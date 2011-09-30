@@ -263,7 +263,10 @@ class Bounce():
         f = self.fraction * self.width
         if x > f - delta and x < f + delta:
             smiley = Sprite(self.sprites, 0, 0, self.smiley_graphic)
-            smiley.move((int(self.count * 25), 0))
+            x = int(self.count * 25 % self.width)
+            y = int(self.count / int(self.width / 25)) * 25
+            smiley.move((x, y))
+            smiley.set_layer(-1)
             _logger.debug("smiley face :)")
 
         self.count += 1
