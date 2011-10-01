@@ -125,7 +125,7 @@ class Bounce():
                            _svg_str_to_pixbuf(svg_from_file(
                     os.path.join(path, 'basketball.svg'))))
         self.ball.set_layer(1)
-        self.ball.set_label(_('click'))
+        self.ball.set_label_attributes(24)
 
         mark = _svg_header(self.ball.rect[2] / 2, BAR_HEIGHT * self.scale + 4,
                            1.0) + \
@@ -161,19 +161,21 @@ class Bounce():
                             self.height - hoffset, _svg_str_to_pixbuf(num))
         self.right.set_label('1')
 
+        self.ball_y_max = self.bar.rect[1] - self.ball.rect[3]
         self.ball.move((int((self.width - self.ball.rect[2]) / 2),
-                        self.bar.rect[1] - self.ball.rect[3]))
+                        self.ball_y_max))
 
         self.dx = 0  # ball horizontal trajectory
         self.count = 0  # number of bounces played
         self.press = None  # sprite under mouse click
-        self._choose_a_fraction()
         self.new_bounce = False
 
         delta = self.height / STEPS
         self.ddy = 6.67 * delta / STEPS  # acceleration (with dampening)
         self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
         _logger.debug('delta: %f, ddy: %f, dy: %f', delta, self.ddy, self.dy)
+
+        self.activity.challenge.set_label(_("Click the ball to start"))
 
     def _gen_bar(self, n):
         ''' Return a bar with n segments '''
@@ -204,7 +206,7 @@ class Bounce():
         x, y = map(int, event.get_coords())
         if self.press is not None:
             if self.press == self.ball:
-                self.ball.set_label('')
+                self._choose_a_fraction()
                 self._move_ball()
         return True
 
@@ -224,8 +226,9 @@ class Bounce():
 
         self.dy += self.ddy
 
-        if self.ball.get_xy()[1] > self.bar.rect[1] - self.ball.rect[3]:
+        if self.ball.get_xy()[1] >= self.ball_y_max:
             # hit the bottom
+            self.ball.move((self.ball.get_xy()[0], self.ball_y_max))
             self._test()
             self.new_bounce = True
             gobject.timeout_add(3000, self._move_ball)
@@ -236,6 +239,7 @@ class Bounce():
         ''' Select a new fraction challenge from the table '''
         n = int(uniform(0, len(FRACTIONS)))
         self.activity.reset_label(FRACTIONS[n][0])
+        self.ball.set_label(FRACTIONS[n][0])
         self.fraction = FRACTIONS[n][1]
         if FRACTIONS[n][2] == 12:  # show twelve-segment bar
             self.bar.set_layer(0)
