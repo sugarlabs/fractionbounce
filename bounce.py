@@ -14,7 +14,8 @@
 FRACTIONS = [('1/2', 0.5, 12), ('2/8', 0.25, 12), ('1/3', 1 / 3., 12),
              ('2/3', 2 / 3., 12), ('2/5', 0.4, 10), ('1/4', 0.25, 12),
              ('3/4', 0.75, 12), ('4/5', 0.8, 10), ('2/4', 0.5, 12),
-             ('4/6', 2 / 3., 12), ('2/6', 1 / 3., 12), ('5/6', 5 / 6., 12)]
+             ('4/6', 2 / 3., 12), ('2/6', 1 / 3., 12), ('5/6', 5 / 6., 12),
+             ('1/6', 1 / 6., 12), ('1/5', 0.2, 10)]
 BAR_HEIGHT = 20
 
 import gtk
@@ -144,29 +145,13 @@ class Bounce():
                            _svg_str_to_pixbuf(mark))
         self.mark.set_layer(2)
 
-        bar = _svg_header(self.width - self.ball.rect[2], BAR_HEIGHT, 1.0)
-        dx = (self.width - self.ball.rect[2]) / 12
-        for i in range(6):  # divide into twelve segments
-            bar += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
-                             i * 2 * dx, 0, '#FFFFFF', '#FFFFFF')
-            bar += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
-                             (i * 2 + 1) * dx, 0, '#AAAAAA', '#AAAAAA')
-        bar += _svg_footer()
+        bar = self._gen_bar(12)  # divide into twelve segments
         self.bar =  Sprite(self.sprites, 0, 0, _svg_str_to_pixbuf(bar))
-        bar = _svg_header(self.width - self.ball.rect[2], BAR_HEIGHT, 1.0)
-        dx = (self.width - self.ball.rect[2]) / 10
-        for i in range(5):  # divide into ten segments
-            bar += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
-                             i * 2 * dx, 0, '#FFFFFF', '#FFFFFF')
-            bar += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
-                             (i * 2 + 1) * dx, 0, '#AAAAAA', '#AAAAAA')
-        bar += _svg_footer()
+        bar = self._gen_bar(10)  # divide into ten segments
         self.bar10 =  Sprite(self.sprites, 0, 0, _svg_str_to_pixbuf(bar))
         hoffset = int((self.ball.rect[3] + self.bar.rect[3]) / 2)
         self.bar.move((int(self.ball.rect[2] / 2), self.height - hoffset))
         self.bar10.move((int(self.ball.rect[2] / 2), self.height - hoffset))
-        self.bar.set_layer(0)
-        self.bar10.set_layer(-1)
         num = _svg_header(BAR_HEIGHT * self.scale, BAR_HEIGHT * self.scale,
                            1.0) + \
               _svg_rect(BAR_HEIGHT * self.scale,
@@ -188,6 +173,18 @@ class Bounce():
         self.count = 0
         self._choose_a_fraction()
         self.reached_the_top = False
+
+    def _gen_bar(self, n):
+        ''' Return a bar with n segments '''
+        _svg_header(self.width - self.ball.rect[2], BAR_HEIGHT, 1.0)
+        dx = (self.width - self.ball.rect[2]) / n
+        for i in range(n / 2):
+            bar += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
+                             i * 2 * dx, 0, '#FFFFFF', '#FFFFFF')
+            bar += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
+                             (i * 2 + 1) * dx, 0, '#AAAAAA', '#AAAAAA')
+        bar += _svg_footer()
+        return bar
 
     def _button_press_cb(self, win, event):
         """ Callback to handle the button presses """
@@ -264,10 +261,7 @@ class Bounce():
             smiley.set_layer(-1)
 
         self.count += 1
-        _logger.debug("fraction %f", self.fraction)
-        _logger.debug("bar %f", self.bar.rect[2])
-        _logger.debug("ball/2 %f %f", self.ball.rect[2] / 2, self.bar.rect[0])
-        _logger.debug("f %f", int(self.fraction * self.bar.rect[2]))
+        self.dx = 0  # stop horizontal movement between bounces
         self.mark.move((int(f - self.mark.rect[2] / 2),
                         self.bar.rect[1] - self.mark.rect[3]))
 
