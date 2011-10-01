@@ -19,6 +19,8 @@ from random import uniform
 import os
 import gobject
 
+from gettext import gettext as _
+
 import logging
 _logger = logging.getLogger("fractionbounce-activity")
 
@@ -127,11 +129,13 @@ class Bounce():
         self.smiley_graphic = _svg_str_to_pixbuf(svg_from_file(
                 os.path.join(path, "smiley.svg")))
 
-        self.ball = Sprite(self.sprites, int(self.width / 3),
-                           self.height - 100,
+        self.ball = Sprite(self.sprites, 0, 0,
                            _svg_str_to_pixbuf(svg_from_file(
-                os.path.join(path, "basketball.svg"))))
+                    os.path.join(path, "basketball.svg"))))
         self.ball.set_layer(1)
+        self.ball.move((int((self.width - self.ball.rect[2]) / 2),
+                        self.height - self.ball.rect[3]))
+        self.ball.set_label(_('click'))
         self.dx = 0  # ball horizontal trajectory
 
         _mark = _svg_header(20, 15, self.scale) +\
@@ -156,7 +160,7 @@ class Bounce():
         self.bar.set_layer(0)
         _num = _svg_header(30 * self.scale, 30 * self.scale, 1.0) +\
             _svg_rect(30 * self.scale, 30 * self.scale, 0, 0, 0, 0,
-                      '#C0C0C0', '#C0C0C0') +\
+                      'none', 'none') +\
                       _svg_footer() 
         self.left =  Sprite(self.sprites, 0,
                            self.height - int(30 * self.scale),
@@ -185,6 +189,7 @@ class Bounce():
         x, y = map(int, event.get_coords())
         if self.press is not None:
             if self.press == self.ball:
+                self.ball.set_label('')
                 self._move_ball()
         return True
 
