@@ -210,7 +210,7 @@ class Bounce():
                 self.ball.move_relative((self.dx, -5))
             else:
                 self.ball.move_relative((0, 5))
-        if self.ball.get_xy()[1] < 1:  # get_xy() returns (x, y)
+        if self.ball.get_xy()[1] < 1:
             # hit the top
             self.reached_the_top = True
             gobject.timeout_add(50, self._move_ball)
@@ -234,7 +234,7 @@ class Bounce():
         """ Test to see if we estimated correctly """
         delta = self.ball.rect[2] / 4
         x = self.ball.get_xy()[0] + self.ball.rect[2] / 2
-        f = self.fraction * self.width
+        f = self.ball.rect[2] / 2 + self.fraction * self.bar.rect[2]
         if x > f - delta and x < f + delta:
             smiley = Sprite(self.sprites, 0, 0, self.smiley_graphic)
             x = int(self.count * 25 % self.width)
@@ -243,7 +243,7 @@ class Bounce():
             smiley.set_layer(-1)
 
         self.count += 1
-        self.mark.move((int(f), self.height - self.mark.rect[3]))
+        self.mark.move((int(f), self.bar.rect[1] - self.mark.rect[3]))
 
     def _keypress_cb(self, area, event):
         """ Keypress: moving the slides with the arrow keys """
