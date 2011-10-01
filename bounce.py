@@ -212,7 +212,6 @@ class Bounce():
             smiley.set_layer(-1)
 
         self.count += 1
-        self.activity.increment_label(self.count)
         self.mark.move((int(f), self.height - self.mark.rect[3]))
 
     def _keypress_cb(self, area, event):

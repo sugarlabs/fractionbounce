@@ -113,11 +113,6 @@ class FractionBounceActivity(activity.Activity):
         self.challenge = _label_factory(toolbox.toolbar, '')
         self.reset_label(0.5)
 
-        _separator_factory(toolbox.toolbar, visible=False)
-
-        self.counter = _label_factory(toolbox.toolbar, '')
-        self.increment_label(0)
-
         _separator_factory(toolbox.toolbar, expand=True, visible=False)
 
         stop_button = StopButton(self)
@@ -142,9 +137,6 @@ class FractionBounceActivity(activity.Activity):
 
     def reset_label(self, fraction):
         """ update the challenge label """
-        self.challenge.set_label(_("Bounce the ball to %s") \
+        self.challenge.set_label(_("Bounce the ball to a position %s \
+way from the left side the bottom of the screen.") \
                                      % (dec2frac(fraction)))
-
-    def increment_label(self, n):
-        """ update the number of tries label """
-        self.counter.set_label(_("Number of tries: %d") % n)
