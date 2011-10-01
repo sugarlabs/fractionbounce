@@ -241,8 +241,8 @@ class Bounce():
         """ Select a new fraction challenge from the table """
         n = int(uniform(0, len(FRACTIONS)))
         _logger.debug(n)
+        self.activity.reset_label(FRACTIONS[n][0])
         self.fraction = FRACTIONS[n][1]
-        self.activity.reset_label(FRACTIONS[n][1])
         if FRACTIONS[n][2] == 12:  # show twelve-segment bar
             self.bar.set_layer(0)
             self.bar10.set_layer(-1)

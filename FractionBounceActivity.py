@@ -48,44 +48,6 @@ def _separator_factory(toolbar, expand=False, visible=True):
     _separator.show()
 
 
-def dec2frac(d):
-    """ Convert float to its approximate fractional representation. """
-
-    """
-    This code was translated to Python from the answers at
-    http://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-\
-readable-fractions/681534#681534
-
-    For example:
-    >>> 3./5
-    0.59999999999999998
-
-    >>> dec2frac(3./5)
-    "3/5"
-
-    """
-
-    if d > 1:
-        return "%s" % d
-    df = 1.0
-    top = 1
-    bot = 1
-
-    while abs(df - d) > 0.00000001:
-        if df < d:
-            top += 1
-        else:
-            bot += 1
-            top = int(d * bot)
-        df = float(top) / bot
-
-    if bot == 1:
-        return "%s" % top
-    elif top == 0:
-        return ""
-    return "%s/%s" % (top, bot)
-
-
 class FractionBounceActivity(activity.Activity):
 
     def __init__(self, handle):
@@ -130,4 +92,4 @@ class FractionBounceActivity(activity.Activity):
         """ update the challenge label """
         self.challenge.set_label(_("Bounce the ball to a position %(fraction)s \
 way from the left side of the bar.") \
-                                     % {'fraction': dec2frac(fraction)})
+                                     % {'fraction': fraction})
