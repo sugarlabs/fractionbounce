@@ -61,17 +61,6 @@ def _svg_indicator():
     return svg_string
 
 
-def _svg_bead(fill, stroke, scale=1.0):
-    """ Returns a bead-shaped SVG object; scale is used to elongate """
-    _h = 15 + 30 * (scale - 1.0)
-    _h2 = 30 * scale - 1.5
-    svg_string = "<path d=\"m 1.5 15 A 15 13.5 90 0 1 15 1.5 L 25 1.5 A 15 13.5 90 0 1 38.5 15 L 38.5 %f A 15 13.5 90 0 1 25 %f L 15 %f A 15 13.5 90 0 1 1.5 %f L 1.5 15 z\"\n" %\
-        (_h, _h2, _h2, _h)
-    svg_string += _svg_style("fill:%s;stroke:%s;stroke-width:1.5" %\
-                             (fill, stroke))
-    return svg_string
-
-
 def _svg_header(w, h, scale, hscale=1.0):
     """ Returns SVG header; some beads are elongated (hscale) """
     svg_string = "<?xml version=\"1.0\" encoding=\"UTF-8\""
@@ -142,6 +131,7 @@ class Bounce():
                            self.height - 100,
                            _svg_str_to_pixbuf(svg_from_file(
                 os.path.join(path, "basketball.svg"))))
+        self.ball.set_layer(1)
         self.dx = 0  # ball horizontal trajectory
 
         _mark = _svg_header(20, 15, self.scale) +\
@@ -150,6 +140,32 @@ class Bounce():
         self.mark = Sprite(self.sprites, int(self.width / 2),
                            self.height + 10,  # hide off bottom of screen
                            _svg_str_to_pixbuf(_mark))
+        self.mark.set_layer(2)
+
+        _bar = _svg_header(self.width, 20, 1.0)
+        dx = int(self.width / 12)
+        for i in range(6):
+            _bar += _svg_rect(dx, 20 * self.scale, 0, 0, i * 2 * dx, 0,
+                         '#FFFFFF', '#AAAAAA')
+            _bar += _svg_rect(dx, 20 * self.scale, 0, 0, (i * 2 + 1) * dx, 0,
+                         '#AAAAAA', '#FFFFFF')
+        _bar += _svg_footer()
+        self.bar =  Sprite(self.sprites, 0,
+                           self.height - int(self.ball.rect[3] / 2),
+                           _svg_str_to_pixbuf(_bar))
+        self.bar.set_layer(0)
+        _num = _svg_header(30 * self.scale, 30 * self.scale, 1.0) +\
+            _svg_rect(30 * self.scale, 30 * self.scale, 0, 0, 0, 0,
+                      '#C0C0C0', '#C0C0C0') +\
+                      _svg_footer() 
+        self.left =  Sprite(self.sprites, 0,
+                           self.height - int(30 * self.scale),
+                           _svg_str_to_pixbuf(_num))
+        self.left.set_label('0')
+        self.right =  Sprite(self.sprites, self.width - int(30 * self.scale),
+                             self.height - int(30 * self.scale),
+                             _svg_str_to_pixbuf(_num))
+        self.right.set_label('1')
         self.count = 0
 
     def _button_press_cb(self, win, event):
