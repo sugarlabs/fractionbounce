@@ -129,5 +129,5 @@ class FractionBounceActivity(activity.Activity):
     def reset_label(self, fraction):
         """ update the challenge label """
         self.challenge.set_label(_("Bounce the ball to a position %(fraction)s \
-way from the left side the bottom of the screen.") \
+way from the left side of the bar.") \
                                      % {'fraction': dec2frac(fraction)})
