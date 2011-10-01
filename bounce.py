@@ -199,9 +199,17 @@ class Bounce():
         """ Move the ball and test boundary conditions """
         self.mark.move((0, self.height))  # hide the mark
         if self.reached_the_top:
-            self.ball.move_relative((self.dx, 5))
+            if self.ball.get_xy()[0] + self.dx > 0 and \
+               self.ball.get_xy()[0] + self.dx < self.width - self.ball.rect[2]:
+                self.ball.move_relative((self.dx, 5))
+            else:
+                self.ball.move_relative((0, 5))
         else:
-            self.ball.move_relative((self.dx, -5))
+            if self.ball.get_xy()[0] + self.dx > 0 and \
+               self.ball.get_xy()[0] + self.dx < self.width - self.ball.rect[2]:
+                self.ball.move_relative((self.dx, -5))
+            else:
+                self.ball.move_relative((0, 5))
         if self.ball.get_xy()[1] < 1:  # get_xy() returns (x, y)
             # hit the top
             self.reached_the_top = True
