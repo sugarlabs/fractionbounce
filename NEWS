@@ -1,7 +1,13 @@
+3
+
+* Acceleration model for ball
+* Label ball with current fraction challenge
+* Add scale to bar
+
 2
 
 * Added bar for reference at bottom of screen
-* fixed path problem preventing activity launch
+* Fixed path problem preventing activity launch
 
 1
 
