@@ -59,14 +59,6 @@ def _svg_rect(w, h, rx, ry, x, y, fill, stroke):
     return svg_string
 
 
-def _svg_indicator():
-    """ Returns a wedge-shaped indicator as SVG """
-    svg_string = "%s %s" % ("<path d=\"m1.5 1.5 L 18.5 1.5 L 10 13.5 L 1.5",
-                            "1.5 z\"\n")
-    svg_string += _svg_style("fill:#ff0000;stroke:#ff0000;stroke-width:3.0;")
-    return svg_string
-
-
 def _svg_header(w, h, scale, hscale=1.0):
     """ Returns SVG header; some beads are elongated (hscale) """
     svg_string = "<?xml version=\"1.0\" encoding=\"UTF-8\""
@@ -125,7 +117,6 @@ class Bounce():
         self.height = gtk.gdk.screen_height() - GRID_CELL_SIZE
         self.sprites = Sprites(self.canvas)
         self.scale = gtk.gdk.screen_height() / 900.0
-        self.press = None
 
         # Create the sprites we'll need
         self.smiley_graphic = _svg_str_to_pixbuf(svg_from_file(
@@ -137,8 +128,11 @@ class Bounce():
         self.ball.set_layer(1)
         self.ball.set_label(_('click'))
 
-        mark = _svg_header(20, 15, self.scale) + \
-               _svg_indicator() + \
+        mark = _svg_header(self.ball.rect[2] / 2, BAR_HEIGHT * self.scale + 4,
+                           1.0) + \
+               _svg_rect(self.ball.rect[2] / 2,
+                         BAR_HEIGHT * self.scale + 4, 0, 0, 0, 0,
+                         '#FF0000', '#FF0000') + \
                _svg_footer()
         self.mark = Sprite(self.sprites, 0,
                            self.height,  # hide off bottom of screen
@@ -172,7 +166,8 @@ class Bounce():
                         self.bar.rect[1] - self.ball.rect[3]))
 
         self.dx = 0  # ball horizontal trajectory
-        self.count = 0
+        self.count = 0  # number of bounces played
+        self.press = None  # sprite under mouse click
         self._choose_a_fraction()
         self.reached_the_top = False
         self.new_bounce = True
@@ -268,8 +263,7 @@ class Bounce():
 
         self.count += 1
         self.dx = 0  # stop horizontal movement between bounces
-        self.mark.move((int(f - self.mark.rect[2] / 2),
-                        self.bar.rect[1] - self.mark.rect[3]))
+        self.mark.move((int(f - self.mark.rect[2] / 2), self.bar.rect[1] - 2))
 
     def _keypress_cb(self, area, event):
         """ Keypress: moving the slides with the arrow keys """
