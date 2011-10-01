@@ -1,3 +1,8 @@
+2
+
+* Added bar for reference at bottom of screen
+* fixed path problem preventing activity launch
+
 1
 
 * New activity: bounce the ball onto the fraction
