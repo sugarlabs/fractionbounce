@@ -127,6 +127,7 @@ class Bounce():
         self._choose_a_fraction()
         self.reached_the_top = False
 
+        # Create the sprites we'll need
         self.smiley_graphic = _svg_str_to_pixbuf(svg_from_file(
                 os.path.join(path, "smiley.svg")))
 
@@ -134,10 +135,7 @@ class Bounce():
                            _svg_str_to_pixbuf(svg_from_file(
                     os.path.join(path, "basketball.svg"))))
         self.ball.set_layer(1)
-        self.ball.move((int((self.width - self.ball.rect[2]) / 2),
-                        self.height - self.ball.rect[3]))
         self.ball.set_label(_('click'))
-        self.dx = 0  # ball horizontal trajectory
 
         mark = _svg_header(20, 15, self.scale) + \
                _svg_indicator() + \
@@ -172,6 +170,11 @@ class Bounce():
                             self.width -  int(self.ball.rect[2] / 2),
                             self.height - hoffset, _svg_str_to_pixbuf(num))
         self.right.set_label('1')
+
+        self.ball.move((int((self.width - self.ball.rect[2]) / 2),
+                        self.bar.rect[1] - self.ball.rect[3]))
+
+        self.dx = 0  # ball horizontal trajectory
         self.count = 0
 
     def _button_press_cb(self, win, event):
@@ -214,7 +217,7 @@ class Bounce():
             # hit the top
             self.reached_the_top = True
             gobject.timeout_add(50, self._move_ball)
-        elif self.ball.get_xy()[1] > self.height - self.ball.rect[3]:
+        elif self.ball.get_xy()[1] > self.bar.rect[1] - self.ball.rect[3]:
             # hit the bottom
             self._test()
             self.reached_the_top = False
