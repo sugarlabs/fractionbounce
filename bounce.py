@@ -17,6 +17,7 @@ FRACTIONS = [('1/2', 0.5, 12), ('2/8', 0.25, 12), ('1/3', 1 / 3., 12),
              ('4/6', 2 / 3., 12), ('2/6', 1 / 3., 12), ('5/6', 5 / 6., 12),
              ('1/6', 1 / 6., 12), ('1/5', 0.2, 10)]
 BAR_HEIGHT = 20
+STEPS = 100.
 
 import gtk
 from random import uniform
@@ -167,8 +168,12 @@ class Bounce():
         self.count = 0  # number of bounces played
         self.press = None  # sprite under mouse click
         self._choose_a_fraction()
-        self.reached_the_top = False
         self.new_bounce = False
+
+        delta = self.height / STEPS
+        self.ddy = 6.67 * delta / STEPS  # acceleration (with dampening)
+        self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
+        _logger.debug('delta: %f, ddy: %f, dy: %f', delta, self.ddy, self.dy)
 
     def _gen_bar(self, n):
         ''' Return a bar with n segments '''
@@ -209,26 +214,19 @@ class Bounce():
             self.mark.move((0, self.height))  # hide the mark
             self._choose_a_fraction()
             self.new_bounce = False
-        if self.reached_the_top:
-            if self.ball.get_xy()[0] + self.dx > 0 and \
-               self.ball.get_xy()[0] + self.dx < self.width - self.ball.rect[2]:
-                self.ball.move_relative((self.dx, 5))
-            else:
-                self.ball.move_relative((0, 5))
+            self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
+
+        if self.ball.get_xy()[0] + self.dx > 0 and \
+           self.ball.get_xy()[0] + self.dx < self.width - self.ball.rect[2]:
+            self.ball.move_relative((self.dx, self.dy))
         else:
-            if self.ball.get_xy()[0] + self.dx > 0 and \
-               self.ball.get_xy()[0] + self.dx < self.width - self.ball.rect[2]:
-                self.ball.move_relative((self.dx, -5))
-            else:
-                self.ball.move_relative((0, 5))
-        if self.ball.get_xy()[1] < 1:
-            # hit the top
-            self.reached_the_top = True
-            gobject.timeout_add(50, self._move_ball)
-        elif self.ball.get_xy()[1] > self.bar.rect[1] - self.ball.rect[3]:
+            self.ball.move_relative((0, self.dy))
+
+        self.dy += self.ddy
+
+        if self.ball.get_xy()[1] > self.bar.rect[1] - self.ball.rect[3]:
             # hit the bottom
             self._test()
-            self.reached_the_top = False
             self.new_bounce = True
             gobject.timeout_add(3000, self._move_ball)
         else:
@@ -237,7 +235,6 @@ class Bounce():
     def _choose_a_fraction(self):
         ''' Select a new fraction challenge from the table '''
         n = int(uniform(0, len(FRACTIONS)))
-        _logger.debug(n)
         self.activity.reset_label(FRACTIONS[n][0])
         self.fraction = FRACTIONS[n][1]
         if FRACTIONS[n][2] == 12:  # show twelve-segment bar
