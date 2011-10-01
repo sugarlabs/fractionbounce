@@ -175,6 +175,7 @@ class Bounce():
         self.count = 0
         self._choose_a_fraction()
         self.reached_the_top = False
+        self.new_bounce = True
 
     def _gen_bar(self, n):
         ''' Return a bar with n segments '''
@@ -211,7 +212,10 @@ class Bounce():
 
     def _move_ball(self):
         """ Move the ball and test boundary conditions """
-        self.mark.move((0, self.height))  # hide the mark
+        if self.new_bounce:
+            self.mark.move((0, self.height))  # hide the mark
+            self._choose_a_fraction()
+            self.new_bounce = False
         if self.reached_the_top:
             if self.ball.get_xy()[0] + self.dx > 0 and \
                self.ball.get_xy()[0] + self.dx < self.width - self.ball.rect[2]:
@@ -232,7 +236,7 @@ class Bounce():
             # hit the bottom
             self._test()
             self.reached_the_top = False
-            self._choose_a_fraction()
+            self.new_bounce = True
             gobject.timeout_add(3000, self._move_ball)
         else:
             gobject.timeout_add(50, self._move_ball)
