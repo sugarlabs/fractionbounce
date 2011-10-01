@@ -27,10 +27,12 @@ _logger = logging.getLogger("fractionbounce-activity")
 from bounce import Bounce
 
 
-def _label_factory(toolbar, label):
+def _label_factory(toolbar, label, width=None):
     """ Factory for adding a label to a toolbar """
     my_label = gtk.Label(label)
     my_label.set_line_wrap(True)
+    if width is not None:
+        my_label.set_size_request(width, -1)
     my_label.show()
     _toolitem = gtk.ToolItem()
     _toolitem.add(my_label)
@@ -63,7 +65,11 @@ class FractionBounceActivity(activity.Activity):
         toolbox.toolbar.insert(activity_button, 0)
         activity_button.show()
 
-        self.challenge = _label_factory(toolbox.toolbar, '')
+        if (gtk.gtk_version[0] > 2 or gtk.gtk_version[1] > 16):
+            self.challenge = _label_factory(
+                toolbox.toolbar, '', gtk.gdk.screen_width() - 250)
+        else:
+            self.challenge = _label_factory(toolbox.toolbar, '')
         self.reset_label(0.5)
 
         _separator_factory(toolbox.toolbar, expand=True, visible=False)
