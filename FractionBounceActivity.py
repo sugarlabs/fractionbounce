@@ -11,25 +11,15 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-import pygtk
-pygtk.require('2.0')
 import gtk
-import gobject
 
-import sugar
 from sugar.activity import activity
-from sugar.bundle.activitybundle import ActivityBundle
 from sugar.activity.widgets import ActivityToolbarButton
 from sugar.activity.widgets import StopButton
 from sugar.graphics.toolbarbox import ToolbarBox
-from sugar.graphics.toolbarbox import ToolbarButton
 from sugar.graphics.toolbutton import ToolButton
-from sugar.graphics.menuitem import MenuItem
-from sugar.graphics.icon import Icon
-from sugar.datastore import datastore
 
 from gettext import gettext as _
-import locale
 
 import logging
 _logger = logging.getLogger("fractionbounce-activity")
@@ -63,8 +53,9 @@ def dec2frac(d):
 
     """
     This code was translated to Python from the answers at
-    http://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readable-fractions/681534#681534
-    
+    http://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-\
+readable-fractions/681534#681534
+
     For example:
     >>> 3./5
     0.59999999999999998
