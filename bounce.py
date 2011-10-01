@@ -13,6 +13,7 @@
 
 FRACTIONS = [('1/2', 0.5), ('2/8', 0.25), ('1/3', 1 / 3.), ('2/3', 2 / 3.),
              ('2/5', 0.4), ('1/4', 0.25), ('3/4', 0.75), ('4/5', 0.8)]
+BAR_HEIGHT = 20
 
 import gtk
 from random import uniform
@@ -141,34 +142,36 @@ class Bounce():
         _mark = _svg_header(20, 15, self.scale) +\
                 _svg_indicator() +\
                 _svg_footer()
-        self.mark = Sprite(self.sprites, int(self.width / 2),
-                           self.height + 10,  # hide off bottom of screen
+        self.mark = Sprite(self.sprites, 0,
+                           self.height,  # hide off bottom of screen
                            _svg_str_to_pixbuf(_mark))
         self.mark.set_layer(2)
 
-        _bar = _svg_header(self.width, 20, 1.0)
-        dx = int(self.width / 12)
-        for i in range(6):
-            _bar += _svg_rect(dx, 20 * self.scale, 0, 0, i * 2 * dx, 0,
-                         '#FFFFFF', '#AAAAAA')
-            _bar += _svg_rect(dx, 20 * self.scale, 0, 0, (i * 2 + 1) * dx, 0,
-                         '#AAAAAA', '#FFFFFF')
+        _bar = _svg_header(self.width - self.ball.rect[2], BAR_HEIGHT, 1.0)
+        dx = int((self.width - self.ball.rect[2]) / 12)
+        for i in range(6):  # divide into twelve segments
+            _bar += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0, i * 2 * dx, 0,
+                              '#FFFFFF', '#FFFFFF')
+            _bar += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
+                              (i * 2 + 1) * dx, 0,
+                              '#AAAAAA', '#AAAAAA')
         _bar += _svg_footer()
-        self.bar =  Sprite(self.sprites, 0,
-                           self.height - int(self.ball.rect[3] / 2),
-                           _svg_str_to_pixbuf(_bar))
+        self.bar =  Sprite(self.sprites, 0, 0, _svg_str_to_pixbuf(_bar))
+        hoffset = int((self.ball.rect[3] + self.bar.rect[3]) / 2)
+        self.bar.move((int(self.ball.rect[2] / 2), self.height - hoffset))
         self.bar.set_layer(0)
-        _num = _svg_header(30 * self.scale, 30 * self.scale, 1.0) +\
-            _svg_rect(30 * self.scale, 30 * self.scale, 0, 0, 0, 0,
-                      'none', 'none') +\
-                      _svg_footer() 
-        self.left =  Sprite(self.sprites, 0,
-                           self.height - int(30 * self.scale),
-                           _svg_str_to_pixbuf(_num))
+        _num = _svg_header(BAR_HEIGHT * self.scale, BAR_HEIGHT * self.scale,
+                           1.0) +\
+               _svg_rect(BAR_HEIGHT * self.scale,
+                         BAR_HEIGHT * self.scale, 0, 0, 0, 0,
+                         'none', 'none') +\
+               _svg_footer()
+        self.left = Sprite(self.sprites, int(self.ball.rect[2] / 4),
+                           self.height - hoffset, _svg_str_to_pixbuf(_num))
         self.left.set_label('0')
-        self.right =  Sprite(self.sprites, self.width - int(30 * self.scale),
-                             self.height - int(30 * self.scale),
-                             _svg_str_to_pixbuf(_num))
+        self.right = Sprite(self.sprites,
+                            self.width -  int(self.ball.rect[2] / 2),
+                            self.height - hoffset, _svg_str_to_pixbuf(_num))
         self.right.set_label('1')
         self.count = 0
 
