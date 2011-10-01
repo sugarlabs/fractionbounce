@@ -138,7 +138,7 @@ class FractionBounceActivity(activity.Activity):
         self.show_all()
 
         # Initialize the canvas
-        Bounce(canvas, self)
+        Bounce(canvas, activity.get_bundle_path(), self)
 
     def reset_label(self, fraction):
         """ update the challenge label """

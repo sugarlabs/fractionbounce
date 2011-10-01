@@ -11,79 +11,25 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-BWIDTH = 40
-BHEIGHT = 30
-BOFFSET = 10
-FSTROKE = 45
-MAX_FADE_LEVEL = 3
-CURSOR = '█'
+FRACTIONS = [('1/2', 0.5), ('2/8', 0.25), ('1/3', 1 / 3.), ('2/3', 2 / 3.),
+             ('2/5', 0.4), ('1/4', 0.25), ('3/4', 0.75), ('4/5', 0.8)]
 
-FRACTIONS = [('1/2', 0.5), ('2/8', 0.25), ('1/3', 1/3.), ('2/3', 2/3.),
-             ('2/5', 0.4)]
-
-import pygtk
-pygtk.require('2.0')
 import gtk
-from math import pow, floor, ceil
 from random import uniform
 import os
-from time import sleep
 import gobject
 
-import locale
-from gettext import gettext as _
-
-import traceback
 import logging
 _logger = logging.getLogger("fractionbounce-activity")
 
 try:
     from sugar.graphics import style
     GRID_CELL_SIZE = style.GRID_CELL_SIZE
-except:
+except ImportError:
     GRID_CELL_SIZE = 0
 
 from sprites import Sprites, Sprite
 
-def dec2frac(d):
-    """ Convert float  to its approximate fractional representation. """
-
-    """
-    This code was translated to Python from the answers at
-    http://stackoverflow.com/questions/95727/how-to-convert-floats-to-human-readable-fractions/681534#681534
-    
-    For example:
-    >>> 3./5
-    0.59999999999999998
-
-    >>> dec2frac(3./5)
-    "3/5"
-
-    """
-
-    if d > 1:
-        return "%s" % d
-    df = 1.0
-    top = 1
-    bot = 1
-
-    while abs(df - d) > 0.00000001:
-        if df < d:
-            top += 1
-        else:
-            bot += 1
-            top = int(d * bot)
-        df = float(top) / bot
-
-    if bot == 1:
-        return "%s" % top
-    elif top == 0:
-        return ""
-    return "%s/%s" % (top, bot)
-
-#
-# Utilities for generating artwork as SVG
-#
 
 def _svg_str_to_pixbuf(svg_string):
     """ Load pixbuf from SVG string """
@@ -92,6 +38,7 @@ def _svg_str_to_pixbuf(svg_string):
     pl.close()
     pixbuf = pl.get_pixbuf()
     return pixbuf
+
 
 def _svg_rect(w, h, rx, ry, x, y, fill, stroke):
     """ Returns an SVG rectangle """
@@ -105,6 +52,7 @@ def _svg_rect(w, h, rx, ry, x, y, fill, stroke):
     svg_string += _svg_style("fill:%s;stroke:%s;" % (fill, stroke))
     return svg_string
 
+
 def _svg_indicator():
     """ Returns a wedge-shaped indicator as SVG """
     svg_string = "%s %s" % ("<path d=\"m1.5 1.5 L 18.5 1.5 L 10 13.5 L 1.5",
@@ -112,15 +60,17 @@ def _svg_indicator():
     svg_string += _svg_style("fill:#ff0000;stroke:#ff0000;stroke-width:3.0;")
     return svg_string
 
+
 def _svg_bead(fill, stroke, scale=1.0):
     """ Returns a bead-shaped SVG object; scale is used to elongate """
-    _h = 15+30*(scale-1.0)
-    _h2 = 30*scale-1.5
+    _h = 15 + 30 * (scale - 1.0)
+    _h2 = 30 * scale - 1.5
     svg_string = "<path d=\"m 1.5 15 A 15 13.5 90 0 1 15 1.5 L 25 1.5 A 15 13.5 90 0 1 38.5 15 L 38.5 %f A 15 13.5 90 0 1 25 %f L 15 %f A 15 13.5 90 0 1 1.5 %f L 1.5 15 z\"\n" %\
         (_h, _h2, _h2, _h)
     svg_string += _svg_style("fill:%s;stroke:%s;stroke-width:1.5" %\
                              (fill, stroke))
     return svg_string
+
 
 def _svg_header(w, h, scale, hscale=1.0):
     """ Returns SVG header; some beads are elongated (hscale) """
@@ -131,18 +81,20 @@ def _svg_header(w, h, scale, hscale=1.0):
     svg_string += "   xmlns:svg=\"http://www.w3.org/2000/svg\"\n"
     svg_string += "   xmlns=\"http://www.w3.org/2000/svg\"\n"
     svg_string += "   version=\"1.0\"\n"
-    svg_string += "%s%f%s" % ("   width=\"", w*scale, "\"\n")
-    svg_string += "%s%f%s" % ("   height=\"", h*scale*hscale, "\">\n")
-    svg_string += "%s%f%s%f%s" % ("<g\n       transform=\"matrix(", 
+    svg_string += "%s%f%s" % ("   width=\"", w * scale, "\"\n")
+    svg_string += "%s%f%s" % ("   height=\"", h * scale * hscale, "\">\n")
+    svg_string += "%s%f%s%f%s" % ("<g\n       transform=\"matrix(",
                                   scale, ",0,0,", scale,
                                   ",0,0)\">\n")
     return svg_string
+
 
 def _svg_footer():
     """ Returns SVG footer """
     svg_string = "</g>\n"
     svg_string += "</svg>\n"
     return svg_string
+
 
 def _svg_style(extras=""):
     """ Returns SVG style for shape rendering """
@@ -153,7 +105,7 @@ class Bounce():
     """ The Bounce class is used to define the ball and the user
     interaction. """
 
-    def __init__(self, canvas, parent=None):
+    def __init__(self, canvas, path, parent=None):
         """ Initialize the canvas and set up the callbacks. """
         self.activity = parent
 
@@ -175,31 +127,21 @@ class Bounce():
         self.canvas.connect("motion-notify-event", self._mouse_move_cb)
         self.canvas.connect("key_press_event", self._keypress_cb)
         self.width = gtk.gdk.screen_width()
-        self.height = gtk.gdk.screen_height()-GRID_CELL_SIZE
+        self.height = gtk.gdk.screen_height() - GRID_CELL_SIZE
         self.sprites = Sprites(self.canvas)
-        self.scale = gtk.gdk.screen_height()/900.0
-        self.dragpos = 0
+        self.scale = gtk.gdk.screen_height() / 900.0
         self.press = None
-        self.last = None
-
-        locale.setlocale(locale.LC_NUMERIC, '')
-        self.decimal_point = locale.localeconv()['decimal_point']
-        if self.decimal_point == '' or self.decimal_point is None:
-            self.decimal_point = '.'
 
         self._choose_a_fraction()
         self.reached_the_top = False
 
         self.smiley_graphic = _svg_str_to_pixbuf(svg_from_file(
-                os.path.join(# self.activity.get_bundle_path(),
-                    "/home/walter/Activities/FractionBounce.activity",
-                             "smiley.svg")))
+                os.path.join(path, "smiley.svg")))
 
-        self.ball = Sprite(self.sprites, int(self.width/3), self.height-100, 
+        self.ball = Sprite(self.sprites, int(self.width / 3),
+                           self.height - 100,
                            _svg_str_to_pixbuf(svg_from_file(
-                os.path.join(# self.activity.get_bundle_path(),
-                    "/home/walter/Activities/FractionBounce.activity",
-                             "basketball.svg"))))
+                os.path.join(path, "basketball.svg"))))
         self.dx = 0  # ball horizontal trajectory
 
         _mark = _svg_header(20, 15, self.scale) +\
@@ -210,13 +152,11 @@ class Bounce():
                            _svg_str_to_pixbuf(_mark))
         self.count = 0
 
-        
     def _button_press_cb(self, win, event):
         """ Callback to handle the button presses """
         win.grab_focus()
         x, y = map(int, event.get_coords())
-        self.press = self.sprites.find_sprite((x,y))
-        self.last = self.press
+        self.press = self.sprites.find_sprite((x, y))
         return True
 
     def _mouse_move_cb(self, win, event):
@@ -233,7 +173,8 @@ class Bounce():
         return True
 
     def _move_ball(self):
-        self.mark.move((0, self.height + 10))
+        """ Move the ball and test boundary conditions """
+        self.mark.move((0, self.height))  # hide the mark
         if self.reached_the_top:
             self.ball.move_relative((self.dx, 5))
         else:
@@ -252,12 +193,14 @@ class Bounce():
             gobject.timeout_add(50, self._move_ball)
 
     def _choose_a_fraction(self):
+        """ Select a new fraction challenge from the table """
         n = int(uniform(0, len(FRACTIONS)))
         _logger.debug(n)
         self.fraction = FRACTIONS[n][1]
         self.activity.reset_label(FRACTIONS[n][1])
 
     def _test(self):
+        """ Test to see if we estimated correctly """
         delta = self.ball.rect[2] / 4
         x = self.ball.get_xy()[0] + self.ball.rect[2] / 2
         f = self.fraction * self.width
@@ -267,11 +210,10 @@ class Bounce():
             y = int(self.count / int(self.width / 25)) * 25
             smiley.move((x, y))
             smiley.set_layer(-1)
-            _logger.debug("smiley face :)")
 
         self.count += 1
         self.activity.increment_label(self.count)
-        self.mark.move((int(f), self.height - 10))
+        self.mark.move((int(f), self.height - self.mark.rect[3]))
 
     def _keypress_cb(self, area, event):
         """ Keypress: moving the slides with the arrow keys """
