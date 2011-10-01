@@ -145,10 +145,12 @@ class Bounce():
                            _svg_str_to_pixbuf(mark))
         self.mark.set_layer(2)
 
-        bar = self._gen_bar(12)  # divide into twelve segments
-        self.bar =  Sprite(self.sprites, 0, 0, _svg_str_to_pixbuf(bar))
-        bar = self._gen_bar(10)  # divide into ten segments
-        self.bar10 =  Sprite(self.sprites, 0, 0, _svg_str_to_pixbuf(bar))
+        # divide into twelve segments
+        self.bar =  Sprite(self.sprites, 0, 0,
+                           _svg_str_to_pixbuf(self._gen_bar(12)))
+        # divide into ten segments
+        self.bar10 =  Sprite(self.sprites, 0, 0,
+                             _svg_str_to_pixbuf(self._gen_bar(10)))
         hoffset = int((self.ball.rect[3] + self.bar.rect[3]) / 2)
         self.bar.move((int(self.ball.rect[2] / 2), self.height - hoffset))
         self.bar10.move((int(self.ball.rect[2] / 2), self.height - hoffset))
@@ -176,7 +178,7 @@ class Bounce():
 
     def _gen_bar(self, n):
         ''' Return a bar with n segments '''
-        _svg_header(self.width - self.ball.rect[2], BAR_HEIGHT, 1.0)
+        bar = _svg_header(self.width - self.ball.rect[2], BAR_HEIGHT, 1.0)
         dx = (self.width - self.ball.rect[2]) / n
         for i in range(n / 2):
             bar += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
