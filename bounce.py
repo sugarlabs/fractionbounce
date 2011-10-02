@@ -271,6 +271,9 @@ class Bounce():
             self.dx = -5
         elif k in ['l', 'Right', 'KP_Right']:
             self.dx = 5
+        elif k in ['KP_Page_Up']:
+            self._choose_a_fraction()
+            self._move_ball()
         else:
             self.dx = 0
         return True
