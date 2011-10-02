@@ -18,6 +18,8 @@ FRACTIONS = [('1/2', 0.5, 12), ('2/8', 0.25, 12), ('1/3', 1 / 3., 12),
              ('1/6', 1 / 6., 12), ('1/5', 0.2, 10)]
 BAR_HEIGHT = 20
 STEPS = 100.  # number of time steps per bounce rise and fall
+STEP_PAUSE = 50  # milliseconds between steps
+BOUNCE_PAUSE = 3000  # milliseconds between bounces
 
 ACCELEROMETER_DEVICE = '/sys/devices/platform/lis3lv02d/position'
 
@@ -240,9 +242,11 @@ class Bounce():
             self.ball.move((self.ball.get_xy()[0], self.ball_y_max))
             self._test()
             self.new_bounce = True
-            gobject.timeout_add(3000, self._move_ball)
+            gobject.timeout_add(  # wait less and less as game goes on
+                max(STEP_PAUSE, BOUNCE_PAUSE - self.count * STEP_PAUSE),
+                self._move_ball)
         else:
-            gobject.timeout_add(50, self._move_ball)
+            gobject.timeout_add(STEP_PAUSE, self._move_ball)
 
     def _choose_a_fraction(self):
         ''' Select a new fraction challenge from the table '''
