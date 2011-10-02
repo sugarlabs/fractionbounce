@@ -117,7 +117,6 @@ class Bounce():
         self.canvas.connect('expose-event', self._expose_cb)
         self.canvas.connect('button-press-event', self._button_press_cb)
         self.canvas.connect('button-release-event', self._button_release_cb)
-        self.canvas.connect('motion-notify-event', self._mouse_move_cb)
         self.canvas.connect('key_press_event', self._keypress_cb)
         self.width = gtk.gdk.screen_width()
         self.height = gtk.gdk.screen_height() - GRID_CELL_SIZE
@@ -201,10 +200,6 @@ class Bounce():
         win.grab_focus()
         x, y = map(int, event.get_coords())
         self.press = self.sprites.find_sprite((x, y))
-        return True
-
-    def _mouse_move_cb(self, win, event):
-        ''' Callback to handle the mouse moves '''
         return True
 
     def _button_release_cb(self, win, event):
