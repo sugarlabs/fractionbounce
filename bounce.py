@@ -17,7 +17,9 @@ FRACTIONS = [('1/2', 0.5, 12), ('2/8', 0.25, 12), ('1/3', 1 / 3., 12),
              ('4/6', 2 / 3., 12), ('2/6', 1 / 3., 12), ('5/6', 5 / 6., 12),
              ('1/6', 1 / 6., 12), ('1/5', 0.2, 10)]
 BAR_HEIGHT = 20
-STEPS = 100.
+STEPS = 100.  # number of time steps per bounce rise and fall
+
+ACCELEROMETER_DEVICE = '/sys/devices/platform/lis3lv02d/position'
 
 import gtk
 from random import uniform
@@ -102,6 +104,11 @@ class Bounce():
             self.sugar = True
             self.canvas = canvas
             parent.show_all()
+
+        if os.path.exists(ACCELEROMETER_DEVICE):
+            self.accererometer = True
+        else:
+            self.accererometer = False
 
         self.canvas.set_flags(gtk.CAN_FOCUS)
         self.canvas.add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -218,6 +225,13 @@ class Bounce():
             self.new_bounce = False
             self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
 
+        if self.accererometer:
+            fh = open(ACCELEROMETER_DEVICE)
+            string = fh.read()
+            xyz = string[1:-2].split(',')
+            self.dx = int(float(xyz[0]) / 18.)
+            fh.close()
+
         if self.ball.get_xy()[0] + self.dx > 0 and \
            self.ball.get_xy()[0] + self.dx < self.width - self.ball.rect[2]:
             self.ball.move_relative((self.dx, self.dy))
@@ -271,7 +285,7 @@ class Bounce():
             self.dx = -5
         elif k in ['l', 'Right', 'KP_Right']:
             self.dx = 5
-        elif k in ['KP_Page_Up']:
+        elif k in ['KP_Page_Up', 'Return']:
             self._choose_a_fraction()
             self._move_ball()
         else:
