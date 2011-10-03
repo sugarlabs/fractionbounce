@@ -11,11 +11,19 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-FRACTIONS = [('1/2', 0.5, 12), ('2/8', 0.25, 12), ('1/3', 1 / 3., 12),
-             ('2/3', 2 / 3., 12), ('2/5', 0.4, 10), ('1/4', 0.25, 12),
-             ('3/4', 0.75, 12), ('4/5', 0.8, 10), ('2/4', 0.5, 12),
-             ('4/6', 2 / 3., 12), ('2/6', 1 / 3., 12), ('5/6', 5 / 6., 12),
-             ('1/6', 1 / 6., 12), ('1/5', 0.2, 10)]
+EASY = [('1/2', 0.5, 12), ('1/3', 1 / 3., 12), ('3/4', 0.75, 12),
+        ('1/4', 0.25, 12), ('2/3', 2 / 3., 12), ('1/6', 1 / 6., 12),
+        ('5/6', 5 / 6., 12)]
+MEDIUM = [('2/8', 0.25, 12), ('2/4', 0.5, 12),  ('3/6', 0.5, 12),
+          ('6/12', 0.5, 12), ('4/6', 2 / 3., 12), ('2/6', 1 / 3., 12),
+          ('5/12', 5 / 12., 12), ('3/12', 0.25, 12), ('7/12', 7 / 12., 12),
+          ('8/12', 2 / 3., 12), ('4/8', 0.5, 12), ('6/12', 0.5, 12),
+          ('9/12', 0.75, 12), ('2/12', 1 / 6., 12), ('4/12', 1 / 3., 12),
+          ('10/12', 5 / 6., 12), ('11/12', 11 / 12., 12)]
+HARD = [('2/5', 0.4, 10), ('4/5', 0.8, 10), ('3/5', 0.6, 10),
+        ('1/10', 0.1, 10), ('1/5', 0.2, 10), ('5/10', 0.5, 10),
+        ('3/10', 0.3, 10), ('7/10', 0.7, 10), ('8/10', 0.8, 10)]
+EXPERT = 100  # after many correct answers, don't segment the bar
 BAR_HEIGHT = 20
 STEPS = 100.  # number of time steps per bounce rise and fall
 STEP_PAUSE = 50  # milliseconds between steps
@@ -149,14 +157,19 @@ class Bounce():
                            _svg_str_to_pixbuf(mark))
         self.mark.set_layer(2)
 
+        # divide into two segments
+        self.bar = Sprite(self.sprites, 0, 0,
+                          _svg_str_to_pixbuf(self._gen_bar(2)))
+
         # divide into twelve segments
-        self.bar =  Sprite(self.sprites, 0, 0,
-                           _svg_str_to_pixbuf(self._gen_bar(12)))
+        self.bar12 = Sprite(self.sprites, 0, 0,
+                            _svg_str_to_pixbuf(self._gen_bar(12)))
         # divide into ten segments
-        self.bar10 =  Sprite(self.sprites, 0, 0,
-                             _svg_str_to_pixbuf(self._gen_bar(10)))
+        self.bar10 = Sprite(self.sprites, 0, 0,
+                            _svg_str_to_pixbuf(self._gen_bar(10)))
         hoffset = int((self.ball.rect[3] + self.bar.rect[3]) / 2)
         self.bar.move((int(self.ball.rect[2] / 2), self.height - hoffset))
+        self.bar12.move((int(self.ball.rect[2] / 2), self.height - hoffset))
         self.bar10.move((int(self.ball.rect[2] / 2), self.height - hoffset))
         num = _svg_header(BAR_HEIGHT * self.scale, BAR_HEIGHT * self.scale,
                            1.0) + \
@@ -168,7 +181,7 @@ class Bounce():
                            self.height - hoffset, _svg_str_to_pixbuf(num))
         self.left.set_label('0')
         self.right = Sprite(self.sprites,
-                            self.width -  int(self.ball.rect[2] / 2),
+                            self.width - int(self.ball.rect[2] / 2),
                             self.height - hoffset, _svg_str_to_pixbuf(num))
         self.right.set_label('1')
 
@@ -176,8 +189,12 @@ class Bounce():
         self.ball.move((int((self.width - self.ball.rect[2]) / 2),
                         self.ball_y_max))
 
+        self.fractions = []
+        for f in EASY:
+            self.fractions.append(f)
         self.dx = 0  # ball horizontal trajectory
         self.count = 0  # number of bounces played
+        self.correct = 0  # number of correct answers
         self.press = None  # sprite under mouse click
         self.new_bounce = False
 
@@ -253,16 +270,23 @@ class Bounce():
 
     def _choose_a_fraction(self):
         ''' Select a new fraction challenge from the table '''
-        n = int(uniform(0, len(FRACTIONS)))
-        self.activity.reset_label(FRACTIONS[n][0])
-        self.ball.set_label(FRACTIONS[n][0])
-        self.fraction = FRACTIONS[n][1]
-        if FRACTIONS[n][2] == 12:  # show twelve-segment bar
+        n = int(uniform(0, len(self.fractions)))
+        self.activity.reset_label(self.fractions[n][0])
+        self.ball.set_label(self.fractions[n][0])
+        self.fraction = self.fractions[n][1]
+
+        if self.correct > EXPERT:  # show two-segment bar
             self.bar.set_layer(0)
             self.bar10.set_layer(-1)
+            self.bar12.set_layer(-1)
+        elif self.fractions[n][2] == 12:  # show twelve-segment bar
+            self.bar.set_layer(-1)
+            self.bar10.set_layer(-1)
+            self.bar12.set_layer(0)
         else:  # show ten-segment bar
             self.bar.set_layer(-1)
             self.bar10.set_layer(0)
+            self.bar12.set_layer(-1)
 
     def _test(self):
         ''' Test to see if we estimated correctly '''
@@ -275,10 +299,21 @@ class Bounce():
             y = int(self.count / int(self.width / 25)) * 25
             smiley.move((x, y))
             smiley.set_layer(-1)
+            self.correct += 1
+        self.mark.move((int(f - self.mark.rect[2] / 2), self.bar.rect[1] - 2))
+
+        # after enough correct answers, up the difficulty
+        if self.correct == len(EASY) * 2:
+            for challenge in MEDIUM:
+                self.fractions.append(challenge)
+            _logger.debug('%s', self.fractions)
+        elif self.correct == len(EASY) * 4:
+            for challenge in HARD:
+                self.fractions.append(challenge)
+            _logger.debug('%s', self.fractions)
 
         self.count += 1
         self.dx = 0  # stop horizontal movement between bounces
-        self.mark.move((int(f - self.mark.rect[2] / 2), self.bar.rect[1] - 2))
 
     def _keypress_cb(self, area, event):
         ''' Keypress: moving the slides with the arrow keys '''
