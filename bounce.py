@@ -189,10 +189,11 @@ class Bounce():
         self.ball.move((int((self.width - self.ball.rect[2]) / 2),
                         self.ball_y_max))
 
-        self.fractions = []
-        for f in EASY:
-            self.fractions.append(f)
+        self.challenges = []
+        for challenge in EASY:
+            self.challenges.append(challenge)
         self.dx = 0  # ball horizontal trajectory
+        self.fraction = 0.5  # the target of the current challenge
         self.count = 0  # number of bounces played
         self.correct = 0  # number of correct answers
         self.press = None  # sprite under mouse click
@@ -205,17 +206,17 @@ class Bounce():
 
         self.activity.challenge.set_label(_("Click the ball to start"))
 
-    def _gen_bar(self, n):
+    def _gen_bar(self, nsegments):
         ''' Return a bar with n segments '''
-        bar = _svg_header(self.width - self.ball.rect[2], BAR_HEIGHT, 1.0)
-        dx = (self.width - self.ball.rect[2]) / n
-        for i in range(n / 2):
-            bar += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
+        svg = _svg_header(self.width - self.ball.rect[2], BAR_HEIGHT, 1.0)
+        dx = (self.width - self.ball.rect[2]) / nsegments
+        for i in range(nsegments / 2):
+            svg += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
                              i * 2 * dx, 0, '#FFFFFF', '#FFFFFF')
-            bar += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
+            svg += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
                              (i * 2 + 1) * dx, 0, '#AAAAAA', '#AAAAAA')
-        bar += _svg_footer()
-        return bar
+        svg += _svg_footer()
+        return svg
 
     def _button_press_cb(self, win, event):
         ''' Callback to handle the button presses '''
@@ -270,16 +271,16 @@ class Bounce():
 
     def _choose_a_fraction(self):
         ''' Select a new fraction challenge from the table '''
-        n = int(uniform(0, len(self.fractions)))
-        self.activity.reset_label(self.fractions[n][0])
-        self.ball.set_label(self.fractions[n][0])
-        self.fraction = self.fractions[n][1]
+        n = int(uniform(0, len(self.challenges)))
+        self.activity.reset_label(self.challenges[n][0])
+        self.ball.set_label(self.challenges[n][0])
+        self.fraction = self.challenges[n][1]
 
         if self.correct > EXPERT:  # show two-segment bar
             self.bar.set_layer(0)
             self.bar10.set_layer(-1)
             self.bar12.set_layer(-1)
-        elif self.fractions[n][2] == 12:  # show twelve-segment bar
+        elif self.challenges[n][2] == 12:  # show twelve-segment bar
             self.bar.set_layer(-1)
             self.bar10.set_layer(-1)
             self.bar12.set_layer(0)
@@ -305,12 +306,12 @@ class Bounce():
         # after enough correct answers, up the difficulty
         if self.correct == len(EASY) * 2:
             for challenge in MEDIUM:
-                self.fractions.append(challenge)
-            _logger.debug('%s', self.fractions)
+                self.challenges.append(challenge)
+            _logger.debug('%s', self.challenges)
         elif self.correct == len(EASY) * 4:
             for challenge in HARD:
-                self.fractions.append(challenge)
-            _logger.debug('%s', self.fractions)
+                self.challenges.append(challenge)
+            _logger.debug('%s', self.challenges)
 
         self.count += 1
         self.dx = 0  # stop horizontal movement between bounces
