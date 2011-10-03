@@ -1,3 +1,8 @@
+4
+
+* Add play levels: simple vs compound fractions
+* Stop left-right movement on key release (#3152)
+
 3
 
 * Support for accelerometer when available (XO 1.75)
