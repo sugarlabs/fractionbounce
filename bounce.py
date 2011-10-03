@@ -116,10 +116,13 @@ class Bounce():
         self.canvas.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.canvas.add_events(gtk.gdk.BUTTON_RELEASE_MASK)
         self.canvas.add_events(gtk.gdk.POINTER_MOTION_MASK)
+        self.canvas.add_events(gtk.gdk.KEY_PRESS_MASK)
+        self.canvas.add_events(gtk.gdk.KEY_RELEASE_MASK)
         self.canvas.connect('expose-event', self._expose_cb)
         self.canvas.connect('button-press-event', self._button_press_cb)
         self.canvas.connect('button-release-event', self._button_release_cb)
         self.canvas.connect('key_press_event', self._keypress_cb)
+        self.canvas.connect('key_release_event', self._keyrelease_cb)
         self.width = gtk.gdk.screen_width()
         self.height = gtk.gdk.screen_height() - GRID_CELL_SIZE
         self.sprites = Sprites(self.canvas)
@@ -289,6 +292,11 @@ class Bounce():
             self._move_ball()
         else:
             self.dx = 0
+        return True
+
+    def _keyrelease_cb(self, area, event):
+        ''' Keyrelease: stop horizontal movement '''
+        self.dx = 0
         return True
 
     def _expose_cb(self, win, event):
