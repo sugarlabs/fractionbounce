@@ -25,13 +25,17 @@ HARD = [('2/5', 0.4, 10), ('4/5', 0.8, 10), ('3/5', 0.6, 10),
         ('3/10', 0.3, 10), ('7/10', 0.7, 10), ('8/10', 0.8, 10),
         ('2/7', 2 / 7., 14), ('4/7', 4 / 7., 14), ('3/7', 3 / 7., 14),
         ('1/14', 1 / 14., 14), ('1/7', 1 / 7., 14), ('5/14', 5 / 14., 14),
-        ('3/14', 3 / 14., 14), ('7/14', 0.5, 14), ('8/14', 4 / 7., 14)]
+        ('3/14', 3 / 14., 14), ('7/14', 0.5, 14), ('8/14', 4 / 7., 14),
+        ('1/8', 0.125, 12), ('3/8', 0.375, 12), ('5/8', 0.625, 12)]
 EXPERT = 100  # after many correct answers, don't segment the bar
 BAR_HEIGHT = 20
 STEPS = 100.  # number of time steps per bounce rise and fall
 STEP_PAUSE = 50  # milliseconds between steps
 BOUNCE_PAUSE = 3000  # milliseconds between bounces
-
+ANIMATION = {10: (0, 1), 15: (1, 2), 20: (2, 1), 25: (1, 2), 30: (2, 1),
+             35: (1, 2), 40: (2, 3), 45: (3, 4), 50: (4, 3), 55: (3, 4),
+             60: (4, 3), 65: (3, 4), 70: (4, 5), 75: (5, 6), 80: (6, 5),
+             85: (5, 6), 90: (6, 7)}
 ACCELEROMETER_DEVICE = '/sys/devices/platform/lis3lv02d/position'
 
 import gtk
@@ -118,6 +122,8 @@ class Bounce():
             self.canvas = canvas
             parent.show_all()
 
+        self.canvas.grab_focus()
+
         if os.path.exists(ACCELEROMETER_DEVICE):
             self.accererometer = True
         else:
@@ -148,6 +154,36 @@ class Bounce():
                     os.path.join(path, 'basketball.svg'))))
         self.ball.set_layer(1)
         self.ball.set_label_attributes(24)
+
+        self.cells = []
+        self.cells.append(Sprite(self.sprites, 0, 0,
+                                   _svg_str_to_pixbuf(svg_from_file(
+                    os.path.join(path, 'basketball1.svg')))))
+        self.cells.append(Sprite(self.sprites, 0, 0,
+                                   _svg_str_to_pixbuf(svg_from_file(
+                    os.path.join(path, 'basketball2.svg')))))
+        self.cells.append(Sprite(self.sprites, 0, 0,
+                                   _svg_str_to_pixbuf(svg_from_file(
+                    os.path.join(path, 'basketball2a.svg')))))
+        self.cells.append(Sprite(self.sprites, 0, 0,
+                                   _svg_str_to_pixbuf(svg_from_file(
+                    os.path.join(path, 'basketball3.svg')))))
+        self.cells.append(Sprite(self.sprites, 0, 0,
+                                   _svg_str_to_pixbuf(svg_from_file(
+                    os.path.join(path, 'basketball3a.svg')))))
+        self.cells.append(Sprite(self.sprites, 0, 0,
+                                   _svg_str_to_pixbuf(svg_from_file(
+                    os.path.join(path, 'basketball4.svg')))))
+        self.cells.append(Sprite(self.sprites, 0, 0,
+                                   _svg_str_to_pixbuf(svg_from_file(
+                    os.path.join(path, 'basketball4a.svg')))))
+        self.cells.append(Sprite(self.sprites, 0, 0,
+                                   _svg_str_to_pixbuf(svg_from_file(
+                    os.path.join(path, 'basketball5.svg')))))
+        for spr in self.cells:
+            spr.set_layer(1)
+            spr.move((0, self.height))  # move animation cells off screen
+        self.frame = 0
 
         mark = _svg_header(self.ball.rect[2] / 2, BAR_HEIGHT * self.scale + 4,
                            1.0) + \
@@ -237,7 +273,7 @@ class Bounce():
         win.grab_focus()
         x, y = map(int, event.get_coords())
         if self.press is not None:
-            if count == 0 and self.press == self.ball:
+            if self.count == 0 and self.press == self.ball:
                 self._choose_a_fraction()
                 self._move_ball()
         return True
@@ -270,11 +306,58 @@ class Bounce():
             self.ball.move((self.ball.get_xy()[0], self.ball_y_max))
             self._test()
             self.new_bounce = True
-            gobject.timeout_add(  # wait less and less as game goes on
-                max(STEP_PAUSE, BOUNCE_PAUSE - self.count * STEP_PAUSE),
-                self._move_ball)
+
+            if int(uniform(0, 25)) == 1:  # Easter Egg
+                self._animate()
+            else:
+                gobject.timeout_add(  # wait less and less as game goes on
+                    max(STEP_PAUSE, BOUNCE_PAUSE - self.count * STEP_PAUSE),
+                    self._move_ball)
         else:
             gobject.timeout_add(STEP_PAUSE, self._move_ball)
+
+    def _animate(self):
+        ''' A little Easter Egg just for fun. '''
+        if self.new_bounce:
+            self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
+            self.new_bounce = False
+            self.frame = 0
+            self.frame_counter = 0
+            self.cells[self.frame].move(self.ball.get_xy())
+            self.ball.move((self.ball.get_xy()[0], self.height))
+
+        if self.accererometer:
+            fh = open(ACCELEROMETER_DEVICE)
+            string = fh.read()
+            xyz = string[1:-2].split(',')
+            self.dx = int(float(xyz[0]) / 18.)
+            fh.close()
+        else:
+            self.dx = int(uniform(-5, 5))
+        self.cells[self.frame].move_relative((self.dx, self.dy))
+        self.dy += self.ddy
+
+        self.frame_counter += 1
+        if self.frame_counter in ANIMATION:
+            self._switch_cells(ANIMATION[self.frame_counter])
+
+        if self.cells[self.frame].get_xy()[1] >= self.ball_y_max:
+            # hit the bottom
+            self.ball.move((self.ball.get_xy()[0], self.ball_y_max))
+            for spr in self.cells:
+                spr.move((0, self.height))  # hide the animation frames
+            _logger.debug('%d', self.frame_counter)
+            self._test()
+            self.new_bounce = True
+            gobject.timeout_add(BOUNCE_PAUSE, self._move_ball)
+        else:
+            gobject.timeout_add(STEP_PAUSE, self._animate)
+
+    def _switch_cells(self, cells):
+        ''' Switch between cells in the animation '''
+        self.cells[cells[1]].move(self.cells[cells[0]].get_xy())
+        self.cells[cells[0]].move((0, self.height))
+        self.frame = cells[1]
 
     def _choose_a_fraction(self):
         ''' Select a new fraction challenge from the table '''
