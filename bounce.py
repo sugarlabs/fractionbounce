@@ -237,7 +237,7 @@ class Bounce():
         win.grab_focus()
         x, y = map(int, event.get_coords())
         if self.press is not None:
-            if self.press == self.ball:
+            if count == 0 and self.press == self.ball:
                 self._choose_a_fraction()
                 self._move_ball()
         return True
