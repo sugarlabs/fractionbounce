@@ -37,11 +37,16 @@ ANIMATION = {10: (0, 1), 15: (1, 2), 20: (2, 1), 25: (1, 2), 30: (2, 1),
              60: (4, 3), 65: (3, 4), 70: (4, 5), 75: (5, 6), 80: (6, 5),
              85: (5, 6), 90: (6, 7)}
 ACCELEROMETER_DEVICE = '/sys/devices/platform/lis3lv02d/position'
+CRASH = 'crash.ogg'
+LAUGH = 'laugh.ogg'
+BUBBLES = 'bubbles.ogg'
 
 import gtk
 from random import uniform
 import os
 import gobject
+
+from play_audio import play_audio_from_file
 
 from gettext import gettext as _
 
@@ -125,9 +130,9 @@ class Bounce():
         self.canvas.grab_focus()
 
         if os.path.exists(ACCELEROMETER_DEVICE):
-            self.accererometer = True
+            self.accelerometer = True
         else:
-            self.accererometer = False
+            self.accelerometer = False
 
         self.canvas.set_flags(gtk.CAN_FOCUS)
         self.canvas.add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -145,6 +150,14 @@ class Bounce():
         self.sprites = Sprites(self.canvas)
         self.scale = gtk.gdk.screen_height() / 900.0
 
+        self.easter_egg = int(uniform(1, 100))
+        _logger.debug('%d', self.easter_egg)
+
+        # Find paths to sound files
+        self.path_to_success = os.path.join(path, LAUGH)
+        self.path_to_failure = os.path.join(path, CRASH)
+        self.path_to_bubbles = os.path.join(path, BUBBLES)
+
         # Create the sprites we'll need
         self.smiley_graphic = _svg_str_to_pixbuf(svg_from_file(
                 os.path.join(path, 'smiley.svg')))
@@ -155,7 +168,7 @@ class Bounce():
         self.ball.set_layer(1)
         self.ball.set_label_attributes(24)
 
-        self.cells = []
+        self.cells = []  # Easter Egg animation
         self.cells.append(Sprite(self.sprites, 0, 0,
                                    _svg_str_to_pixbuf(svg_from_file(
                     os.path.join(path, 'basketball1.svg')))))
@@ -286,7 +299,7 @@ class Bounce():
             self.new_bounce = False
             self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
 
-        if self.accererometer:
+        if self.accelerometer:
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             xyz = string[1:-2].split(',')
@@ -307,7 +320,7 @@ class Bounce():
             self._test()
             self.new_bounce = True
 
-            if int(uniform(0, 25)) == 1:  # Easter Egg
+            if self._easter_egg_test():
                 self._animate()
             else:
                 gobject.timeout_add(  # wait less and less as game goes on
@@ -325,8 +338,9 @@ class Bounce():
             self.frame_counter = 0
             self.cells[self.frame].move(self.ball.get_xy())
             self.ball.move((self.ball.get_xy()[0], self.height))
+            play_audio_from_file(self, self.path_to_bubbles)
 
-        if self.accererometer:
+        if self.accelerometer:
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             xyz = string[1:-2].split(',')
@@ -387,11 +401,22 @@ class Bounce():
             self.bar12.set_layer(-1)
             self.bar14.set_layer(0)
 
+    def _easter_egg_test(self):
+        ''' Test to see if we show the Easter Egg '''
+        delta = self.ball.rect[2] / 8
+        x = self.ball.get_xy()[0] + self.ball.rect[2] / 2
+        f = self.bar.rect[2] * self.easter_egg / 100.
+        if x > f - delta and x < f + delta:
+            return True
+        else:
+            return False
+
     def _test(self):
         ''' Test to see if we estimated correctly '''
         delta = self.ball.rect[2] / 4
         x = self.ball.get_xy()[0] + self.ball.rect[2] / 2
         f = self.ball.rect[2] / 2 + int(self.fraction * self.bar.rect[2])
+        self.mark.move((int(f - self.mark.rect[2] / 2), self.bar.rect[1] - 2))
         if x > f - delta and x < f + delta:
             smiley = Sprite(self.sprites, 0, 0, self.smiley_graphic)
             x = int(self.count * 25 % self.width)
@@ -399,7 +424,10 @@ class Bounce():
             smiley.move((x, y))
             smiley.set_layer(-1)
             self.correct += 1
-        self.mark.move((int(f - self.mark.rect[2] / 2), self.bar.rect[1] - 2))
+            gobject.idle_add(play_audio_from_file, self, self.path_to_success)
+        else:
+            gobject.idle_add(play_audio_from_file, self, self.path_to_failure)
+
 
         # after enough correct answers, up the difficulty
         if self.correct == len(EASY) * 2:
