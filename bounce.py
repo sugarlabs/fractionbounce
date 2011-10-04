@@ -23,10 +23,15 @@ MEDIUM = [('2/8', 0.25, 12), ('2/4', 0.5, 12),  ('3/6', 0.5, 12),
 HARD = [('2/5', 0.4, 10), ('4/5', 0.8, 10), ('3/5', 0.6, 10),
         ('1/10', 0.1, 10), ('1/5', 0.2, 10), ('5/10', 0.5, 10),
         ('3/10', 0.3, 10), ('7/10', 0.7, 10), ('8/10', 0.8, 10),
-        ('2/7', 2 / 7., 14), ('4/7', 4 / 7., 14), ('3/7', 3 / 7., 14),
-        ('1/14', 1 / 14., 14), ('1/7', 1 / 7., 14), ('5/14', 5 / 14., 14),
-        ('3/14', 3 / 14., 14), ('7/14', 0.5, 14), ('8/14', 4 / 7., 14),
-        ('1/8', 0.125, 12), ('3/8', 0.375, 12), ('5/8', 0.625, 12)]
+        ('1/16', 1 / 16., 4), ('2/16', 1 / 8., 4), ('3/16', 3 / 16., 4),
+        ('4/16', 2 / 8., 4), ('5/16', 5 / 16., 4), ('6/16', 3 / 8., 4),
+        ('7/16', 7 / 16., 4), ('8/16', 0.5, 4), ('9/16', 9 / 16., 4),
+        ('10/16', 5 / 8., 4), ('11/16', 11 / 16., 4), ('12/16', 6 / 8., 4),
+        ('13/16', 13 / 16., 4), ('14/16', 7 / 8., 4), ('15/16', 15 / 16., 4),
+        ('1/8', 0.125, 4), ('2/8', 0.25, 4), ('3/8', 0.375, 4),
+        ('4/8', 0.5, 4), ('5/8', 0.625, 4), ('6/8', 0.75, 4),
+        ('7/8', 0.875, 4)]
+
 EXPERT = 100  # after many correct answers, don't segment the bar
 BAR_HEIGHT = 20
 STEPS = 100.  # number of time steps per bounce rise and fall
@@ -221,15 +226,15 @@ class Bounce():
         # divide into ten segments
         self.bar10 = Sprite(self.sprites, 0, 0,
                             _svg_str_to_pixbuf(self._gen_bar(10)))
-        # divide into fourteen segments
-        self.bar14 = Sprite(self.sprites, 0, 0,
-                            _svg_str_to_pixbuf(self._gen_bar(14)))
+        # divide into four segments
+        self.bar4 = Sprite(self.sprites, 0, 0,
+                            _svg_str_to_pixbuf(self._gen_bar(4)))
 
         hoffset = int((self.ball.rect[3] + self.bar.rect[3]) / 2)
         self.bar.move((int(self.ball.rect[2] / 2), self.height - hoffset))
         self.bar12.move((int(self.ball.rect[2] / 2), self.height - hoffset))
         self.bar10.move((int(self.ball.rect[2] / 2), self.height - hoffset))
-        self.bar14.move((int(self.ball.rect[2] / 2), self.height - hoffset))
+        self.bar4.move((int(self.ball.rect[2] / 2), self.height - hoffset))
         num = _svg_header(BAR_HEIGHT * self.scale, BAR_HEIGHT * self.scale,
                            1.0) + \
               _svg_rect(BAR_HEIGHT * self.scale,
@@ -387,22 +392,22 @@ class Bounce():
             self.bar.set_layer(0)
             self.bar10.set_layer(-1)
             self.bar12.set_layer(-1)
-            self.bar14.set_layer(-1)
+            self.bar4.set_layer(-1)
         elif self.challenges[n][2] == 12:  # show twelve-segment bar
             self.bar.set_layer(-1)
             self.bar10.set_layer(-1)
             self.bar12.set_layer(0)
-            self.bar14.set_layer(-1)
+            self.bar4.set_layer(-1)
         elif self.challenges[n][2] == 10:  # show ten-segment bar
             self.bar.set_layer(-1)
             self.bar10.set_layer(0)
             self.bar12.set_layer(-1)
-            self.bar14.set_layer(-1)
-        else:  # show fourteen-segment bar
+            self.bar4.set_layer(-1)
+        else:  # show four-segment bar
             self.bar.set_layer(-1)
             self.bar10.set_layer(-1)
             self.bar12.set_layer(-1)
-            self.bar14.set_layer(0)
+            self.bar4.set_layer(0)
 
     def _easter_egg_test(self):
         ''' Test to see if we show the Easter Egg '''
