@@ -162,6 +162,9 @@ class Bounce():
         self.smiley_graphic = _svg_str_to_pixbuf(svg_from_file(
                 os.path.join(path, 'smiley.svg')))
 
+        self.egg_graphic = _svg_str_to_pixbuf(svg_from_file(
+                os.path.join(path, 'Easter_egg.svg')))
+
         self.ball = Sprite(self.sprites, 0, 0,
                            _svg_str_to_pixbuf(svg_from_file(
                     os.path.join(path, 'basketball.svg'))))
@@ -338,7 +341,7 @@ class Bounce():
             self.frame_counter = 0
             self.cells[self.frame].move(self.ball.get_xy())
             self.ball.move((self.ball.get_xy()[0], self.height))
-            play_audio_from_file(self, self.path_to_bubbles)
+            gobject.idle_add(play_audio_from_file, self, self.path_to_bubbles)
 
         if self.accelerometer:
             fh = open(ACCELEROMETER_DEVICE)
@@ -361,7 +364,7 @@ class Bounce():
             for spr in self.cells:
                 spr.move((0, self.height))  # hide the animation frames
             _logger.debug('%d', self.frame_counter)
-            self._test()
+            self._test(easter_egg=True)
             self.new_bounce = True
             gobject.timeout_add(BOUNCE_PAUSE, self._move_ball)
         else:
@@ -411,23 +414,30 @@ class Bounce():
         else:
             return False
 
-    def _test(self):
+    def _test(self, easter_egg=False):
         ''' Test to see if we estimated correctly '''
         delta = self.ball.rect[2] / 4
         x = self.ball.get_xy()[0] + self.ball.rect[2] / 2
         f = self.ball.rect[2] / 2 + int(self.fraction * self.bar.rect[2])
         self.mark.move((int(f - self.mark.rect[2] / 2), self.bar.rect[1] - 2))
         if x > f - delta and x < f + delta:
-            smiley = Sprite(self.sprites, 0, 0, self.smiley_graphic)
-            x = int(self.count * 25 % self.width)
-            y = int(self.count / int(self.width / 25)) * 25
-            smiley.move((x, y))
-            smiley.set_layer(-1)
+            if not easter_egg:
+                smiley = Sprite(self.sprites, 0, 0, self.smiley_graphic)
+                x = int(self.count * 25 % self.width)
+                y = int(self.count / int(self.width / 25)) * 25
+                smiley.move((x, y))
+                smiley.set_layer(-1)
             self.correct += 1
             gobject.idle_add(play_audio_from_file, self, self.path_to_success)
         else:
             gobject.idle_add(play_audio_from_file, self, self.path_to_failure)
 
+        if easter_egg:
+            egg = Sprite(self.sprites, 0, 0, self.egg_graphic)
+            x = int(self.count * 25 % self.width)
+            y = int(self.count / int(self.width / 25)) * 25
+            egg.move((x, y))
+            egg.set_layer(-1)
 
         # after enough correct answers, up the difficulty
         if self.correct == len(EASY) * 2:

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="25"
+   height="25"
+   id="svg2447">
+  <defs
+     id="defs2449" />
+  <metadata
+     id="metadata2452">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-148.571,-675.93329)"
+     id="layer1">
+    <g
+       id="g3285">
+      <g
+         id="g3766">
+        <g
+           transform="matrix(0.06289146,0,0,0.06289146,142.10254,658.29192)"
+           id="g3847"
+           style="stroke-width:15.42731571;stroke-miterlimit:4;stroke-dasharray:none">
+          <rect
+             width="218.50008"
+             height="248.17293"
+             ry="34.168736"
+             x="214.21094"
+             y="354.75003"
+             id="rect3764"
+             style="fill:#f1f319;fill-opacity:1;stroke:none" />
+          <path
+             d="m 449.99095,306.23822 c -66.74511,-55.40228 -227.53063,28.10512 -286.96218,99.70443 -59.43154,71.5993 -53.52387,174.67882 13.22124,230.08111 66.74512,55.40227 169.17393,42.24822 228.60546,-29.35107 59.43153,-71.5993 111.88058,-245.03221 45.13548,-300.43447 z m -67.67863,81.09452 -7.50675,69.95882 41.80568,56.59147 -68.8479,14.49349 -40.90902,57.25979 -35.04827,-61.01384 -67.08049,-21.20028 47.17266,-52.18245 -0.56438,-70.36331 64.23026,28.74399 66.74821,-22.28768 z"
+             id="path2435"
+             style="fill:#fcfdd9;fill-opacity:1;fill-rule:nonzero;stroke:#070707;stroke-width:15.42731571;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
