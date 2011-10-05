@@ -198,24 +198,11 @@ class Bounce():
         self.mark.set_layer(2)
 
         self.bars = {}
-        # divide into two segments
         self.bars[2] = Sprite(self.sprites, 0, 0,
                               _svg_str_to_pixbuf(self._gen_bar(2)))
-        # divide into twelve segments
-        self.bars[12] = Sprite(self.sprites, 0, 0,
-                               _svg_str_to_pixbuf(self._gen_bar(12)))
-        # divide into ten segments
-        self.bars[10] = Sprite(self.sprites, 0, 0,
-                               _svg_str_to_pixbuf(self._gen_bar(10)))
-        # divide into four segments
-        self.bars[4] = Sprite(self.sprites, 0, 0,
-                              _svg_str_to_pixbuf(self._gen_bar(4)))
-
-        hoffset = int((self.ball.rect[3] + self.bars[2].rect[3]) / 2)
-        
-        for bar in self.bars:
-            self.bars[bar].move((int(self.ball.rect[2] / 2),
-                                 self.height - hoffset))
+        self.bars[2].move((int(self.ball.rect[2] / 2),
+                           self.height - int((self.ball.rect[3] + \
+                                                  self.bars[2].rect[3]) / 2)))
 
         num = _svg_header(BAR_HEIGHT * self.scale, BAR_HEIGHT * self.scale,
                            1.0) + \
@@ -224,11 +211,11 @@ class Bounce():
                         'none', 'none') + \
               _svg_footer()
         self.left = Sprite(self.sprites, int(self.ball.rect[2] / 4),
-                           self.height - hoffset, _svg_str_to_pixbuf(num))
+                           self.bars[2].rect[1], _svg_str_to_pixbuf(num))
         self.left.set_label('0')
         self.right = Sprite(self.sprites,
                             self.width - int(self.ball.rect[2] / 2),
-                            self.height - hoffset, _svg_str_to_pixbuf(num))
+                            self.bars[2].rect[1], _svg_str_to_pixbuf(num))
         self.right.set_label('1')
 
         self.ball_y_max = self.bars[2].rect[1] - self.ball.rect[3]
@@ -256,11 +243,14 @@ class Bounce():
         ''' Return a bar with n segments '''
         svg = _svg_header(self.width - self.ball.rect[2], BAR_HEIGHT, 1.0)
         dx = (self.width - self.ball.rect[2]) / float(nsegments)
-        for i in range(nsegments / 2):
+        for i in range(int(nsegments) / 2):
             svg += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
                              i * 2 * dx, 0, '#FFFFFF', '#FFFFFF')
             svg += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
                              (i * 2 + 1) * dx, 0, '#AAAAAA', '#AAAAAA')
+        if int(nsegments) % 2 == 1:  # odd
+            svg += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
+                             i * 2 * dx, 0, '#FFFFFF', '#FFFFFF')
         svg += _svg_footer()
         return svg
 
@@ -367,12 +357,12 @@ class Bounce():
         ''' Select a new fraction challenge from the table '''
         n = int(uniform(0, len(self.challenges)))
         fstr = self.challenges[n][0]
-        if '/' in fstr:
+        if '/' in fstr:  # fraction
             numden = fstr.split('/', 2)
             self.fraction = float(numden[0].strip()) / float(numden[1].strip())
-        elif '%' in fstr:
+        elif '%' in fstr:  # percentage
             self.fraction = float(fstr.strip().strip('%').strip()) / 100.
-        else:
+        else:  # To do: add support for decimals (using locale)
             _logger.debug('Could not parse challenge (%s)', fstr)
             self.fraction = 0.5
 
@@ -383,14 +373,21 @@ class Bounce():
             self.bars[bar].set_layer(-1)
         if self.correct > EXPERT:  # Show two-segment bar in expert mode
             self.bars[2].set_layer(0)
-        else:  # To do: generate new bar on demand if needed
-            self.bars[self.challenges[n][1]].set_layer(-1)
+        else:
+            # generate new bar on demand if needed
+            nseg = self.challenges[n][1]
+            if not nseg in self.bars:
+                self.bars[nseg] = Sprite(self.sprites, 0, 0,
+                    _svg_str_to_pixbuf(self._gen_bar(nseg)))
+                self.bars[nseg].move((self.bars[2].rect[0],
+                                      self.bars[2].rect[1]))
+            self.bars[nseg].set_layer(0)
 
     def _easter_egg_test(self):
         ''' Test to see if we show the Easter Egg '''
         delta = self.ball.rect[2] / 8
         x = self.ball.get_xy()[0] + self.ball.rect[2] / 2
-        f = self.bar.rect[2] * self.easter_egg / 100.
+        f = self.bars[2].rect[2] * self.easter_egg / 100.
         if x > f - delta and x < f + delta:
             return True
         else:
@@ -400,8 +397,9 @@ class Bounce():
         ''' Test to see if we estimated correctly '''
         delta = self.ball.rect[2] / 4
         x = self.ball.get_xy()[0] + self.ball.rect[2] / 2
-        f = self.ball.rect[2] / 2 + int(self.fraction * self.bar.rect[2])
-        self.mark.move((int(f - self.mark.rect[2] / 2), self.bar.rect[1] - 2))
+        f = self.ball.rect[2] / 2 + int(self.fraction * self.bars[2].rect[2])
+        self.mark.move((int(f - self.mark.rect[2] / 2),
+                        self.bars[2].rect[1] - 2))
         if x > f - delta and x < f + delta:
             if not easter_egg:
                 smiley = Sprite(self.sprites, 0, 0, self.smiley_graphic)
