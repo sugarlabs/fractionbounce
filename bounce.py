@@ -177,30 +177,10 @@ class Bounce():
         self.ball.set_label_attributes(24)
 
         self.cells = []  # Easter Egg animation
-        self.cells.append(Sprite(self.sprites, 0, 0,
-                                   _svg_str_to_pixbuf(svg_from_file(
-                    os.path.join(path, 'basketball1.svg')))))
-        self.cells.append(Sprite(self.sprites, 0, 0,
-                                   _svg_str_to_pixbuf(svg_from_file(
-                    os.path.join(path, 'basketball2.svg')))))
-        self.cells.append(Sprite(self.sprites, 0, 0,
-                                   _svg_str_to_pixbuf(svg_from_file(
-                    os.path.join(path, 'basketball2a.svg')))))
-        self.cells.append(Sprite(self.sprites, 0, 0,
-                                   _svg_str_to_pixbuf(svg_from_file(
-                    os.path.join(path, 'basketball3.svg')))))
-        self.cells.append(Sprite(self.sprites, 0, 0,
-                                   _svg_str_to_pixbuf(svg_from_file(
-                    os.path.join(path, 'basketball3a.svg')))))
-        self.cells.append(Sprite(self.sprites, 0, 0,
-                                   _svg_str_to_pixbuf(svg_from_file(
-                    os.path.join(path, 'basketball4.svg')))))
-        self.cells.append(Sprite(self.sprites, 0, 0,
-                                   _svg_str_to_pixbuf(svg_from_file(
-                    os.path.join(path, 'basketball4a.svg')))))
-        self.cells.append(Sprite(self.sprites, 0, 0,
-                                   _svg_str_to_pixbuf(svg_from_file(
-                    os.path.join(path, 'basketball5.svg')))))
+        for i in range(8):
+            self.cells.append(Sprite(
+                    self.sprites, 0, 0, _svg_str_to_pixbuf(svg_from_file(
+                            os.path.join(path, 'basketball%d.svg' % (i + 1))))))
         for spr in self.cells:
             spr.set_layer(1)
             spr.move((0, self.height))  # move animation cells off screen
