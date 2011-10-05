@@ -11,6 +11,7 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
+# The challenges are tuples: (a fraction to display, a bar to display)
 EASY = [('1/2', 12), ('1/3', 12), ('3/4', 12),
         ('1/4', 12), ('2/3', 12), ('1/6', 12),
         ('5/6', 12)]
@@ -31,8 +32,7 @@ HARD = [('2/5', 10), ('4/5', 10), ('3/5', 10),
         ('1/8', 4), ('2/8', 4), ('3/8', 4),
         ('4/8', 4), ('5/8', 4), ('6/8', 4),
         ('7/8', 4)]
-
-EXPERT = 100  # after many correct answers, don't segment the bar
+EXPERT = 100  # after some number of correct answers, don't segment the bar
 BAR_HEIGHT = 20
 STEPS = 100.  # number of time steps per bounce rise and fall
 STEP_PAUSE = 50  # milliseconds between steps
@@ -42,9 +42,9 @@ ANIMATION = {10: (0, 1), 15: (1, 2), 20: (2, 1), 25: (1, 2), 30: (2, 1),
              60: (4, 3), 65: (3, 4), 70: (4, 5), 75: (5, 6), 80: (6, 5),
              85: (5, 6), 90: (6, 7)}
 ACCELEROMETER_DEVICE = '/sys/devices/platform/lis3lv02d/position'
-CRASH = 'crash.ogg'  # wrong answer
-LAUGH = 'bottle.ogg'  # correct answer
-BUBBLES = 'bubbles.ogg'  # Easter Egg
+CRASH = 'crash.ogg'  # wrong answer sound
+LAUGH = 'bottle.ogg'  # correct answer sound
+BUBBLES = 'bubbles.ogg'  # Easter Egg sound
 
 import gtk
 from random import uniform
@@ -197,24 +197,26 @@ class Bounce():
                            _svg_str_to_pixbuf(mark))
         self.mark.set_layer(2)
 
+        self.bars = {}
         # divide into two segments
-        self.bar = Sprite(self.sprites, 0, 0,
-                          _svg_str_to_pixbuf(self._gen_bar(2)))
+        self.bars[2] = Sprite(self.sprites, 0, 0,
+                              _svg_str_to_pixbuf(self._gen_bar(2)))
         # divide into twelve segments
-        self.bar12 = Sprite(self.sprites, 0, 0,
-                            _svg_str_to_pixbuf(self._gen_bar(12)))
+        self.bars[12] = Sprite(self.sprites, 0, 0,
+                               _svg_str_to_pixbuf(self._gen_bar(12)))
         # divide into ten segments
-        self.bar10 = Sprite(self.sprites, 0, 0,
-                            _svg_str_to_pixbuf(self._gen_bar(10)))
+        self.bars[10] = Sprite(self.sprites, 0, 0,
+                               _svg_str_to_pixbuf(self._gen_bar(10)))
         # divide into four segments
-        self.bar4 = Sprite(self.sprites, 0, 0,
-                            _svg_str_to_pixbuf(self._gen_bar(4)))
+        self.bars[4] = Sprite(self.sprites, 0, 0,
+                              _svg_str_to_pixbuf(self._gen_bar(4)))
 
-        hoffset = int((self.ball.rect[3] + self.bar.rect[3]) / 2)
-        self.bar.move((int(self.ball.rect[2] / 2), self.height - hoffset))
-        self.bar12.move((int(self.ball.rect[2] / 2), self.height - hoffset))
-        self.bar10.move((int(self.ball.rect[2] / 2), self.height - hoffset))
-        self.bar4.move((int(self.ball.rect[2] / 2), self.height - hoffset))
+        hoffset = int((self.ball.rect[3] + self.bars[2].rect[3]) / 2)
+        
+        for bar in self.bars:
+            self.bars[bar].move((int(self.ball.rect[2] / 2),
+                                 self.height - hoffset))
+
         num = _svg_header(BAR_HEIGHT * self.scale, BAR_HEIGHT * self.scale,
                            1.0) + \
               _svg_rect(BAR_HEIGHT * self.scale,
@@ -229,7 +231,7 @@ class Bounce():
                             self.height - hoffset, _svg_str_to_pixbuf(num))
         self.right.set_label('1')
 
-        self.ball_y_max = self.bar.rect[1] - self.ball.rect[3]
+        self.ball_y_max = self.bars[2].rect[1] - self.ball.rect[3]
         self.ball.move((int((self.width - self.ball.rect[2]) / 2),
                         self.ball_y_max))
 
@@ -377,26 +379,12 @@ class Bounce():
         self.activity.reset_label(fstr)
         self.ball.set_label(fstr)
 
-        if self.correct > EXPERT:  # show two-segment bar
-            self.bar.set_layer(0)
-            self.bar10.set_layer(-1)
-            self.bar12.set_layer(-1)
-            self.bar4.set_layer(-1)
-        elif self.challenges[n][1] == 12:  # show twelve-segment bar
-            self.bar.set_layer(-1)
-            self.bar10.set_layer(-1)
-            self.bar12.set_layer(0)
-            self.bar4.set_layer(-1)
-        elif self.challenges[n][1] == 10:  # show ten-segment bar
-            self.bar.set_layer(-1)
-            self.bar10.set_layer(0)
-            self.bar12.set_layer(-1)
-            self.bar4.set_layer(-1)
-        else:  # show four-segment bar
-            self.bar.set_layer(-1)
-            self.bar10.set_layer(-1)
-            self.bar12.set_layer(-1)
-            self.bar4.set_layer(0)
+        for bar in self.bars:
+            self.bars[bar].set_layer(-1)
+        if self.correct > EXPERT:  # Show two-segment bar in expert mode
+            self.bars[2].set_layer(0)
+        else:  # To do: generate new bar on demand if needed
+            self.bars[self.challenges[n][1]].set_layer(-1)
 
     def _easter_egg_test(self):
         ''' Test to see if we show the Easter Egg '''
