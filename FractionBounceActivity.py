@@ -18,6 +18,7 @@ from sugar.activity.widgets import ActivityToolbarButton
 from sugar.activity.widgets import StopButton
 from sugar.graphics.toolbarbox import ToolbarBox
 from sugar.graphics.toolbutton import ToolButton
+from sugar.graphics.radiotoolbutton import RadioToolButton
 
 from gettext import gettext as _
 
@@ -27,19 +28,37 @@ _logger = logging.getLogger("fractionbounce-activity")
 from bounce import Bounce
 
 
-def _label_factory(toolbar, label, width=None):
+def _radio_factory(button_name, toolbar, cb, arg, tooltip, group):
+    ''' Add a radio button to a toolbar '''
+    button = RadioToolButton(group=group)
+    button.set_named_icon(button_name)
+    if cb is not None:
+        if arg is None:
+            button.connect('clicked', cb)
+        else:
+            button.connect('clicked', cb, arg)
+    if hasattr(toolbar, 'insert'):  # Add button to the main toolbar...
+        toolbar.insert(button, -1)
+    else:  # ...or a secondary toolbar.
+        toolbar.props.page.insert(button, -1)
+    button.show()
+    if tooltip is not None:
+        button.set_tooltip(tooltip)
+    return button
+
+
+def _label_factory(toolbar, label_text, width=None):
     """ Factory for adding a label to a toolbar """
-    my_label = gtk.Label(label)
-    my_label.set_line_wrap(True)
-    ## doesn't work on XOs
+    label = gtk.Label(label_text)
+    label.set_line_wrap(True)
     if width is not None:
-        my_label.set_size_request(width, -1)
-    my_label.show()
+        label.set_size_request(width, -1)  # doesn't work on XOs
+    label.show()
     _toolitem = gtk.ToolItem()
-    _toolitem.add(my_label)
+    _toolitem.add(label)
     toolbar.insert(_toolitem, -1)
     _toolitem.show()
-    return my_label
+    return label
 
 
 def _separator_factory(toolbar, expand=False, visible=True):
@@ -66,6 +85,16 @@ class FractionBounceActivity(activity.Activity):
         toolbox.toolbar.insert(activity_button, 0)
         activity_button.show()
 
+        self.fraction_button = _radio_factory('fraction', toolbox.toolbar,
+                                              self.fraction_cb, None,
+                                              _('fractions'), None)
+        self.percent_button = _radio_factory('percent', toolbox.toolbar,
+                                             self.percent_cb, None,
+                                             _('percents'),
+                                             self.fraction_button)
+
+        _separator_factory(toolbox.toolbar, expand=False, visible=True)
+
         self.challenge = _label_factory(toolbox.toolbar, '')
         self.reset_label(0.5)
 
@@ -89,7 +118,13 @@ class FractionBounceActivity(activity.Activity):
         self.show_all()
 
         # Initialize the canvas
-        Bounce(canvas, activity.get_bundle_path(), self)
+        self.bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
+
+    def fraction_cb(self, arg=None):
+        self.bounce_window.mode = 'fractions'
+
+    def percent_cb(self, arg=None):
+        self.bounce_window.mode = 'percents'
 
     def reset_label(self, fraction):
         """ update the challenge label """

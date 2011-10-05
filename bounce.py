@@ -230,6 +230,7 @@ class Bounce():
         self.count = 0  # number of bounces played
         self.correct = 0  # number of correct answers
         self.press = None  # sprite under mouse click
+        self.mode = 'fractions'
         self.new_bounce = False
 
         delta = self.height / STEPS
@@ -357,25 +358,42 @@ class Bounce():
         ''' Select a new fraction challenge from the table '''
         n = int(uniform(0, len(self.challenges)))
         fstr = self.challenges[n][0]
+        saw_a_fraction = False
         if '/' in fstr:  # fraction
             numden = fstr.split('/', 2)
             self.fraction = float(numden[0].strip()) / float(numden[1].strip())
+            saw_a_fraction = True
         elif '%' in fstr:  # percentage
             self.fraction = float(fstr.strip().strip('%').strip()) / 100.
         else:  # To do: add support for decimals (using locale)
             _logger.debug('Could not parse challenge (%s)', fstr)
+            fstr = '1/2'
             self.fraction = 0.5
+            saw_a_fraction = True
 
-        self.activity.reset_label(fstr)
-        self.ball.set_label(fstr)
+        if self.mode == 'fractions':
+            if saw_a_fraction:
+                label = fstr
+            else:
+                label = fstr.strip().strip('%').strip()+'/100'
+        else:  # percentage
+            if not saw_a_fraction:
+                label = fstr
+            else:
+                label = str(int(self.fraction * 100 + 0.5))+'%'
+        self.activity.reset_label(label)
+        self.ball.set_label(label)
 
         for bar in self.bars:
             self.bars[bar].set_layer(-1)
         if self.correct > EXPERT:  # Show two-segment bar in expert mode
             self.bars[2].set_layer(0)
         else:
-            # generate new bar on demand if needed
-            nseg = self.challenges[n][1]
+            if self.mode == 'fractions':
+                nseg = self.challenges[n][1]
+            else:
+                nseg = 10  # percentages
+            # generate new bar on demand
             if not nseg in self.bars:
                 self.bars[nseg] = Sprite(self.sprites, 0, 0,
                     _svg_str_to_pixbuf(self._gen_bar(nseg)))
