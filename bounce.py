@@ -11,26 +11,26 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-EASY = [('1/2', 0.5, 12), ('1/3', 1 / 3., 12), ('3/4', 0.75, 12),
-        ('1/4', 0.25, 12), ('2/3', 2 / 3., 12), ('1/6', 1 / 6., 12),
-        ('5/6', 5 / 6., 12)]
-MEDIUM = [('2/8', 0.25, 12), ('2/4', 0.5, 12),  ('3/6', 0.5, 12),
-          ('6/12', 0.5, 12), ('4/6', 2 / 3., 12), ('2/6', 1 / 3., 12),
-          ('5/12', 5 / 12., 12), ('3/12', 0.25, 12), ('7/12', 7 / 12., 12),
-          ('8/12', 2 / 3., 12), ('4/8', 0.5, 12), ('6/12', 0.5, 12),
-          ('9/12', 0.75, 12), ('2/12', 1 / 6., 12), ('4/12', 1 / 3., 12),
-          ('10/12', 5 / 6., 12), ('11/12', 11 / 12., 12)]
-HARD = [('2/5', 0.4, 10), ('4/5', 0.8, 10), ('3/5', 0.6, 10),
-        ('1/10', 0.1, 10), ('1/5', 0.2, 10), ('5/10', 0.5, 10),
-        ('3/10', 0.3, 10), ('7/10', 0.7, 10), ('8/10', 0.8, 10),
-        ('1/16', 1 / 16., 4), ('2/16', 1 / 8., 4), ('3/16', 3 / 16., 4),
-        ('4/16', 2 / 8., 4), ('5/16', 5 / 16., 4), ('6/16', 3 / 8., 4),
-        ('7/16', 7 / 16., 4), ('8/16', 0.5, 4), ('9/16', 9 / 16., 4),
-        ('10/16', 5 / 8., 4), ('11/16', 11 / 16., 4), ('12/16', 6 / 8., 4),
-        ('13/16', 13 / 16., 4), ('14/16', 7 / 8., 4), ('15/16', 15 / 16., 4),
-        ('1/8', 0.125, 4), ('2/8', 0.25, 4), ('3/8', 0.375, 4),
-        ('4/8', 0.5, 4), ('5/8', 0.625, 4), ('6/8', 0.75, 4),
-        ('7/8', 0.875, 4)]
+EASY = [('1/2', 12), ('1/3', 12), ('3/4', 12),
+        ('1/4', 12), ('2/3', 12), ('1/6', 12),
+        ('5/6', 12)]
+MEDIUM = [('2/8', 12), ('2/4', 12),  ('3/6', 12),
+          ('6/12', 12), ('4/6', 12), ('2/6', 12),
+          ('5/12', 12), ('3/12', 12), ('7/12', 12),
+          ('8/12', 12), ('4/8', 12), ('6/12', 12),
+          ('9/12', 12), ('2/12', 12), ('4/12', 12),
+          ('10/12', 12), ('11/12', 12)]
+HARD = [('2/5', 10), ('4/5', 10), ('3/5', 10),
+        ('1/10', 10), ('1/5', 10), ('5/10', 10),
+        ('3/10', 10), ('7/10', 10), ('8/10', 10),
+        ('1/16', 4), ('2/16', 4), ('3/16', 4),
+        ('4/16', 4), ('5/16', 4), ('6/16', 4),
+        ('7/16', 4), ('8/16', 4), ('9/16', 4),
+        ('10/16', 4), ('11/16', 4), ('12/16', 4),
+        ('13/16', 4), ('14/16', 4), ('15/16', 4),
+        ('1/8', 4), ('2/8', 4), ('3/8', 4),
+        ('4/8', 4), ('5/8', 4), ('6/8', 4),
+        ('7/8', 4)]
 
 EXPERT = 100  # after many correct answers, don't segment the bar
 BAR_HEIGHT = 20
@@ -364,21 +364,30 @@ class Bounce():
     def _choose_a_fraction(self):
         ''' Select a new fraction challenge from the table '''
         n = int(uniform(0, len(self.challenges)))
-        self.activity.reset_label(self.challenges[n][0])
-        self.ball.set_label(self.challenges[n][0])
-        self.fraction = self.challenges[n][1]
+        fstr = self.challenges[n][0]
+        if '/' in fstr:
+            numden = fstr.split('/', 2)
+            self.fraction = float(numden[0].strip()) / float(numden[1].strip())
+        elif '%' in fstr:
+            self.fraction = float(fstr.strip().strip('%').strip()) / 100.
+        else:
+            _logger.debug('Could not parse challenge (%s)', fstr)
+            self.fraction = 0.5
+
+        self.activity.reset_label(fstr)
+        self.ball.set_label(fstr)
 
         if self.correct > EXPERT:  # show two-segment bar
             self.bar.set_layer(0)
             self.bar10.set_layer(-1)
             self.bar12.set_layer(-1)
             self.bar4.set_layer(-1)
-        elif self.challenges[n][2] == 12:  # show twelve-segment bar
+        elif self.challenges[n][1] == 12:  # show twelve-segment bar
             self.bar.set_layer(-1)
             self.bar10.set_layer(-1)
             self.bar12.set_layer(0)
             self.bar4.set_layer(-1)
-        elif self.challenges[n][2] == 10:  # show ten-segment bar
+        elif self.challenges[n][1] == 10:  # show ten-segment bar
             self.bar.set_layer(-1)
             self.bar10.set_layer(0)
             self.bar12.set_layer(-1)
