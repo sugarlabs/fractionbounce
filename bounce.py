@@ -33,7 +33,7 @@ HARD = [('2/5', 10), ('4/5', 10), ('3/5', 10),
         ('4/8', 4), ('5/8', 4), ('6/8', 4),
         ('7/8', 4)]
 EXPERT = 100  # after some number of correct answers, don't segment the bar
-BAR_HEIGHT = 20
+BAR_HEIGHT = 25
 STEPS = 100.  # number of time steps per bounce rise and fall
 STEP_PAUSE = 50  # milliseconds between steps
 BOUNCE_PAUSE = 3000  # milliseconds between bounces
@@ -170,6 +170,11 @@ class Bounce():
         self.egg_graphic = _svg_str_to_pixbuf(svg_from_file(
                 os.path.join(path, 'Easter_egg.svg')))
 
+        self.blank_graphic = _svg_str_to_pixbuf(
+            _svg_header(BAR_HEIGHT, BAR_HEIGHT, 1.0) + \
+            _svg_rect(BAR_HEIGHT, BAR_HEIGHT, 0, 0, 0, 0, 'none', 'none') + \
+            _svg_footer())
+
         self.ball = Sprite(self.sprites, 0, 0,
                            _svg_str_to_pixbuf(svg_from_file(
                     os.path.join(path, 'basketball.svg'))))
@@ -227,6 +232,7 @@ class Bounce():
             self.challenges.append(challenge)
         self.dx = 0  # ball horizontal trajectory
         self.fraction = 0.5  # the target of the current challenge
+        self.label = '1/2'  # the label
         self.count = 0  # number of bounces played
         self.correct = 0  # number of correct answers
         self.press = None  # sprite under mouse click
@@ -373,16 +379,16 @@ class Bounce():
 
         if self.mode == 'fractions':
             if saw_a_fraction:
-                label = fstr
+                self.label = fstr
             else:
-                label = fstr.strip().strip('%').strip()+'/100'
+                self.label = fstr.strip().strip('%').strip()+'/100'
         else:  # percentage
             if not saw_a_fraction:
-                label = fstr
+                self.label = fstr
             else:
-                label = str(int(self.fraction * 100 + 0.5))+'%'
-        self.activity.reset_label(label)
-        self.ball.set_label(label)
+                self.label = str(int(self.fraction * 100 + 0.5))+'%'
+        self.activity.reset_label(self.label)
+        self.ball.set_label(self.label)
 
         for bar in self.bars:
             self.bars[bar].set_layer(-1)
@@ -420,22 +426,21 @@ class Bounce():
                         self.bars[2].rect[1] - 2))
         if x > f - delta and x < f + delta:
             if not easter_egg:
-                smiley = Sprite(self.sprites, 0, 0, self.smiley_graphic)
-                x = int(self.count * 25 % self.width)
-                y = int(self.count / int(self.width / 25)) * 25
-                smiley.move((x, y))
-                smiley.set_layer(-1)
+                spr = Sprite(self.sprites, 0, 0, self.smiley_graphic)
             self.correct += 1
             gobject.idle_add(play_audio_from_file, self, self.path_to_success)
         else:
+            if not easter_egg:
+                spr = Sprite(self.sprites, 0, 0, self.blank_graphic)
+                spr.set_label(self.label)
             gobject.idle_add(play_audio_from_file, self, self.path_to_failure)
 
         if easter_egg:
-            egg = Sprite(self.sprites, 0, 0, self.egg_graphic)
-            x = int(self.count * 25 % self.width)
-            y = int(self.count / int(self.width / 25)) * 25
-            egg.move((x, y))
-            egg.set_layer(-1)
+            spr = Sprite(self.sprites, 0, 0, self.egg_graphic)
+
+        spr.move((int(self.count * 25 % self.width),
+                  int(self.count / int(self.width / 25)) * 25))
+        spr.set_layer(-1)
 
         # after enough correct answers, up the difficulty
         if self.correct == len(EASY) * 2:
