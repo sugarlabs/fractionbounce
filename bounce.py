@@ -42,9 +42,9 @@ ANIMATION = {10: (0, 1), 15: (1, 2), 20: (2, 1), 25: (1, 2), 30: (2, 1),
              60: (4, 3), 65: (3, 4), 70: (4, 5), 75: (5, 6), 80: (6, 5),
              85: (5, 6), 90: (6, 7)}
 ACCELEROMETER_DEVICE = '/sys/devices/platform/lis3lv02d/position'
-CRASH = 'crash.ogg'
-LAUGH = 'laugh.ogg'
-BUBBLES = 'bubbles.ogg'
+CRASH = 'crash.ogg'  # wrong answer
+LAUGH = 'bottle.ogg'  # correct answer
+BUBBLES = 'bubbles.ogg'  # Easter Egg
 
 import gtk
 from random import uniform
@@ -253,7 +253,7 @@ class Bounce():
     def _gen_bar(self, nsegments):
         ''' Return a bar with n segments '''
         svg = _svg_header(self.width - self.ball.rect[2], BAR_HEIGHT, 1.0)
-        dx = (self.width - self.ball.rect[2]) / nsegments
+        dx = (self.width - self.ball.rect[2]) / float(nsegments)
         for i in range(nsegments / 2):
             svg += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
                              i * 2 * dx, 0, '#FFFFFF', '#FFFFFF')
