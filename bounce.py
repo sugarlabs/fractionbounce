@@ -233,7 +233,6 @@ class Bounce():
         self.challenges = []
         for challenge in EASY:
             self.challenges.append(challenge)
-        self.dx = 0  # ball horizontal trajectory
         self.fraction = 0.5  # the target of the current challenge
         self.label = '1/2'  # the label
         self.count = 0  # number of bounces played
@@ -243,10 +242,10 @@ class Bounce():
         self.new_bounce = False
         self.paused = True
 
-        delta = self.height / STEPS
-        self.ddy = 6.67 * delta / STEPS  # acceleration (with dampening)
+        self.dx = 0.  # ball horizontal trajectory
+        # acceleration (with dampening)
+        self.ddy = (6.67 * self.height) / (STEPS * STEPS)
         self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
-        _logger.debug('delta: %f, ddy: %f, dy: %f', delta, self.ddy, self.dy)
 
         self.activity.challenge.set_label(_("Click the ball to start"))
 
@@ -269,6 +268,7 @@ class Bounce():
         ''' Pause play when visibility changes '''
         if self.timeout is not None:
             gobject.source_remove(self.timeout)
+            self.paused = True
 
     def _button_press_cb(self, win, event):
         ''' Callback to handle the button presses '''
@@ -300,7 +300,7 @@ class Bounce():
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             xyz = string[1:-2].split(',')
-            self.dx = int(float(xyz[0]) / 18.)
+            self.dx = float(xyz[0]) / 18.
             fh.close()
 
         if self.ball.get_xy()[0] + self.dx > 0 and \
@@ -310,7 +310,7 @@ class Bounce():
             self.ball.move_relative((0, int(self.dy)))
 
         # speed up ball in x while key is pressed
-        self.dx *= 1.05
+        self.dx *= 1.15
 
         # accelerate in y
         self.dy += self.ddy
@@ -345,11 +345,11 @@ class Bounce():
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             xyz = string[1:-2].split(',')
-            self.dx = int(float(xyz[0]) / 18.)
+            self.dx = float(xyz[0]) / 18.
             fh.close()
         else:
-            self.dx = int(uniform(-5, 5))
-        self.cells[self.frame].move_relative((self.dx, self.dy))
+            self.dx = uniform(-5, 5)
+        self.cells[self.frame].move_relative((int(self.dx), int(self.dy)))
         self.dy += self.ddy
 
         self.frame_counter += 1
@@ -467,25 +467,26 @@ class Bounce():
             _logger.debug('%s', self.challenges)
 
         self.count += 1
-        self.dx = 0  # stop horizontal movement between bounces
+        self.dx = 0.  # stop horizontal movement between bounces
 
     def _keypress_cb(self, area, event):
         ''' Keypress: moving the slides with the arrow keys '''
         k = gtk.gdk.keyval_name(event.keyval)
         if k in ['h', 'Left', 'KP_Left']:
-            self.dx = -5
+            self.dx = -5.
         elif k in ['l', 'Right', 'KP_Right']:
-            self.dx = 5
+            self.dx = 5.
         elif k in ['KP_Page_Up', 'Return']:
             self._choose_a_fraction()
             self._move_ball()
         else:
-            self.dx = 0
+            self.dx = 0.
         return True
 
     def _keyrelease_cb(self, area, event):
         ''' Keyrelease: stop horizontal movement '''
-        self.dx = 0
+        _logger.debug('%f', self.dx)
+        self.dx = 0.
         return True
 
     def _expose_cb(self, win, event):
