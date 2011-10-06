@@ -116,6 +116,14 @@ def _svg_style(extras=''):
     return 'style="%s"/>\n' % (extras)
 
 
+def svg_from_file(pathname):
+    ''' Read SVG string from a file '''
+    f = file(pathname, 'r')
+    svg = f.read()
+    f.close()
+    return(svg)
+
+
 class Bounce():
     ''' The Bounce class is used to define the ball and the user
     interaction. '''
@@ -361,7 +369,6 @@ class Bounce():
             self.ball.move((self.ball.get_xy()[0], self.ball_y_max))
             for spr in self.cells:
                 spr.move((0, self.height))  # hide the animation frames
-            _logger.debug('%d', self.frame_counter)
             self._test(easter_egg=True)
             self.new_bounce = True
             self.timeout = gobject.timeout_add(BOUNCE_PAUSE, self._move_ball)
@@ -485,7 +492,6 @@ class Bounce():
 
     def _keyrelease_cb(self, area, event):
         ''' Keyrelease: stop horizontal movement '''
-        _logger.debug('%f', self.dx)
         self.dx = 0.
         return True
 
@@ -497,11 +503,3 @@ class Bounce():
     def _destroy_cb(self, win, event):
         ''' Callback to handle quit '''
         gtk.main_quit()
-
-
-def svg_from_file(pathname):
-    ''' Read SVG string from a file '''
-    f = file(pathname, 'r')
-    svg = f.read()
-    f.close()
-    return(svg)
