@@ -295,10 +295,14 @@ class Bounce():
 
         if self.ball.get_xy()[0] + self.dx > 0 and \
            self.ball.get_xy()[0] + self.dx < self.width - self.ball.rect[2]:
-            self.ball.move_relative((self.dx, self.dy))
+            self.ball.move_relative((int(self.dx), int(self.dy)))
         else:
-            self.ball.move_relative((0, self.dy))
+            self.ball.move_relative((0, int(self.dy)))
 
+        # speed up ball in x while key is pressed
+        self.dx *= 1.05
+
+        # accelerate in y
         self.dy += self.ddy
 
         if self.ball.get_xy()[1] >= self.ball_y_max:
