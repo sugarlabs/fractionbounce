@@ -20,9 +20,11 @@ try:  # 0.86+ toolbar widgets
 except ImportError:
     HAS_TOOLBARBOX = False
 if HAS_TOOLBARBOX:
+    from sugar.graphics.toolbarbox import ToolbarButton
     from sugar.activity.widgets import ActivityToolbarButton
     from sugar.activity.widgets import StopButton
 from sugar.graphics.radiotoolbutton import RadioToolButton
+from sugar.graphics.toolbutton import ToolButton
 
 from gettext import gettext as _
 
@@ -32,16 +34,51 @@ _logger = logging.getLogger('fractionbounce-activity')
 from bounce import Bounce
 
 
-def _radio_factory(button_name, toolbar, cb, arg=None, tooltip=None,
+def _entry_factory(default_string, toolbar, tooltip='', max=3):
+    """ Factory for adding a text box to a toolbar """
+    entry = gtk.Entry()
+    entry.set_text(default_string)
+    if hasattr(entry, 'set_tooltip_text'):
+        entry.set_tooltip_text(tooltip)
+    entry.set_width_chars(max)
+    entry.show()
+    toolitem = gtk.ToolItem()
+    toolitem.add(entry)
+    toolbar.insert(toolitem, -1)
+    toolitem.show()
+    return entry
+
+
+def _button_factory(icon_name, toolbar, callback, cb_arg=None, tooltip=None,
+                    accelerator=None):
+    """Factory for making toolbar buttons"""
+    button = ToolButton(icon_name)
+    button.set_tooltip(tooltip)
+    button.props.sensitive = True
+    if accelerator is not None:
+        button.props.accelerator = accelerator
+    if cb_arg is not None:
+        button.connect('clicked', callback, cb_arg)
+    else:
+        button.connect('clicked', callback)
+    if hasattr(toolbar, 'insert'):  # the main toolbar
+        toolbar.insert(button, -1)
+    else:  # or a secondary toolbar
+        toolbar.props.page.insert(button, -1)
+    button.show()
+    return button
+
+
+def _radio_factory(button_name, toolbar, callback, cb_arg=None, tooltip=None,
                    group=None):
     ''' Add a radio button to a toolbar '''
     button = RadioToolButton(group=group)
     button.set_named_icon(button_name)
-    if cb is not None:
-        if arg is None:
-            button.connect('clicked', cb)
+    if callback is not None:
+        if cb_arg is None:
+            button.connect('clicked', callback)
         else:
-            button.connect('clicked', cb, arg)
+            button.connect('clicked', callback, cb_arg)
     if hasattr(toolbar, 'insert'):  # Add button to the main toolbar...
         toolbar.insert(button, -1)
     else:  # ...or a secondary toolbar.
@@ -87,6 +124,7 @@ class FractionBounceActivity(activity.Activity):
         # no sharing
         self.max_participants = 1
 
+        custom_toolbar = gtk.Toolbar()
         if HAS_TOOLBARBOX:
             toolbox = ToolbarBox()
 
@@ -94,7 +132,15 @@ class FractionBounceActivity(activity.Activity):
             toolbox.toolbar.insert(activity_button, 0)
             activity_button.show()
 
-            self._load_buttons(toolbox.toolbar)
+            custom_toolbar_button = ToolbarButton(
+                label=_('Custom'),
+                page=custom_toolbar,
+                icon_name='view-source')
+            custom_toolbar.show()
+            toolbox.toolbar.insert(custom_toolbar_button, -1)
+            custom_toolbar_button.show()
+
+            self._load_standard_buttons(toolbox.toolbar)
 
             _separator_factory(toolbox.toolbar, expand=True, visible=False)
 
@@ -111,7 +157,10 @@ class FractionBounceActivity(activity.Activity):
             self.set_toolbox(toolbox)
             bounce_toolbar = gtk.Toolbar()
             toolbox.add_toolbar(_('Project'), bounce_toolbar)
-            self._load_buttons(bounce_toolbar)
+            toolbox.add_toolbar(_('Custom'), custom_toolbar)
+            self._load_standard_buttons(bounce_toolbar)
+
+        self._load_custom_buttons(custom_toolbar)
 
         # Create a canvas
         canvas = gtk.DrawingArea()
@@ -124,7 +173,7 @@ class FractionBounceActivity(activity.Activity):
         # Initialize the canvas
         self.bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
 
-    def _load_buttons(self, toolbar):
+    def _load_standard_buttons(self, toolbar):
         ''' Load buttons onto whichever toolbar we are using '''
         self.fraction_button = _radio_factory('fraction', toolbar,
                                               self._fraction_cb,
@@ -140,6 +189,18 @@ class FractionBounceActivity(activity.Activity):
         self.challenge = _label_factory(toolbar, '')
         self.reset_label(0.5)
 
+    def _load_custom_buttons(self, toolbar):
+        ''' Entry fields and buttons for adding custom fractions '''
+        self.numerator = _entry_factory('', toolbar, tooltip=_('numerator'))
+        _label_factory(toolbar, '   /   ')
+        self.denominator = _entry_factory('', toolbar,
+                                          tooltip=_('denominator'))
+        _separator_factory(toolbar, expand=False, visible=False)
+        self.enter_button = _button_factory('list-add', toolbar,
+                                           self._add_fraction_cb,
+                                           tooltip=_('add new fraction'),
+                                           accelerator='Return')
+
     def _fraction_cb(self, arg=None):
         ''' Set fraction mode '''
         self.bounce_window.mode = 'fractions'
@@ -147,6 +208,26 @@ class FractionBounceActivity(activity.Activity):
     def _percent_cb(self, arg=None):
         ''' Set percent mode '''
         self.bounce_window.mode = 'percents'
+
+    def _add_fraction_cb(self, arg=None):
+        ''' Read entries and add a fraction to the list '''
+        # To do: save to Journal
+        try:
+            numerator = int(self.numerator.get_text().strip())
+        except ValueError:
+            self.numerator.set_text('NAN')
+            numerator = 0
+        try:
+            denominator = int(self.denominator.get_text().strip())
+        except ValueError:
+            self.denominator.set_text('NAN')
+            denominator = 1
+        if denominator == 0:
+            self.denominator.set_text('ZDE')
+        if numerator > denominator:
+            numerator = 0
+        if numerator > 0 and denominator > 1:
+            self.bounce_window.add_fraction('%d/%d' % (numerator, denominator))
 
     def reset_label(self, fraction):
         ''' update the challenge label '''

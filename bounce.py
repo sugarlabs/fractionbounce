@@ -382,6 +382,13 @@ class Bounce():
         self.cells[cells[0]].move((0, self.height))
         self.frame = cells[1]
 
+    def add_fraction(self, string):
+        ''' Add a new challenge; set bar to 2x demominator '''
+        numden = string.split('/', 2)
+        _logger.debug('adding (%s, %d) to the challenges',
+                      string, int(numden[1]) * 2)
+        self.challenges.append((string, int(numden[1]) * 2))
+
     def _choose_a_fraction(self):
         ''' Select a new fraction challenge from the table '''
         n = int(uniform(0, len(self.challenges)))
