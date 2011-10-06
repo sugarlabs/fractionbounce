@@ -81,6 +81,9 @@ class FractionBounceActivity(activity.Activity):
         """ Initiate activity. """
         super(FractionBounceActivity, self).__init__(handle)
 
+        self.add_events(gtk.gdk.VISIBILITY_NOTIFY_MASK)
+        self.connect('visibility-notify-event', self.__visibility_notify_cb)
+
         # no sharing
         self.max_participants = 1
 
@@ -147,3 +150,19 @@ class FractionBounceActivity(activity.Activity):
         self.challenge.set_label(_("Bounce the ball to a position %(fraction)s \
 of the way from the left side of the bar.") \
                                      % {'fraction': fraction})
+
+    def __visibility_notify_cb(self, window, event):
+        ''' Callback method for when the activity's visibility changes. '''
+        _logger.debug('%s', str(event.state))
+        return
+
+        ''' The event is always be UNOBSCURED so commented out for now '''
+        if event.state == gtk.gdk.VISIBILITY_FULLY_OBSCURED:
+            _logger.debug('pause it')
+            self.bounce_window.pause()
+        elif event.state in \
+            [gtk.gdk.VISIBILITY_UNOBSCURED, gtk.gdk.VISIBILITY_PARTIAL]:
+            if not self.bounce_window.paused:
+                _logger.debug('unpause it')
+                self.bounce_window.paused = True
+                self.challenge.set_label(_("Click the ball to continue"))

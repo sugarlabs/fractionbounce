@@ -154,6 +154,7 @@ class Bounce():
         self.height = gtk.gdk.screen_height() - GRID_CELL_SIZE
         self.sprites = Sprites(self.canvas)
         self.scale = gtk.gdk.screen_height() / 900.0
+        self.timeout = None
 
         self.easter_egg = int(uniform(1, 100))
         _logger.debug('%d', self.easter_egg)
@@ -240,10 +241,11 @@ class Bounce():
         self.press = None  # sprite under mouse click
         self.mode = 'fractions'
         self.new_bounce = False
+        self.paused = True
 
         delta = self.height / STEPS
         self.ddy = 6.67 * delta / STEPS  # acceleration (with dampening)
-        self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
+        self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
         _logger.debug('delta: %f, ddy: %f, dy: %f', delta, self.ddy, self.dy)
 
         self.activity.challenge.set_label(_("Click the ball to start"))
@@ -263,6 +265,11 @@ class Bounce():
         svg += _svg_footer()
         return svg
 
+    def pause(self):
+        ''' Pause play when visibility changes '''
+        if self.timeout is not None:
+            gobject.source_remove(self.timeout)
+
     def _button_press_cb(self, win, event):
         ''' Callback to handle the button presses '''
         win.grab_focus()
@@ -275,9 +282,10 @@ class Bounce():
         win.grab_focus()
         x, y = map(int, event.get_coords())
         if self.press is not None:
-            if self.count == 0 and self.press == self.ball:
+            if self.paused and self.press == self.ball:
                 self._choose_a_fraction()
                 self._move_ball()
+                self.paused = False
         return True
 
     def _move_ball(self):
@@ -316,11 +324,11 @@ class Bounce():
             if self._easter_egg_test():
                 self._animate()
             else:
-                gobject.timeout_add(  # wait less and less as game goes on
+                self.timeout = gobject.timeout_add(
                     max(STEP_PAUSE, BOUNCE_PAUSE - self.count * STEP_PAUSE),
                     self._move_ball)
         else:
-            gobject.timeout_add(STEP_PAUSE, self._move_ball)
+            self.timeout = gobject.timeout_add(STEP_PAUSE, self._move_ball)
 
     def _animate(self):
         ''' A little Easter Egg just for fun. '''
@@ -356,7 +364,7 @@ class Bounce():
             _logger.debug('%d', self.frame_counter)
             self._test(easter_egg=True)
             self.new_bounce = True
-            gobject.timeout_add(BOUNCE_PAUSE, self._move_ball)
+            self.timeout = gobject.timeout_add(BOUNCE_PAUSE, self._move_ball)
         else:
             gobject.timeout_add(STEP_PAUSE, self._animate)
 
