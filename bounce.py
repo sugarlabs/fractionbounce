@@ -194,7 +194,8 @@ class Bounce():
         for i in range(8):
             self.cells.append(Sprite(
                     self.sprites, 0, 0, _svg_str_to_pixbuf(svg_from_file(
-                            os.path.join(path, 'basketball%d.svg' % (i + 1))))))
+                            os.path.join(path,
+                                         'basketball%d.svg' % (i + 1))))))
         for spr in self.cells:
             spr.set_layer(1)
             spr.move((0, self.height))  # move animation cells off screen
@@ -402,12 +403,12 @@ class Bounce():
             if saw_a_fraction:
                 self.label = fstr
             else:
-                self.label = fstr.strip().strip('%').strip()+'/100'
+                self.label = fstr.strip().strip('%').strip() + '/100'
         else:  # percentage
             if not saw_a_fraction:
                 self.label = fstr
             else:
-                self.label = str(int(self.fraction * 100 + 0.5))+'%'
+                self.label = str(int(self.fraction * 100 + 0.5)) + '%'
         self.activity.reset_label(self.label)
         self.ball.set_label(self.label)
 
