@@ -270,7 +270,7 @@ class Bounce():
                              (i * 2 + 1) * dx, 0, '#AAAAAA', '#AAAAAA')
         if int(nsegments) % 2 == 1:  # odd
             svg += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
-                             i * 2 * dx, 0, '#FFFFFF', '#FFFFFF')
+                             (i * 2 + 2) * dx, 0, '#FFFFFF', '#FFFFFF')
         svg += _svg_footer()
         return svg
 
@@ -385,9 +385,7 @@ class Bounce():
     def add_fraction(self, string):
         ''' Add a new challenge; set bar to 2x demominator '''
         numden = string.split('/', 2)
-        _logger.debug('adding (%s, %d) to the challenges',
-                      string, int(numden[1]) * 2)
-        self.challenges.append((string, int(numden[1]) * 2))
+        self.challenges.append((string, int(numden[1])))
 
     def _choose_a_fraction(self):
         ''' Select a new fraction challenge from the table '''
