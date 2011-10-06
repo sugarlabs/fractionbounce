@@ -27,12 +27,13 @@ from sugar.graphics.radiotoolbutton import RadioToolButton
 from gettext import gettext as _
 
 import logging
-_logger = logging.getLogger("fractionbounce-activity")
+_logger = logging.getLogger('fractionbounce-activity')
 
 from bounce import Bounce
 
 
-def _radio_factory(button_name, toolbar, cb, arg, tooltip, group):
+def _radio_factory(button_name, toolbar, cb, arg=None, tooltip=None,
+                   group=None):
     ''' Add a radio button to a toolbar '''
     button = RadioToolButton(group=group)
     button.set_named_icon(button_name)
@@ -52,7 +53,7 @@ def _radio_factory(button_name, toolbar, cb, arg, tooltip, group):
 
 
 def _label_factory(toolbar, label_text, width=None):
-    """ Factory for adding a label to a toolbar """
+    ''' Factory for adding a label to a toolbar '''
     label = gtk.Label(label_text)
     label.set_line_wrap(True)
     if width is not None:
@@ -66,7 +67,7 @@ def _label_factory(toolbar, label_text, width=None):
 
 
 def _separator_factory(toolbar, expand=False, visible=True):
-    """ add a separator to a toolbar """
+    ''' add a separator to a toolbar '''
     _separator = gtk.SeparatorToolItem()
     _separator.props.draw = visible
     _separator.set_expand(expand)
@@ -77,7 +78,7 @@ def _separator_factory(toolbar, expand=False, visible=True):
 class FractionBounceActivity(activity.Activity):
 
     def __init__(self, handle):
-        """ Initiate activity. """
+        ''' Initiate activity. '''
         super(FractionBounceActivity, self).__init__(handle)
 
         self.add_events(gtk.gdk.VISIBILITY_NOTIFY_MASK)
@@ -126,12 +127,13 @@ class FractionBounceActivity(activity.Activity):
     def _load_buttons(self, toolbar):
         ''' Load buttons onto whichever toolbar we are using '''
         self.fraction_button = _radio_factory('fraction', toolbar,
-                                              self._fraction_cb, None,
-                                              _('fractions'), None)
+                                              self._fraction_cb,
+                                              tooltip=_('fractions'),
+                                              group=None)
         self.percent_button = _radio_factory('percent', toolbar,
-                                             self._percent_cb, None,
-                                             _('percents'),
-                                             self.fraction_button)
+                                             self._percent_cb,
+                                             tooltip=_('percents'),
+                                             group=self.fraction_button)
 
         _separator_factory(toolbar, expand=False, visible=True)
 
@@ -139,15 +141,17 @@ class FractionBounceActivity(activity.Activity):
         self.reset_label(0.5)
 
     def _fraction_cb(self, arg=None):
+        ''' Set fraction mode '''
         self.bounce_window.mode = 'fractions'
 
     def _percent_cb(self, arg=None):
+        ''' Set percent mode '''
         self.bounce_window.mode = 'percents'
 
     def reset_label(self, fraction):
-        """ update the challenge label """
-        self.challenge.set_label(_("Bounce the ball to a position \
-%(fraction)s of the way from the left side of the bar.") \
+        ''' update the challenge label '''
+        self.challenge.set_label(_('Bounce the ball to a position \
+%(fraction)s of the way from the left side of the bar.') \
                                      % {'fraction': fraction})
 
     def __visibility_notify_cb(self, window, event):
@@ -155,7 +159,8 @@ class FractionBounceActivity(activity.Activity):
         _logger.debug('%s', str(event.state))
         return
 
-        ''' The event is always be UNOBSCURED so commented out for now '''
+        '''
+        # Awaiting resolution of #2570
         if event.state == gtk.gdk.VISIBILITY_FULLY_OBSCURED:
             _logger.debug('pause it')
             self.bounce_window.pause()
@@ -163,5 +168,5 @@ class FractionBounceActivity(activity.Activity):
             [gtk.gdk.VISIBILITY_UNOBSCURED, gtk.gdk.VISIBILITY_PARTIAL]:
             if not self.bounce_window.paused:
                 _logger.debug('unpause it')
-                self.bounce_window.paused = True
-                self.challenge.set_label(_("Click the ball to continue"))
+                self.challenge.set_label(_('Click the ball to continue'))
+        '''

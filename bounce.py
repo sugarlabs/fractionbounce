@@ -249,7 +249,6 @@ class Bounce():
         self.press = None  # sprite under mouse click
         self.mode = 'fractions'
         self.new_bounce = False
-        self.paused = True
 
         self.dx = 0.  # ball horizontal trajectory
         # acceleration (with dampening)
@@ -277,7 +276,7 @@ class Bounce():
         ''' Pause play when visibility changes '''
         if self.timeout is not None:
             gobject.source_remove(self.timeout)
-            self.paused = True
+            self.timeout = None
 
     def _button_press_cb(self, win, event):
         ''' Callback to handle the button presses '''
@@ -291,10 +290,9 @@ class Bounce():
         win.grab_focus()
         x, y = map(int, event.get_coords())
         if self.press is not None:
-            if self.paused and self.press == self.ball:
+            if self.timeout is None and self.press == self.ball:
                 self._choose_a_fraction()
                 self._move_ball()
-                self.paused = False
         return True
 
     def _move_ball(self):
