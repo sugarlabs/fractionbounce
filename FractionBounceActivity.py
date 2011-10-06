@@ -14,9 +14,14 @@
 import gtk
 
 from sugar.activity import activity
-from sugar.activity.widgets import ActivityToolbarButton
-from sugar.activity.widgets import StopButton
-from sugar.graphics.toolbarbox import ToolbarBox
+try: # 0.86+ toolbar widgets
+    from sugar.graphics.toolbarbox import ToolbarBox
+    HAS_TOOLBARBOX = True
+except ImportError:
+    HAS_TOOLBARBOX = False
+if HAS_TOOLBARBOX:
+    from sugar.activity.widgets import ActivityToolbarButton
+    from sugar.activity.widgets import StopButton
 from sugar.graphics.toolbutton import ToolButton
 from sugar.graphics.radiotoolbutton import RadioToolButton
 
@@ -79,35 +84,31 @@ class FractionBounceActivity(activity.Activity):
         # no sharing
         self.max_participants = 1
 
-        toolbox = ToolbarBox()
+        if HAS_TOOLBARBOX:
+            toolbox = ToolbarBox()
 
-        activity_button = ActivityToolbarButton(self)
-        toolbox.toolbar.insert(activity_button, 0)
-        activity_button.show()
+            activity_button = ActivityToolbarButton(self)
+            toolbox.toolbar.insert(activity_button, 0)
+            activity_button.show()
 
-        self.fraction_button = _radio_factory('fraction', toolbox.toolbar,
-                                              self.fraction_cb, None,
-                                              _('fractions'), None)
-        self.percent_button = _radio_factory('percent', toolbox.toolbar,
-                                             self.percent_cb, None,
-                                             _('percents'),
-                                             self.fraction_button)
+            self._load_buttons(toolbox.toolbar)
 
-        _separator_factory(toolbox.toolbar, expand=False, visible=True)
+            _separator_factory(toolbox.toolbar, expand=True, visible=False)
 
-        self.challenge = _label_factory(toolbox.toolbar, '')
-        self.reset_label(0.5)
+            stop_button = StopButton(self)
+            stop_button.props.accelerator = _('<Ctrl>Q')
+            toolbox.toolbar.insert(stop_button, -1)
 
-        _separator_factory(toolbox.toolbar, expand=True, visible=False)
+            stop_button.show()
 
-        stop_button = StopButton(self)
-        stop_button.props.accelerator = _('<Ctrl>Q')
-        toolbox.toolbar.insert(stop_button, -1)
-
-        stop_button.show()
-
-        self.set_toolbox(toolbox)
-        toolbox.show()
+            self.set_toolbox(toolbox)
+            toolbox.show()
+        else:
+            toolbox = activity.ActivityToolbox(self)
+            self.set_toolbox(toolbox)
+            bounce_toolbar = gtk.Toolbar()
+            toolbox.add_toolbar( _('Project'), bounce_toolbar)
+            self._load_buttons(bounce_toolbar)
 
         # Create a canvas
         canvas = gtk.DrawingArea()
@@ -120,10 +121,25 @@ class FractionBounceActivity(activity.Activity):
         # Initialize the canvas
         self.bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
 
-    def fraction_cb(self, arg=None):
+    def _load_buttons(self, toolbar):
+        ''' Load buttons onto whichever toolbar we are using '''
+        self.fraction_button = _radio_factory('fraction', toolbar,
+                                              self._fraction_cb, None,
+                                              _('fractions'), None)
+        self.percent_button = _radio_factory('percent', toolbar,
+                                             self._percent_cb, None,
+                                             _('percents'),
+                                             self.fraction_button)
+
+        _separator_factory(toolbar, expand=False, visible=True)
+
+        self.challenge = _label_factory(toolbar, '')
+        self.reset_label(0.5)
+
+    def _fraction_cb(self, arg=None):
         self.bounce_window.mode = 'fractions'
 
-    def percent_cb(self, arg=None):
+    def _percent_cb(self, arg=None):
         self.bounce_window.mode = 'percents'
 
     def reset_label(self, fraction):
