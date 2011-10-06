@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-05 17:45-0400\n"
+"POT-Creation-Date: 2011-10-06 13:06-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,25 +21,45 @@ msgstr ""
 msgid "FractionBounce"
 msgstr ""
 
-#: FractionBounceActivity.py:90
-msgid "fractions"
+#: FractionBounceActivity.py:136 FractionBounceActivity.py:160
+msgid "Custom"
 msgstr ""
 
-#: FractionBounceActivity.py:93
-msgid "percents"
-msgstr ""
-
-#: FractionBounceActivity.py:104
+#: FractionBounceActivity.py:148
 msgid "<Ctrl>Q"
 msgstr ""
 
-#: FractionBounceActivity.py:131
+#: FractionBounceActivity.py:159
+msgid "Project"
+msgstr ""
+
+#: FractionBounceActivity.py:193
+msgid "fractions"
+msgstr ""
+
+#: FractionBounceActivity.py:197
+msgid "percents"
+msgstr ""
+
+#: FractionBounceActivity.py:207
+msgid "numerator"
+msgstr ""
+
+#: FractionBounceActivity.py:210
+msgid "denominator"
+msgstr ""
+
+#: FractionBounceActivity.py:214
+msgid "add new fraction"
+msgstr ""
+
+#: FractionBounceActivity.py:251
 #, python-format
 msgid ""
 "Bounce the ball to a position %(fraction)s of the way from the left side of "
 "the bar."
 msgstr ""
 
-#: bounce.py:247
+#: bounce.py:260
 msgid "Click the ball to start"
 msgstr ""
