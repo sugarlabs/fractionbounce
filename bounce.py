@@ -37,6 +37,8 @@ BAR_HEIGHT = 25
 STEPS = 100.  # number of time steps per bounce rise and fall
 STEP_PAUSE = 50  # milliseconds between steps
 BOUNCE_PAUSE = 3000  # milliseconds between bounces
+DX = 10  # starting step size for horizontal movement
+DDX = 1.25  # acceleration during keypress
 ANIMATION = {10: (0, 1), 15: (1, 2), 20: (2, 1), 25: (1, 2), 30: (2, 1),
              35: (1, 2), 40: (2, 3), 45: (3, 4), 50: (4, 3), 55: (3, 4),
              60: (4, 3), 65: (3, 4), 70: (4, 5), 75: (5, 6), 80: (6, 5),
@@ -317,7 +319,7 @@ class Bounce():
             self.ball.move_relative((0, int(self.dy)))
 
         # speed up ball in x while key is pressed
-        self.dx *= 1.15
+        self.dx *= DDX
 
         # accelerate in y
         self.dy += self.ddy
@@ -355,7 +357,7 @@ class Bounce():
             self.dx = float(xyz[0]) / 18.
             fh.close()
         else:
-            self.dx = uniform(-5, 5)
+            self.dx = uniform(-int(DX * self.scale), int(DX * self.scale))
         self.cells[self.frame].move_relative((int(self.dx), int(self.dy)))
         self.dy += self.ddy
 
@@ -479,9 +481,9 @@ class Bounce():
         ''' Keypress: moving the slides with the arrow keys '''
         k = gtk.gdk.keyval_name(event.keyval)
         if k in ['h', 'Left', 'KP_Left']:
-            self.dx = -5.
+            self.dx = -DX * self.scale
         elif k in ['l', 'Right', 'KP_Right']:
-            self.dx = 5.
+            self.dx = DX * self.scale
         elif k in ['KP_Page_Up', 'Return']:
             self._choose_a_fraction()
             self._move_ball()
