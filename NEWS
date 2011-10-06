@@ -1,3 +1,22 @@
+5
+
+ENHANCEMENTS:
+* Added support for both fractions and percentages
+* Added 8ths and 16ths
+* Label misses
+* Scaled initial horizontal velocity based on screen size
+* Added horizontal acceleration during key press
+* Added center mark on landing point
+* Added support for adding custom fractions
+* Added support for old-style Sugar toolbars
+
+JUST FOR FUN:
+* Added sound
+* Added an Easter Egg
+
+BUG FIXES:
+* Generated SVG for bar using float to prevent aliasing
+
 4
 
 * Add play levels: simple vs compound fractions
