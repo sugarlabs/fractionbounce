@@ -14,7 +14,7 @@
 import gtk
 
 from sugar.activity import activity
-try: # 0.86+ toolbar widgets
+try:  # 0.86+ toolbar widgets
     from sugar.graphics.toolbarbox import ToolbarBox
     HAS_TOOLBARBOX = True
 except ImportError:
@@ -110,7 +110,7 @@ class FractionBounceActivity(activity.Activity):
             toolbox = activity.ActivityToolbox(self)
             self.set_toolbox(toolbox)
             bounce_toolbar = gtk.Toolbar()
-            toolbox.add_toolbar( _('Project'), bounce_toolbar)
+            toolbox.add_toolbar(_('Project'), bounce_toolbar)
             self._load_buttons(bounce_toolbar)
 
         # Create a canvas
@@ -147,8 +147,8 @@ class FractionBounceActivity(activity.Activity):
 
     def reset_label(self, fraction):
         """ update the challenge label """
-        self.challenge.set_label(_("Bounce the ball to a position %(fraction)s \
-of the way from the left side of the bar.") \
+        self.challenge.set_label(_("Bounce the ball to a position \
+%(fraction)s of the way from the left side of the bar.") \
                                      % {'fraction': fraction})
 
     def __visibility_notify_cb(self, window, event):
