@@ -22,7 +22,6 @@ except ImportError:
 if HAS_TOOLBARBOX:
     from sugar.activity.widgets import ActivityToolbarButton
     from sugar.activity.widgets import StopButton
-from sugar.graphics.toolbutton import ToolButton
 from sugar.graphics.radiotoolbutton import RadioToolButton
 
 from gettext import gettext as _
