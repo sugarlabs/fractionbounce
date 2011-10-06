@@ -191,11 +191,13 @@ class Bounce():
             spr.move((0, self.height))  # move animation cells off screen
         self.frame = 0
 
-        mark = _svg_header(self.ball.rect[2] / 2, BAR_HEIGHT * self.scale + 4,
-                           1.0) + \
-               _svg_rect(self.ball.rect[2] / 2,
+        mark = _svg_header(self.ball.rect[2] / 2.,
+                           BAR_HEIGHT * self.scale + 4, 1.0) + \
+               _svg_rect(self.ball.rect[2] / 2.,
                          BAR_HEIGHT * self.scale + 4, 0, 0, 0, 0,
                          '#FF0000', '#FF0000') + \
+               _svg_rect(1, BAR_HEIGHT * self.scale + 4, 0, 0,
+                         self.ball.rect[2] / 4., 0, '#000000', '#000000') + \
                _svg_footer()
         self.mark = Sprite(self.sprites, 0,
                            self.height,  # hide off bottom of screen
