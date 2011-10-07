@@ -170,8 +170,21 @@ class FractionBounceActivity(activity.Activity):
         canvas.show()
         self.show_all()
 
+        # Read any custom fractions from the project metadata
+        if 'custom' in self.metadata:
+            custom = self.metadata['custom']
+        else:
+            custom = None
+
         # Initialize the canvas
         self.bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
+
+        # Restore any custom fractions
+        if custom is not None:
+            _logger.debug('Restoring custom data: %s', custom)
+            fractions = custom.split(',')
+            for f in fractions:
+                self.bounce_window.add_fraction(f)
 
     def _load_standard_buttons(self, toolbar):
         ''' Load buttons onto whichever toolbar we are using '''
@@ -211,7 +224,6 @@ class FractionBounceActivity(activity.Activity):
 
     def _add_fraction_cb(self, arg=None):
         ''' Read entries and add a fraction to the list '''
-        # To do: save to Journal
         try:
             numerator = int(self.numerator.get_text().strip())
         except ValueError:
@@ -228,6 +240,11 @@ class FractionBounceActivity(activity.Activity):
             numerator = 0
         if numerator > 0 and denominator > 1:
             self.bounce_window.add_fraction('%d/%d' % (numerator, denominator))
+            if 'custom' in self.metadata:  # Save to Journal
+                self.metadata['custom'] = '%s,%d/%d' % (
+                    self.metadata['custom'], numerator, denominator)
+            else:
+                self.metadata['custom'] = '%d/%d' % (numerator, denominator)
 
     def reset_label(self, fraction):
         ''' update the challenge label '''
