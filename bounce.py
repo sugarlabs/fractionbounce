@@ -12,27 +12,27 @@
 # Boston, MA 02111-1307, USA.
 
 # The challenges are tuples: (a fraction to display, a bar to display)
-EASY = [('1/2', 2), ('1/3', 3), ('3/4', 4),
-        ('1/4', 4), ('2/3', 3), ('1/6', 6),
-        ('5/6', 6), ('2/6', 6), ('3/6', 6),
-        ('2/4', 4), ('4/6', 6)]
-MEDIUM = [('2/8', 12), ('2/4', 12),  ('3/6', 12),
-          ('6/12', 12), ('4/6', 12), ('2/6', 12),
-          ('5/12', 12), ('3/12', 12), ('7/12', 12),
-          ('8/12', 12), ('4/8', 12), ('6/12', 12),
-          ('9/12', 12), ('2/12', 12), ('4/12', 12),
-          ('10/12', 12), ('11/12', 12)]
-HARD = [('2/5', 10), ('4/5', 10), ('3/5', 10),
-        ('1/10', 10), ('1/5', 10), ('5/10', 10),
-        ('3/10', 10), ('7/10', 10), ('8/10', 10),
-        ('1/16', 4), ('2/16', 4), ('3/16', 4),
-        ('4/16', 4), ('5/16', 4), ('6/16', 4),
-        ('7/16', 4), ('8/16', 4), ('9/16', 4),
-        ('10/16', 4), ('11/16', 4), ('12/16', 4),
-        ('13/16', 4), ('14/16', 4), ('15/16', 4),
-        ('1/8', 4), ('2/8', 4), ('3/8', 4),
-        ('4/8', 4), ('5/8', 4), ('6/8', 4),
-        ('7/8', 4)]
+EASY = [['1/2', 2, 0], ['1/3', 3, 0], ['3/4', 4, 0],
+        ['1/4', 4, 0], ['2/3', 3, 0], ['1/6', 6, 0],
+        ['5/6', 6, 0], ['2/6', 6, 0], ['3/6', 6, 0],
+        ['2/4', 4, 0], ['4/6', 6, 0]]
+MEDIUM = [['2/8', 12, 0], ['2/4', 12, 0],  ['3/6', 12, 0],
+          ['6/12', 12, 0], ['4/6', 12, 0], ['2/6', 12, 0],
+          ['5/12', 12, 0], ['3/12', 12, 0], ['7/12', 12, 0],
+          ['8/12', 12, 0], ['4/8', 12, 0], ['6/12', 12, 0],
+          ['9/12', 12, 0], ['2/12', 12, 0], ['4/12', 12, 0],
+          ['10/12', 12, 0], ['11/12', 12, 0]]
+HARD = [['2/5', 10, 0], ['4/5', 10, 0], ['3/5', 10, 0],
+        ['1/10', 10, 0], ['1/5', 10, 0], ['5/10', 10, 0],
+        ['3/10', 10, 0], ['7/10', 10, 0], ['8/10', 10, 0],
+        ['1/16', 4, 0], ['2/16', 4, 0], ['3/16', 4, 0],
+        ['4/16', 4, 0], ['5/16', 4, 0], ['6/16', 4, 0],
+        ['7/16', 4, 0], ['8/16', 4, 0], ['9/16', 4, 0],
+        ['10/16', 4, 0], ['11/16', 4, 0], ['12/16', 4, 0],
+        ['13/16', 4, 0], ['14/16', 4, 0], ['15/16', 4, 0],
+        ['1/8', 4, 0], ['2/8', 4, 0], ['3/8', 4, 0],
+        ['4/8', 4, 0], ['5/8', 4, 0], ['6/8', 4, 0],
+        ['7/8', 4, 0]]
 EXPERT = 100  # after some number of correct answers, don't segment the bar
 BAR_HEIGHT = 25
 STEPS = 100.  # number of time steps per bounce rise and fall
@@ -178,6 +178,9 @@ class Bounce():
         # Create the sprites we'll need
         self.smiley_graphic = _svg_str_to_pixbuf(svg_from_file(
                 os.path.join(path, 'smiley.svg')))
+
+        self.frown_graphic = _svg_str_to_pixbuf(svg_from_file(
+                os.path.join(path, 'frown.svg')))
 
         self.egg_graphic = _svg_str_to_pixbuf(svg_from_file(
                 os.path.join(path, 'Easter_egg.svg')))
@@ -386,12 +389,12 @@ class Bounce():
     def add_fraction(self, string):
         ''' Add a new challenge; set bar to 2x demominator '''
         numden = string.split('/', 2)
-        self.challenges.append((string, int(numden[1])))
+        self.challenges.append([string, int(numden[1]), 0])
 
     def _choose_a_fraction(self):
         ''' Select a new fraction challenge from the table '''
-        n = int(uniform(0, len(self.challenges)))
-        fstr = self.challenges[n][0]
+        self.n = int(uniform(0, len(self.challenges)))
+        fstr = self.challenges[self.n][0]
         saw_a_fraction = False
         if '/' in fstr:  # fraction
             numden = fstr.split('/', 2)
@@ -424,7 +427,7 @@ class Bounce():
             self.bars[2].set_layer(0)
         else:
             if self.mode == 'fractions':
-                nseg = self.challenges[n][1]
+                nseg = self.challenges[self.n][1]
             else:
                 nseg = 10  # percentages
             # generate new bar on demand
@@ -452,6 +455,12 @@ class Bounce():
         f = self.ball.rect[2] / 2 + int(self.fraction * self.bars[2].rect[2])
         self.mark.move((int(f - self.mark.rect[2] / 2),
                         self.bars[2].rect[1] - 2))
+        if self.challenges[self.n][2] == 0:  # label the column
+            spr = Sprite(self.sprites, 0, 0, self.blank_graphic)
+            spr.set_label(self.label)
+            spr.move((int(self.n * 25), 0))
+            spr.set_layer(-1)
+        self.challenges[self.n][2] += 1
         if x > f - delta and x < f + delta:
             if not easter_egg:
                 spr = Sprite(self.sprites, 0, 0, self.smiley_graphic)
@@ -459,15 +468,13 @@ class Bounce():
             gobject.idle_add(play_audio_from_file, self, self.path_to_success)
         else:
             if not easter_egg:
-                spr = Sprite(self.sprites, 0, 0, self.blank_graphic)
-                spr.set_label(self.label)
+                spr = Sprite(self.sprites, 0, 0, self.frown_graphic)
             gobject.idle_add(play_audio_from_file, self, self.path_to_failure)
 
         if easter_egg:
             spr = Sprite(self.sprites, 0, 0, self.egg_graphic)
 
-        spr.move((int(self.count * 25 % self.width),
-                  int(self.count / int(self.width / 25)) * 25))
+        spr.move((int(self.n * 25), int(self.challenges[self.n][2] * 25)))
         spr.set_layer(-1)
 
         # after enough correct answers, up the difficulty
