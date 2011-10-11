@@ -187,7 +187,8 @@ class Bounce():
 
         self.blank_graphic = _svg_str_to_pixbuf(
             _svg_header(BAR_HEIGHT, BAR_HEIGHT, 1.0) + \
-            _svg_rect(BAR_HEIGHT, BAR_HEIGHT, 0, 0, 0, 0, 'none', 'none') + \
+            _svg_rect(BAR_HEIGHT, BAR_HEIGHT, 5, 5, 0, 0,
+                      '#C0C0C0', '#282828') + \
             _svg_footer())
 
         self.ball = Sprite(self.sprites, 0, 0,
