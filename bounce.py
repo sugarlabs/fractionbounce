@@ -201,7 +201,6 @@ class Bounce():
         self.timeout = None
 
         self.buddies = []  # used for sharing
-        self.whos_turn = 0
         self.my_turn = False
         self.select_a_fraction = False
 
@@ -231,45 +230,6 @@ class Bounce():
         # acceleration (with dampening)
         self.ddy = (6.67 * self.height) / (STEPS * STEPS)
         self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
-
-        self.activity.challenge.set_label(_("Click the ball to start."))
-
-    def we_are_sharing(self):
-        ''' If there is more than one buddy, we are sharing. '''
-        if len(self.buddies) > 1:
-            return True
-
-    def its_my_turn(self):
-        ''' When sharing, it is your turn... '''
-        self.my_turn = True
-        self.activity.set_player_on_toolbar(self.activity.nick)
-        _logger.debug('my turn: sending a fraction')
-        # todo: some mechanism for choosing a fraction to play
-        self.activity.challenge.set_label(
-            _("Click on the bar to choose a fraction."))
-        self.select_a_fraction = True
-
-    def its_their_turn(self, nick):
-        ''' When sharing, it is nick's turn... '''
-        self.my_turn = False
-        self.activity.set_player_on_toolbar(nick)
-        _logger.debug("%s's turn", nick)
-
-    def play_a_fraction(self, fraction):
-        ''' Play this fraction '''
-        _logger.debug('playing a fraction %s', fraction)
-        fraction_is_new = True
-        for i, c in enumerate(self.challenges):
-            if c[0] == fraction:
-                fraction_is_new = False
-                self.n = i
-                break
-        if fraction_is_new:
-            _logger.debug('fraction is new')
-            self.add_fraction(fraction)
-            self.n = len(self.challenges)
-        self._choose_a_fraction()
-        self._move_ball()
 
     def _create_sprites(self, path):
         ''' Create all of the sprites we'll need '''
@@ -365,6 +325,47 @@ class Bounce():
             gobject.source_remove(self.timeout)
             self.timeout = None
 
+    def we_are_sharing(self):
+        ''' If there is more than one buddy, we are sharing. '''
+        if len(self.buddies) > 1:
+            return True
+
+    def its_my_turn(self):
+        ''' When sharing, it is your turn... '''
+        if self.timeout is not None:
+            _logger.debug('timeout is not None')
+        gobject.timeout_add(1000, self._take_a_turn)
+
+    def _take_a_turn(self):
+        self.my_turn = True
+        self.select_a_fraction = True
+        self.activity.set_player_on_toolbar(self.activity.nick)
+        _logger.debug('my turn: sending a fraction')
+        self.activity.challenge.set_label(
+            _("Click on the bar to choose a fraction."))
+
+    def its_their_turn(self, nick):
+        ''' When sharing, it is nick's turn... '''
+        self.my_turn = False
+        self.activity.set_player_on_toolbar(nick)
+        _logger.debug("%s's turn", nick)
+
+    def play_a_fraction(self, fraction):
+        ''' Play this fraction '''
+        _logger.debug('playing a fraction %s', fraction)
+        fraction_is_new = True
+        for i, c in enumerate(self.challenges):
+            if c[0] == fraction:
+                fraction_is_new = False
+                self.n = i
+                break
+        if fraction_is_new:
+            _logger.debug('fraction is new')
+            self.add_fraction(fraction)
+            self.n = len(self.challenges)
+        self._choose_a_fraction()
+        self._move_ball()
+
     def _button_press_cb(self, win, event):
         ''' Callback to handle the button presses '''
         win.grab_focus()
@@ -378,30 +379,24 @@ class Bounce():
         x, y = map(int, event.get_coords())
         _logger.debug('button release %d', x)
         if self.press is not None:
-            if self.select_a_fraction and self.press == self.current_bar:
-                # Find the fraction closest to the click
-                fraction = self._search_challenges(
-                    (x - self.current_bar.rect[0]) / \
-                        float(self.current_bar.rect[2]))
-                _logger.debug('selected a fraction: %s', fraction)
-                self.select_a_fraction = False
-                self.activity.send_a_fraction(fraction)
-                self.play_a_fraction(fraction)
-            elif self.timeout is None and self.press == self.ball:
-                if self.we_are_sharing() and self.activity.initiating:
-                    _logger.debug('We are sharing and I am the initiator...')
-                    self.its_my_turn()
-                else:
-                    _logger.debug('Either we are not sharing (%s) or \
-I am not the initiator (%s)',
-                                  str(self.we_are_sharing()), str(self.activity.initiating))
+            if self.we_are_sharing():
+                if self.select_a_fraction and self.press == self.current_bar:
+                    # Find the fraction closest to the click
+                    fraction = self._search_challenges(
+                        (x - self.current_bar.rect[0]) / \
+                            float(self.current_bar.rect[2]))
+                    _logger.debug('selected a fraction: %s', fraction)
+                    self.select_a_fraction = False
+                    self.activity.send_a_fraction(fraction)
+                    self.play_a_fraction(fraction)
+            else:
+                if self.timeout is None and self.press == self.ball:
                     self._choose_a_fraction()
                     self._move_ball()
         return True
 
     def _search_challenges(self, f):
         ''' Find the fraction which is closest to f in the list. '''
-        _logger.debug('looking near %f', f)
         dist = 1.
         closest = '1/2'
         for c in self.challenges:
@@ -450,11 +445,10 @@ I am not the initiator (%s)',
                 if self.my_turn:
                     # Let the next player know it is their turn.
                     _logger.debug('asking the next player to play')
-                    self.whos_turn = self.buddies.index(self.activity.nick) + 1
-                    self.whos_turn %= len(self.buddies)
-                    self.activity.send_event(
-                        't|%s' % (self.buddies[self.whos_turn]))
-                    self.its_their_turn(self.buddies[self.whos_turn])
+                    i = (self.buddies.index(self.activity.nick) + 1) % \
+                        len(self.buddies)
+                    self.its_their_turn(self.buddies[i])
+                    self.activity.send_event('t|%s' % (self.buddies[i]))
                 else:
                     _logger.debug('played the challenge... waiting!')
             else:
@@ -580,6 +574,7 @@ I am not the initiator (%s)',
 
     def _test(self, easter_egg=False):
         ''' Test to see if we estimated correctly '''
+        self.timeout = None
         delta = self.ball.rect[2] / 4
         x = self.ball.get_xy()[0] + self.ball.rect[2] / 2
         f = self.ball.rect[2] / 2 + int(self.fraction * self.bars[2].rect[2])

@@ -276,8 +276,7 @@ class FractionBounceActivity(activity.Activity):
 
         _separator_factory(toolbar, expand=False, visible=True)
 
-        self.challenge = _label_factory(toolbar, '')
-        self.reset_label(0.5)
+        self.challenge = _label_factory(toolbar, _("Click the ball to start."))
 
     def _load_custom_buttons(self, toolbar):
         ''' Entry fields and buttons for adding custom fractions '''
@@ -402,7 +401,7 @@ class FractionBounceActivity(activity.Activity):
             id = self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].OfferDBusTube(
                 SERVICE, {})
 
-            self.challenge.set_label(_('Wait for everyone to join.'))
+            self.challenge.set_label(_('Wait for others to join.'))
         else:
             _logger.debug('I am joining an activity: waiting for a tube...')
             self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].ListTubes(
@@ -476,6 +475,8 @@ class FractionBounceActivity(activity.Activity):
             payload = json_dump([self.bounce_window.buddies,
                                  self._player_colors])
             self.send_event('b|%s' % (payload))
+            if self.bounce_window.count == 0:  # Haven't started yet...
+                self.bounce_window.its_my_turn()
 
     def _append_player(self, nick, colors):
         ''' Keep a list of players, their colors, and an XO pixbuf '''
@@ -518,7 +519,7 @@ class FractionBounceActivity(activity.Activity):
             self.chattube.SendText(entry)
 
     def set_player_on_toolbar(self, nick):
-        return
+        ''' Display the XO icon of the player whose turn it is. '''
         self.player.set_from_pixbuf(self._player_pixbuf[
                 self.bounce_window.buddies.index(nick)])
         self.player.set_tooltip_text(nick)
