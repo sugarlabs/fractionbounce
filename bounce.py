@@ -205,7 +205,6 @@ class Bounce():
         self.select_a_fraction = False
 
         self.easter_egg = int(uniform(1, 100))
-        _logger.debug('%d', self.easter_egg)
 
         # Find paths to sound files
         self.path_to_success = os.path.join(path, LAUGH)
@@ -332,27 +331,29 @@ class Bounce():
 
     def its_my_turn(self):
         ''' When sharing, it is your turn... '''
-        if self.timeout is not None:
-            _logger.debug('timeout is not None')
         gobject.timeout_add(1000, self._take_a_turn)
 
     def _take_a_turn(self):
+        ''' On your turn, choose a fraction. '''
         self.my_turn = True
         self.select_a_fraction = True
         self.activity.set_player_on_toolbar(self.activity.nick)
-        _logger.debug('my turn: sending a fraction')
         self.activity.challenge.set_label(
             _("Click on the bar to choose a fraction."))
 
     def its_their_turn(self, nick):
         ''' When sharing, it is nick's turn... '''
+        gobject.timeout_add(1000, self._wait_your_turn, nick)
+
+    def _wait_your_turn(self, nick):
+        ''' Wait for nick to choose a fraction. '''
         self.my_turn = False
         self.activity.set_player_on_toolbar(nick)
-        _logger.debug("%s's turn", nick)
+        self.activity.challenge.set_label(
+            _('Waiting for %(buddy)s') % {'buddy': nick})
 
     def play_a_fraction(self, fraction):
         ''' Play this fraction '''
-        _logger.debug('playing a fraction %s', fraction)
         fraction_is_new = True
         for i, c in enumerate(self.challenges):
             if c[0] == fraction:
@@ -360,7 +361,6 @@ class Bounce():
                 self.n = i
                 break
         if fraction_is_new:
-            _logger.debug('fraction is new')
             self.add_fraction(fraction)
             self.n = len(self.challenges)
         self._choose_a_fraction()
@@ -377,7 +377,6 @@ class Bounce():
         ''' Callback to handle the button releases '''
         win.grab_focus()
         x, y = map(int, event.get_coords())
-        _logger.debug('button release %d', x)
         if self.press is not None:
             if self.we_are_sharing():
                 if self.select_a_fraction and self.press == self.current_bar:
@@ -385,7 +384,6 @@ class Bounce():
                     fraction = self._search_challenges(
                         (x - self.current_bar.rect[0]) / \
                             float(self.current_bar.rect[2]))
-                    _logger.debug('selected a fraction: %s', fraction)
                     self.select_a_fraction = False
                     self.activity.send_a_fraction(fraction)
                     self.play_a_fraction(fraction)
@@ -444,13 +442,10 @@ class Bounce():
             if self.we_are_sharing():
                 if self.my_turn:
                     # Let the next player know it is their turn.
-                    _logger.debug('asking the next player to play')
                     i = (self.buddies.index(self.activity.nick) + 1) % \
                         len(self.buddies)
                     self.its_their_turn(self.buddies[i])
                     self.activity.send_event('t|%s' % (self.buddies[i]))
-                else:
-                    _logger.debug('played the challenge... waiting!')
             else:
                 if self._easter_egg_test():
                     self._animate()
@@ -513,9 +508,6 @@ class Bounce():
         ''' Select a new fraction challenge from the table '''
         if not self.we_are_sharing():
             self.n = int(uniform(0, len(self.challenges)))
-        else:
-            _logger.debug('choosing %s from share', self.challenges[self.n][0])
-
         fstr = self.challenges[self.n][0]
         saw_a_fraction = False
         if '/' in fstr:  # fraction
@@ -606,11 +598,9 @@ class Bounce():
         if self.correct == len(EASY) * 2:
             for challenge in MEDIUM:
                 self.challenges.append(challenge)
-            _logger.debug('%s', self.challenges)
         elif self.correct == len(EASY) * 4:
             for challenge in HARD:
                 self.challenges.append(challenge)
-            _logger.debug('%s', self.challenges)
 
         self.count += 1
         self.dx = 0.  # stop horizontal movement between bounces

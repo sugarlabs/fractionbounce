@@ -211,7 +211,6 @@ class FractionBounceActivity(activity.Activity):
 
         # Restore any custom fractions
         if custom is not None:
-            _logger.debug('Restoring custom data: %s', custom)
             fractions = custom.split(',')
             for f in fractions:
                 self.bounce_window.add_fraction(f)
@@ -340,7 +339,7 @@ class FractionBounceActivity(activity.Activity):
 
     def __visibility_notify_cb(self, window, event):
         ''' Callback method for when the activity's visibility changes. '''
-        _logger.debug('%s', str(event.state))
+        # _logger.debug('%s', str(event.state))
         return
 
         '''
@@ -463,7 +462,7 @@ class FractionBounceActivity(activity.Activity):
         except ValueError:
             _logger.debug('Could not split event message %s', event_message)
             return
-        _logger.debug('received an event %s|%s', command, payload)
+        # _logger.debug('received an event %s|%s', command, payload)
         self._processing_methods[command][0](payload)
 
     def _new_joiner(self, payload):
@@ -481,7 +480,7 @@ class FractionBounceActivity(activity.Activity):
     def _append_player(self, nick, colors):
         ''' Keep a list of players, their colors, and an XO pixbuf '''
         if not nick in self.bounce_window.buddies:
-            _logger.debug('appending %s to the buddy list', nick)
+            # _logger.debug('appending %s to the buddy list', nick)
             self.bounce_window.buddies.append(nick)
             self._player_colors.append(colors)
             self._player_pixbuf.append(svg_str_to_pixbuf(
@@ -501,20 +500,18 @@ class FractionBounceActivity(activity.Activity):
     def _receive_a_fraction(self, payload):
         ''' Receive a fraction from another player. '''
         fraction = json_load(payload)
-        _logger.debug('fraction to play: %s', fraction)
         self.bounce_window.play_a_fraction(fraction)
 
     def _take_a_turn(self, nick):
         ''' If it is your turn, take it, otherwise, wait. '''
         if nick == self.nick:
-            _logger.debug('my turn :)')
             self.bounce_window.its_my_turn()
         else:
             self.bounce_window.its_their_turn(nick)
 
     def send_event(self, entry):
         ''' Send event through the tube. '''
-        _logger.debug('sending event: %s', entry)
+        # _logger.debug('sending event: %s', entry)
         if hasattr(self, 'chattube') and self.chattube is not None:
             self.chattube.SendText(entry)
 
