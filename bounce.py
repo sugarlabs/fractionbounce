@@ -451,7 +451,8 @@ class Bounce():
                     self._animate()
                 else:
                     self.timeout = gobject.timeout_add(
-                        max(STEP_PAUSE, BOUNCE_PAUSE - self.count * STEP_PAUSE),
+                        max(STEP_PAUSE,
+                            BOUNCE_PAUSE - self.count * STEP_PAUSE),
                         self._move_ball)
         else:
             self.timeout = gobject.timeout_add(STEP_PAUSE, self._move_ball)

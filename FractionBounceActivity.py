@@ -236,13 +236,11 @@ class FractionBounceActivity(activity.Activity):
             custom_toolbar_button.show()
 
             self._load_standard_buttons(self.toolbar)
-
             _separator_factory(self.toolbar, expand=True, visible=False)
 
             stop_button = StopButton(self)
             stop_button.props.accelerator = _('<Ctrl>Q')
             self.toolbar.insert(stop_button, -1)
-
             stop_button.show()
 
             self.set_toolbox(toolbox)
@@ -271,10 +269,7 @@ class FractionBounceActivity(activity.Activity):
             svg_str_to_pixbuf(generate_xo_svg(scale=0.8,
                                           colors=['#282828', '#000000'])),
             toolbar, tooltip=self.nick)
-
-
         _separator_factory(toolbar, expand=False, visible=True)
-
         self.challenge = _label_factory(toolbar, _("Click the ball to start."))
 
     def _load_custom_buttons(self, toolbar):
@@ -427,7 +422,7 @@ class FractionBounceActivity(activity.Activity):
         _logger.debug(
             'Newtube: ID=%d initator=%d type=%d service=%s params=%r state=%d',
             id, initiator, type, service, params, state)
-        
+
         if (type == telepathy.TUBE_TYPE_DBUS and service == SERVICE):
             if state == telepathy.TUBE_STATE_LOCAL_PENDING:
                 self.tubes_chan[ \
