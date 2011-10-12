@@ -11,7 +11,11 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-# The challenges are tuples: (a fraction to display, a bar to display)
+# The challenges are arrays:
+# [a fraction to display on the ball,
+#  the number of segments in the bar,
+#  the number of times this challenge has been played]
+
 EASY = [['1/2', 2, 0], ['1/3', 3, 0], ['3/4', 4, 0],
         ['1/4', 4, 0], ['2/3', 3, 0], ['1/6', 6, 0],
         ['5/6', 6, 0], ['2/6', 6, 0], ['3/6', 6, 0],
@@ -70,7 +74,14 @@ except ImportError:
 from sprites import Sprites, Sprite
 
 
-def _svg_str_to_pixbuf(svg_string):
+def generate_xo_svg(scale=1.0, colors=["#C0C0C0", "#282828"]):
+    ''' Returns an SVG string representing an XO image '''
+    return _svg_header(55, 55, scale) + \
+           _svg_xo(colors[0], colors[1]) + \
+           _svg_footer()
+
+
+def svg_str_to_pixbuf(svg_string):
     ''' Load pixbuf from SVG string '''
     pl = gtk.gdk.PixbufLoader('svg')
     pl.write(svg_string)
@@ -89,6 +100,28 @@ def _svg_rect(w, h, rx, ry, x, y, fill, stroke):
     svg_string += '          x="%f"\n' % (x)
     svg_string += '          y="%f"\n' % (y)
     svg_string += _svg_style('fill:%s;stroke:%s;' % (fill, stroke))
+    return svg_string
+
+
+def _svg_xo(fill, stroke, width=3.5):
+    ''' Returns XO icon graphic '''
+    svg_string = '<path d="M33.233,35.1l10.102,10.1c0.752,\
+0.75,1.217,1.783,1.217,2.932\
+   c0,2.287-1.855,4.143-4.146,4.143c-1.145,0-2.178-0.463-2.932-1.211L27.372,\
+40.961l-10.1,10.1c-0.75,0.75-1.787,1.211-2.934,1.211\
+   c-2.284,0-4.143-1.854-4.143-4.141c0-1.146,0.465-2.184,\
+1.212-2.934l10.104-10.102L11.409,24.995\
+   c-0.747-0.748-1.212-1.785-1.212-2.93c0-2.289,1.854-4.146,4.146-4.146c1.143,\
+0,2.18,0.465,2.93,1.214l10.099,10.102l10.102-10.103\
+   c0.754-0.749,1.787-1.214,2.934-1.214c2.289,0,4.146,1.856,4.146,4.145c0,\
+1.146-0.467,2.18-1.217,2.932L33.233,35.1z" '
+    svg_string += _svg_style('fill:%s;stroke:%s;stroke_width:%f' % (fill,
+                                                                    stroke,
+                                                                    width))
+    svg_string += '\n<circle cx="27.371" cy="10.849" r="8.122" '
+    svg_string += _svg_style('fill:%s;stroke:%s;stroke_width:%f' % (fill,
+                                                                    stroke,
+                                                                    width))
     return svg_string
 
 
@@ -167,6 +200,11 @@ class Bounce():
         self.scale = gtk.gdk.screen_height() / 900.0
         self.timeout = None
 
+        self.buddies = []  # used for sharing
+        self.whos_turn = 0
+        self.my_turn = False
+        self.select_a_fraction = False
+
         self.easter_egg = int(uniform(1, 100))
         _logger.debug('%d', self.easter_egg)
 
@@ -175,24 +213,83 @@ class Bounce():
         self.path_to_failure = os.path.join(path, CRASH)
         self.path_to_bubbles = os.path.join(path, BUBBLES)
 
-        # Create the sprites we'll need
-        self.smiley_graphic = _svg_str_to_pixbuf(svg_from_file(
+        self._create_sprites(path)
+
+        self.challenges = []
+        for challenge in EASY:
+            self.challenges.append(challenge)
+        self.fraction = 0.5  # the target of the current challenge
+        self.label = '1/2'  # the label
+        self.count = 0  # number of bounces played
+        self.correct = 0  # number of correct answers
+        self.press = None  # sprite under mouse click
+        self.mode = 'fractions'
+        self.new_bounce = False
+        self.n = 0
+
+        self.dx = 0.  # ball horizontal trajectory
+        # acceleration (with dampening)
+        self.ddy = (6.67 * self.height) / (STEPS * STEPS)
+        self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
+
+        self.activity.challenge.set_label(_("Click the ball to start."))
+
+    def we_are_sharing(self):
+        ''' If there is more than one buddy, we are sharing. '''
+        if len(self.buddies) > 1:
+            return True
+
+    def its_my_turn(self):
+        ''' When sharing, it is your turn... '''
+        self.my_turn = True
+        self.activity.set_player_on_toolbar(self.activity.nick)
+        _logger.debug('my turn: sending a fraction')
+        # todo: some mechanism for choosing a fraction to play
+        self.activity.challenge.set_label(
+            _("Click on the bar to choose a fraction."))
+        self.select_a_fraction = True
+
+    def its_their_turn(self, nick):
+        ''' When sharing, it is nick's turn... '''
+        self.my_turn = False
+        self.activity.set_player_on_toolbar(nick)
+        _logger.debug("%s's turn", nick)
+
+    def play_a_fraction(self, fraction):
+        ''' Play this fraction '''
+        _logger.debug('playing a fraction %s', fraction)
+        fraction_is_new = True
+        for i, c in enumerate(self.challenges):
+            if c[0] == fraction:
+                fraction_is_new = False
+                self.n = i
+                break
+        if fraction_is_new:
+            _logger.debug('fraction is new')
+            self.add_fraction(fraction)
+            self.n = len(self.challenges)
+        self._choose_a_fraction()
+        self._move_ball()
+
+    def _create_sprites(self, path):
+        ''' Create all of the sprites we'll need '''
+        self.smiley_graphic = svg_str_to_pixbuf(svg_from_file(
                 os.path.join(path, 'smiley.svg')))
 
-        self.frown_graphic = _svg_str_to_pixbuf(svg_from_file(
+        self.frown_graphic = svg_str_to_pixbuf(svg_from_file(
                 os.path.join(path, 'frown.svg')))
 
-        self.egg_graphic = _svg_str_to_pixbuf(svg_from_file(
+        self.egg_graphic = svg_str_to_pixbuf(svg_from_file(
                 os.path.join(path, 'Easter_egg.svg')))
 
-        self.blank_graphic = _svg_str_to_pixbuf(
+        self.blank_graphic = svg_str_to_pixbuf(
             _svg_header(BAR_HEIGHT, BAR_HEIGHT, 1.0) + \
             _svg_rect(BAR_HEIGHT, BAR_HEIGHT, 5, 5, 0, 0,
                       '#C0C0C0', '#282828') + \
             _svg_footer())
 
         self.ball = Sprite(self.sprites, 0, 0,
-                           _svg_str_to_pixbuf(svg_from_file(
+                           svg_str_to_pixbuf(svg_from_file(
                     os.path.join(path, 'basketball.svg'))))
         self.ball.set_layer(1)
         self.ball.set_label_attributes(24)
@@ -200,7 +297,7 @@ class Bounce():
         self.cells = []  # Easter Egg animation
         for i in range(8):
             self.cells.append(Sprite(
-                    self.sprites, 0, 0, _svg_str_to_pixbuf(svg_from_file(
+                    self.sprites, 0, 0, svg_str_to_pixbuf(svg_from_file(
                             os.path.join(path,
                                          'basketball%d.svg' % (i + 1))))))
         for spr in self.cells:
@@ -218,15 +315,16 @@ class Bounce():
                _svg_footer()
         self.mark = Sprite(self.sprites, 0,
                            self.height,  # hide off bottom of screen
-                           _svg_str_to_pixbuf(mark))
+                           svg_str_to_pixbuf(mark))
         self.mark.set_layer(2)
 
         self.bars = {}
         self.bars[2] = Sprite(self.sprites, 0, 0,
-                              _svg_str_to_pixbuf(self._gen_bar(2)))
+                              svg_str_to_pixbuf(self._gen_bar(2)))
         self.bars[2].move((int(self.ball.rect[2] / 2),
                            self.height - int((self.ball.rect[3] + \
                                                   self.bars[2].rect[3]) / 2)))
+        self.current_bar = self.bars[2]
 
         num = _svg_header(BAR_HEIGHT * self.scale, BAR_HEIGHT * self.scale,
                            1.0) + \
@@ -235,34 +333,16 @@ class Bounce():
                         'none', 'none') + \
               _svg_footer()
         self.left = Sprite(self.sprites, int(self.ball.rect[2] / 4),
-                           self.bars[2].rect[1], _svg_str_to_pixbuf(num))
+                           self.bars[2].rect[1], svg_str_to_pixbuf(num))
         self.left.set_label('0')
         self.right = Sprite(self.sprites,
                             self.width - int(self.ball.rect[2] / 2),
-                            self.bars[2].rect[1], _svg_str_to_pixbuf(num))
+                            self.bars[2].rect[1], svg_str_to_pixbuf(num))
         self.right.set_label('1')
 
         self.ball_y_max = self.bars[2].rect[1] - self.ball.rect[3]
         self.ball.move((int((self.width - self.ball.rect[2]) / 2),
                         self.ball_y_max))
-
-        self.challenges = []
-        for challenge in EASY:
-            self.challenges.append(challenge)
-        self.fraction = 0.5  # the target of the current challenge
-        self.label = '1/2'  # the label
-        self.count = 0  # number of bounces played
-        self.correct = 0  # number of correct answers
-        self.press = None  # sprite under mouse click
-        self.mode = 'fractions'
-        self.new_bounce = False
-
-        self.dx = 0.  # ball horizontal trajectory
-        # acceleration (with dampening)
-        self.ddy = (6.67 * self.height) / (STEPS * STEPS)
-        self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
-
-        self.activity.challenge.set_label(_("Click the ball to start"))
 
     def _gen_bar(self, nsegments):
         ''' Return a bar with n segments '''
@@ -296,17 +376,48 @@ class Bounce():
         ''' Callback to handle the button releases '''
         win.grab_focus()
         x, y = map(int, event.get_coords())
+        _logger.debug('button release %d', x)
         if self.press is not None:
-            if self.timeout is None and self.press == self.ball:
-                self._choose_a_fraction()
-                self._move_ball()
+            if self.select_a_fraction and self.press == self.current_bar:
+                # Find the fraction closest to the click
+                fraction = self._search_challenges(
+                    (x - self.current_bar.rect[0]) / \
+                        float(self.current_bar.rect[2]))
+                _logger.debug('selected a fraction: %s', fraction)
+                self.select_a_fraction = False
+                self.activity.send_a_fraction(fraction)
+                self.play_a_fraction(fraction)
+            elif self.timeout is None and self.press == self.ball:
+                if self.we_are_sharing() and self.activity.initiating:
+                    _logger.debug('We are sharing and I am the initiator...')
+                    self.its_my_turn()
+                else:
+                    _logger.debug('Either we are not sharing (%s) or \
+I am not the initiator (%s)',
+                                  str(self.we_are_sharing()), str(self.activity.initiating))
+                    self._choose_a_fraction()
+                    self._move_ball()
         return True
+
+    def _search_challenges(self, f):
+        ''' Find the fraction which is closest to f in the list. '''
+        _logger.debug('looking near %f', f)
+        dist = 1.
+        closest = '1/2'
+        for c in self.challenges:
+            numden = c[0].split('/')
+            delta = abs((float(numden[0]) / float(numden[1])) - f)
+            if delta <= dist:
+                dist = delta
+                closest = c[0]
+        return closest
 
     def _move_ball(self):
         ''' Move the ball and test boundary conditions '''
         if self.new_bounce:
             self.mark.move((0, self.height))  # hide the mark
-            self._choose_a_fraction()
+            if not self.we_are_sharing():
+                self._choose_a_fraction()
             self.new_bounce = False
             self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
 
@@ -335,12 +446,24 @@ class Bounce():
             self._test()
             self.new_bounce = True
 
-            if self._easter_egg_test():
-                self._animate()
+            if self.we_are_sharing():
+                if self.my_turn:
+                    # Let the next player know it is their turn.
+                    _logger.debug('asking the next player to play')
+                    self.whos_turn = self.buddies.index(self.activity.nick) + 1
+                    self.whos_turn %= len(self.buddies)
+                    self.activity.send_event(
+                        't|%s' % (self.buddies[self.whos_turn]))
+                    self.its_their_turn(self.buddies[self.whos_turn])
+                else:
+                    _logger.debug('played the challenge... waiting!')
             else:
-                self.timeout = gobject.timeout_add(
-                    max(STEP_PAUSE, BOUNCE_PAUSE - self.count * STEP_PAUSE),
-                    self._move_ball)
+                if self._easter_egg_test():
+                    self._animate()
+                else:
+                    self.timeout = gobject.timeout_add(
+                        max(STEP_PAUSE, BOUNCE_PAUSE - self.count * STEP_PAUSE),
+                        self._move_ball)
         else:
             self.timeout = gobject.timeout_add(STEP_PAUSE, self._move_ball)
 
@@ -394,7 +517,11 @@ class Bounce():
 
     def _choose_a_fraction(self):
         ''' Select a new fraction challenge from the table '''
-        self.n = int(uniform(0, len(self.challenges)))
+        if not self.we_are_sharing():
+            self.n = int(uniform(0, len(self.challenges)))
+        else:
+            _logger.debug('choosing %s from share', self.challenges[self.n][0])
+
         fstr = self.challenges[self.n][0]
         saw_a_fraction = False
         if '/' in fstr:  # fraction
@@ -426,6 +553,7 @@ class Bounce():
             self.bars[bar].set_layer(-1)
         if self.correct > EXPERT:  # Show two-segment bar in expert mode
             self.bars[2].set_layer(0)
+            self.current_bar = self.bars[2]
         else:
             if self.mode == 'fractions':
                 nseg = self.challenges[self.n][1]
@@ -434,10 +562,11 @@ class Bounce():
             # generate new bar on demand
             if not nseg in self.bars:
                 self.bars[nseg] = Sprite(self.sprites, 0, 0,
-                    _svg_str_to_pixbuf(self._gen_bar(nseg)))
+                    svg_str_to_pixbuf(self._gen_bar(nseg)))
                 self.bars[nseg].move((self.bars[2].rect[0],
                                       self.bars[2].rect[1]))
             self.bars[nseg].set_layer(0)
+            self.current_bar = self.bars[nseg]
 
     def _easter_egg_test(self):
         ''' Test to see if we show the Easter Egg '''
