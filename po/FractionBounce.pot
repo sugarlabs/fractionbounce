@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-18 14:34-0400\n"
+"POT-Creation-Date: 2011-10-18 16:24-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,67 +21,75 @@ msgstr ""
 msgid "FractionBounce"
 msgstr ""
 
-#: animate.py:418 bounce.py:198
-msgid "Click on the bar to choose a fraction."
+#: FractionBounceActivity.py:48 FractionBounceActivity.py:160
+#: FractionBounceActivity.py:177
+msgid "basketball"
 msgstr ""
 
-#: animate.py:429 bounce.py:209
-#, python-format
-msgid "Waiting for %(buddy)s"
+#: FractionBounceActivity.py:48 FractionBounceActivity.py:180
+msgid "soccer ball"
 msgstr ""
 
-#: FractionBounceActivity.py:101 FractionBounceActivity.py:123
+#: FractionBounceActivity.py:48
+msgid "user defined"
+msgstr ""
+
+#: FractionBounceActivity.py:103 FractionBounceActivity.py:125
 msgid "Custom"
 msgstr ""
 
-#: FractionBounceActivity.py:112
+#: FractionBounceActivity.py:114
 msgid "<Ctrl>Q"
 msgstr ""
 
-#: FractionBounceActivity.py:122
+#: FractionBounceActivity.py:124
 msgid "Project"
 msgstr ""
 
-#: FractionBounceActivity.py:132
+#: FractionBounceActivity.py:134
 msgid "fractions"
 msgstr ""
 
-#: FractionBounceActivity.py:136
+#: FractionBounceActivity.py:138
 msgid "percents"
 msgstr ""
 
-#: FractionBounceActivity.py:143
+#: FractionBounceActivity.py:145
 msgid "Click the ball to start."
 msgstr ""
 
-#: FractionBounceActivity.py:147
+#: FractionBounceActivity.py:149
 msgid "numerator"
 msgstr ""
 
-#: FractionBounceActivity.py:150
+#: FractionBounceActivity.py:152
 msgid "denominator"
 msgstr ""
 
-#: FractionBounceActivity.py:154
+#: FractionBounceActivity.py:156
 msgid "add new fraction"
 msgstr ""
 
-#: FractionBounceActivity.py:201
+#: FractionBounceActivity.py:161
+msgid "choose a ball"
+msgstr ""
+
+#: FractionBounceActivity.py:224
 #, python-format
 msgid ""
 "Bounce the ball to a position %(fraction)s of the way from the left side of "
 "the bar."
 msgstr ""
 
-#: FractionBounceActivity.py:269
+#: FractionBounceActivity.py:292
 msgid "Wait for others to join."
 msgstr ""
 
-#: FractionBounceActivity.py:276
+#: FractionBounceActivity.py:299
 msgid "Wait for the sharer to start."
 msgstr ""
 
-#: FractionBounceActivity.py:337
+#: FractionBounceActivity.py:360
 msgid "has joined."
 msgstr ""
 
@@ -91,4 +99,13 @@ msgstr ""
 
 #: bar.py:88
 msgid "1"
+msgstr ""
+
+#: bounce.py:198
+msgid "Click on the bar to choose a fraction."
+msgstr ""
+
+#: bounce.py:209
+#, python-format
+msgid "Waiting for %(buddy)s"
 msgstr ""
