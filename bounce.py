@@ -16,27 +16,27 @@
 #  the number of segments in the bar,
 #  the number of times this challenge has been played]
 
-EASY = [['1/2', 2, 0], ['1/3', 3, 0], ['3/4', 4, 0],
-        ['1/4', 4, 0], ['2/3', 3, 0], ['1/6', 6, 0],
-        ['5/6', 6, 0], ['2/6', 6, 0], ['3/6', 6, 0],
-        ['2/4', 4, 0], ['4/6', 6, 0]]
-MEDIUM = [['2/8', 12, 0], ['2/4', 12, 0],  ['3/6', 12, 0],
-          ['6/12', 12, 0], ['4/6', 12, 0], ['2/6', 12, 0],
-          ['5/12', 12, 0], ['3/12', 12, 0], ['7/12', 12, 0],
-          ['8/12', 12, 0], ['4/8', 12, 0], ['6/12', 12, 0],
-          ['9/12', 12, 0], ['2/12', 12, 0], ['4/12', 12, 0],
-          ['10/12', 12, 0], ['11/12', 12, 0]]
-HARD = [['2/5', 10, 0], ['4/5', 10, 0], ['3/5', 10, 0],
-        ['1/10', 10, 0], ['1/5', 10, 0], ['5/10', 10, 0],
-        ['3/10', 10, 0], ['7/10', 10, 0], ['8/10', 10, 0],
+EASY = [['1/2', 2, 0], ['1/3', 3, 0], ['1/4', 4, 0],
+        ['2/4', 4, 0], ['2/3', 3, 0], ['3/4', 4, 0]]
+MEDIUM = [['1/6', 6, 0], ['2/6', 6, 0], ['3/6', 6, 0],
+          ['4/6', 6, 0], ['5/6', 6, 0],
+          ['1/8', 8, 0], ['2/8', 8, 0],  ['3/8', 8, 0],
+          ['4/8', 8, 0], ['5/8', 8, 0],  ['6/8', 8, 0],
+          ['7/8', 8, 0]]
+HARD = [['1/12', 12, 0], ['2/12', 12, 0], ['3/12', 12, 0],
+        ['4/12', 12, 0], ['3/12', 12, 0], ['6/12', 12, 0],
+        ['7/12', 12, 0], ['8/12', 12, 0], ['9/12', 12, 0],
+        ['10/12', 12, 0], ['11/12', 12, 0],
+        ['1/5', 10, 0], ['2/5', 10, 0], ['3/5', 10, 0],
+        ['4/5', 10, 0],
+        ['1/10', 10, 0], ['2/10', 10, 0], ['3/10', 10, 0],
+        ['4/10', 10, 0], ['5/10', 10, 0], ['6/10', 10, 0],
+        ['7/10', 10, 0], ['8/10', 10, 0], ['9/10', 10, 0],
         ['1/16', 4, 0], ['2/16', 4, 0], ['3/16', 4, 0],
         ['4/16', 4, 0], ['5/16', 4, 0], ['6/16', 4, 0],
         ['7/16', 4, 0], ['8/16', 4, 0], ['9/16', 4, 0],
         ['10/16', 4, 0], ['11/16', 4, 0], ['12/16', 4, 0],
-        ['13/16', 4, 0], ['14/16', 4, 0], ['15/16', 4, 0],
-        ['1/8', 4, 0], ['2/8', 4, 0], ['3/8', 4, 0],
-        ['4/8', 4, 0], ['5/8', 4, 0], ['6/8', 4, 0],
-        ['7/8', 4, 0]]
+        ['13/16', 4, 0], ['14/16', 4, 0], ['15/16', 4, 0]]
 EXPERT = 100  # after some number of correct answers, don't segment the bar
 BAR_HEIGHT = 25
 STEPS = 100.  # number of time steps per bounce rise and fall
@@ -52,6 +52,54 @@ ACCELEROMETER_DEVICE = '/sys/devices/platform/lis3lv02d/position'
 CRASH = 'crash.ogg'  # wrong answer sound
 LAUGH = 'bottle.ogg'  # correct answer sound
 BUBBLES = 'bubbles.ogg'  # Easter Egg sound
+# Easter Egg animation graphics
+TRANSFORMS = ['<g>',
+              '<g transform="matrix(0.83251323,0.17764297,-0.48065174, \
+1.0074555,27.969568,-8.7531294)">',
+              '<g transform="matrix(-0.83251323,0.17764297,0.48065174, \
+1.0074555,57.030432,-8.7531294)">',
+              '<g transform="matrix(0.57147881,-0.357582,-0.32994345, \
+0.96842187,32.525583,15.686767)">',
+              '<g transform="matrix(-0.57147881,-0.357582,0.32994345, \
+0.96842187,52.474417,15.686767)">',
+              '<g transform="matrix(0.39557109,-0.57943591,-0.22838308, \
+0.86196565,35.595823,29.733447)">',
+              '<g transform="matrix(-0.39557109,-0.57943591,0.22838308, \
+0.86196565,49.404177,29.733447)">',
+              '<g transform="matrix(1,0,0,0.08410415,0,73.873449)">']
+PUNCTURE = \
+'  <g \
+     transform="translate(2.5316175,0)">\
+    <path \
+       d="m 33.19688,68.961518 c 3.900378,7.602149 10.970659,7.634416 \
+13.708164,7.432138"\
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;\
+stroke-miterlimit:4" />\
+    <path \
+       d="m 33.031721,77.05429 c 8.199837,0.123635 12.819227,-7.570626 \
+12.882372,-8.423089" \
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;\
+stroke-miterlimit:4" />\
+  </g>'
+AIR = \
+'  <g \
+     transform="matrix(0.63786322,0,0,0.35767122,17.379518,75.244216)"> \
+    <path \
+       d="M 39.054054,1.75 C 37.741313,16.51834 25.926641,23.082047 \
+25.926641,23.082047 l 0,0" \
+       style="fill:none;stroke:#0ac9fb;stroke-width:6.0;stroke-linecap:round;\
+stroke-miterlimit:4;" />\
+    <path \
+       d="m 39.710425,1.75 c 1.312741,14.76834 13.127413,21.332047 \
+13.127413,21.332047 l 0,0" \
+       style="fill:none;stroke:#0ac9fb;stroke-width:6.0;stroke-linecap:round;\
+stroke-miterlimit:4" />\
+    <path \
+       d="m 39.054054,1.75 c 1.969112,3.281854 -0.656371,20.347491 \
+-0.656371,20.347491 l 0,0" \
+       style="fill:none;stroke:#0ac9fb;stroke-width:6.0;stroke-linecap:round;\
+stroke-miterlimit:4" />\
+  </g>'
 
 import gtk
 from random import uniform
@@ -160,6 +208,32 @@ def svg_from_file(pathname):
     return(svg)
 
 
+def _extract_svg_payload(fd):
+    """Returns everything between <svg ...> and </svg>"""
+    payload = ''
+    looking_for_start_svg_token = True
+    looking_for_close_token = True
+    looking_for_end_svg_token = True
+    for line in fd:
+        if looking_for_start_svg_token:
+            if line.find('<svg') < 0:
+                continue
+            looking_for_start_svg_token = False
+            line = line.split('<svg', 1)[1]
+        if looking_for_close_token:
+            if line.find('>') < 0:
+                continue
+            looking_for_close_token = False
+            line = line.split('>', 1)[1]
+        if looking_for_end_svg_token:
+            if line.find('</svg>') < 0:
+                payload += line
+                continue
+            payload += line.split('</svg>')[0]
+            break
+    return payload
+
+
 class Bounce():
     ''' The Bounce class is used to define the ball and the user
     interaction. '''
@@ -247,18 +321,20 @@ class Bounce():
                       '#C0C0C0', '#282828') + \
             _svg_footer())
 
-        self.ball = Sprite(self.sprites, 0, 0,
-                           svg_str_to_pixbuf(svg_from_file(
-                    os.path.join(path, 'basketball.svg'))))
+        self.ball = Sprite(self.sprites, 0, 0, svg_str_to_pixbuf(
+                svg_from_file(os.path.join(path, 'basketball.svg'))))
         self.ball.set_layer(1)
         self.ball.set_label_attributes(24)
 
+        ball = _extract_svg_payload(
+            file(os.path.join(path, 'basketball.svg'), 'r'))
         self.cells = []  # Easter Egg animation
         for i in range(8):
             self.cells.append(Sprite(
-                    self.sprites, 0, 0, svg_str_to_pixbuf(svg_from_file(
-                            os.path.join(path,
-                                         'basketball%d.svg' % (i + 1))))))
+                    self.sprites, 0, 0, svg_str_to_pixbuf(
+                        _svg_header(85, 85, 1.0) + TRANSFORMS[i] + \
+                            ball + PUNCTURE + AIR + '</g>' + _svg_footer())))
+
         for spr in self.cells:
             spr.set_layer(1)
             spr.move((0, self.height))  # move animation cells off screen
