@@ -11,9 +11,14 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
+import gtk
+
 from sprites import Sprite
 from svg_utils import svg_header, svg_footer, svg_str_to_pixbuf, \
     extract_svg_payload, svg_from_file
+
+import logging
+_logger = logging.getLogger('fractionbounce-activity')
 
 
 SIZE = 85
@@ -76,11 +81,11 @@ class Ball():
     interaction. '''
 
     def __init__(self, sprites, filename):
-        ''' Create a ball object and Easter Egg animation from an SVG file. '''
-        self.ball = Sprite(sprites, 0, 0, svg_str_to_pixbuf(
-                svg_from_file(filename)))
         self.current_frame = 0
         self.frames = []  # Easter Egg animation
+        self.sprites = sprites
+        self.ball = Sprite(self.sprites, 0, 0, svg_str_to_pixbuf(
+                svg_from_file(filename)))
 
         self.ball.set_layer(1)
         self.ball.set_label_attributes(24)
@@ -88,13 +93,34 @@ class Ball():
         ball = extract_svg_payload(file(filename, 'r'))
         for i in range(8):
             self.frames.append(Sprite(
-                    sprites, 0, 0, svg_str_to_pixbuf(
+                    self.sprites, 0, 0, svg_str_to_pixbuf(
                         svg_header(SIZE, SIZE, 1.0) + TRANSFORMS[i] + \
                             ball + PUNCTURE + AIR + '</g>' + svg_footer())))
 
-        for spr in self.frames:
-            spr.set_layer(1)
-            spr.move((0, -SIZE))  # move animation frames off screen
+        for frame in self.frames:
+            frame.set_layer(1)
+            frame.move((0, -SIZE))  # move animation frames off screen
+
+    def new_ball(self, filename):
+        ''' Create a ball object and Easter Egg animation from an SVG file. '''
+        self.ball.images[0] = svg_str_to_pixbuf(svg_from_file(filename))
+
+        ball = extract_svg_payload(file(filename, 'r'))
+        for i in range(8):
+            self.frames[i].images[0] = svg_str_to_pixbuf(
+                        svg_header(SIZE, SIZE, 1.0) + TRANSFORMS[i] + \
+                            ball + PUNCTURE + AIR + '</g>' + svg_footer())
+
+    def new_ball_from_image(self, filename):
+        ''' Just create a ball object from an image file '''
+        if filename == '':
+            _logger.debug('Image file not found.')
+            return
+        try:
+            self.ball.images[0] = gtk.gdk.pixbuf_new_from_file_at_size(
+                filename, SIZE, SIZE)
+        except:
+            _logger.debug('Could not load image from %s.', filename)
 
     def ball_x(self):
         return self.ball.get_xy()[0]

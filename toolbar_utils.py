@@ -15,27 +15,59 @@ import gtk
 
 from sugar.graphics.radiotoolbutton import RadioToolButton
 from sugar.graphics.toolbutton import ToolButton
+from sugar.graphics.combobox import ComboBox
+from sugar.graphics.toolcombobox import ToolComboBox
 
-def entry_factory(default_string, toolbar, tooltip='', max=3):
-    """ Factory for adding a text box to a toolbar """
+
+def combo_factory(combo_array, toolbar, callback, cb_arg=None,
+                  tooltip=None, default=None):
+    '''Factory for making a toolbar combo box'''
+    combo = ComboBox()
+    if tooltip is not None and hasattr(combo, 'set_tooltip_text'):
+        combo.set_tooltip_text(tooltip)
+    if cb_arg is not None:
+        combo.connect('changed', callback, cb_arg)
+    else:
+        combo.connect('changed', callback)
+    for i, selection in enumerate(combo_array):
+        combo.append_item(i, selection, None)
+    combo.show()
+    toolitem = gtk.ToolItem()
+    toolitem.add(combo)
+    if hasattr(toolbar, 'insert'):  # the main toolbar
+        toolbar.insert(toolitem, -1)
+    else:  # or a secondary toolbar
+        toolbar.props.page.insert(toolitem, -1)
+    toolitem.show()
+    if default is not None:
+        combo.set_active(combo_array.index(default))
+    return combo
+
+
+def entry_factory(default_string, toolbar, tooltip=None, max=3):
+    ''' Factory for adding a text box to a toolbar '''
     entry = gtk.Entry()
     entry.set_text(default_string)
-    if hasattr(entry, 'set_tooltip_text'):
+    if tooltip is not None and hasattr(entry, 'set_tooltip_text'):
         entry.set_tooltip_text(tooltip)
     entry.set_width_chars(max)
     entry.show()
     toolitem = gtk.ToolItem()
     toolitem.add(entry)
-    toolbar.insert(toolitem, -1)
+    if hasattr(toolbar, 'insert'):  # the main toolbar
+        toolbar.insert(toolitem, -1)
+    else:  # or a secondary toolbar
+        toolbar.props.page.insert(toolitem, -1)
     toolitem.show()
     return entry
 
 
 def button_factory(icon_name, toolbar, callback, cb_arg=None, tooltip=None,
                    accelerator=None):
-    """Factory for making toolbar buttons"""
+    '''Factory for making toolbar buttons'''
     button = ToolButton(icon_name)
-    button.set_tooltip(tooltip)
+    if tooltip is not None:
+        button.set_tooltip(tooltip)
     button.props.sensitive = True
     if accelerator is not None:
         button.props.accelerator = accelerator

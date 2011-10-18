@@ -11,6 +11,10 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
+import gtk
+
+from sugar.graphics.objectchooser import ObjectChooser
+
 from StringIO import StringIO
 try:
     USING_JSON_READWRITE = False
@@ -52,3 +56,23 @@ def json_dump(data):
         _io = StringIO()
         jdump(data, _io)
         return _io.getvalue()
+
+
+def chooser(parent_window, filter, action):
+    """ Choose an object from the datastore and take some action """
+    chooser = None
+    try:
+        chooser = ObjectChooser(parent=parent_window, what_filter=filter)
+    except TypeError:
+        chooser = ObjectChooser(None, parent_window,
+            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+    if chooser is not None:
+        try:
+            result = chooser.run()
+            if result == gtk.RESPONSE_ACCEPT:
+                dsobject = chooser.get_selected_object()
+                action(dsobject)
+                dsobject.destroy()
+        finally:
+            chooser.destroy()
+            del chooser

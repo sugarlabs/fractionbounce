@@ -12,6 +12,7 @@
 # Boston, MA 02111-1307, USA.
 
 import gtk
+import os
 
 from sugar.activity import activity
 from sugar import profile
@@ -36,14 +37,15 @@ from gettext import gettext as _
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
 
-from toolbar_utils import image_factory, separator_factory, \
+from toolbar_utils import image_factory, separator_factory, combo_factory, \
     label_factory, radio_factory, button_factory, entry_factory
-from utils import json_load, json_dump
+from utils import json_load, json_dump, chooser
 from svg_utils import svg_str_to_pixbuf, generate_xo_svg
 
 from bounce import Bounce
 
 
+BALLS = [_('basketball'), _('soccer ball'), _('user defined')]
 SERVICE = 'org.sugarlabs.FractionBounceActivity'
 IFACE = SERVICE
 PATH = '/org/augarlabs/FractionBounceActivity'
@@ -153,6 +155,10 @@ class FractionBounceActivity(activity.Activity):
                                            self._add_fraction_cb,
                                            tooltip=_('add new fraction'),
                                            accelerator='Return')
+        separator_factory(toolbar, expand=False, visible=True)
+        self._ball_selector = combo_factory(BALLS, toolbar, self._combo_cb,
+                                            default=_('basketball'),
+                                            tooltip=_('choose a ball'))
 
     def _setup_canvas(self):
         ''' Create a canvas '''
@@ -163,6 +169,23 @@ class FractionBounceActivity(activity.Activity):
         canvas.show()
         self.show_all()
         return canvas
+
+    def _combo_cb(self, arg=None):
+        ''' Load a new ball based on the selector value. '''
+        if not hasattr(self, '_ball_selector'):
+            return
+        if BALLS[self._ball_selector.get_active()] == _('basketball'):
+            self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'basketball.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('soccer ball'):
+            self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'soccer.svg'))
+        else:
+            chooser(self, '', self._new_ball_from_journal)
+
+    def _new_ball_from_journal(self, dsobject):
+        ''' Load an image from the Journal. '''
+        self.bounce_window.ball.new_ball_from_image(dsobject.file_path)
 
     def _fraction_cb(self, arg=None):
         ''' Set fraction mode '''
