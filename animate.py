@@ -16,49 +16,97 @@
 #  the number of segments in the bar,
 #  the number of times this challenge has been played]
 
-CHALLENGES = [[['1/2', 2, 0], ['1/3', 3, 0], ['1/4', 4, 0],
-               ['2/4', 4, 0], ['2/3', 3, 0], ['3/4', 4, 0]],
-              [['1/8', 8, 0], ['2/8', 8, 0],  ['3/8', 8, 0],
-               ['4/8', 8, 0], ['5/8', 8, 0],  ['6/8', 8, 0],
-               ['7/8', 8, 0]],
-              [['1/6', 6, 0], ['2/6', 6, 0], ['3/6', 6, 0],
-               ['4/6', 6, 0], ['5/6', 6, 0]],
-              [['1/5', 10, 0], ['2/5', 10, 0], ['3/5', 10, 0],
-               ['4/5', 10, 0]],
-              [['1/10', 10, 0], ['2/10', 10, 0], ['3/10', 10, 0],
-               ['4/10', 10, 0], ['5/10', 10, 0], ['6/10', 10, 0],
-               ['7/10', 10, 0], ['8/10', 10, 0], ['9/10', 10, 0]],
-              [['1/12', 12, 0], ['2/12', 12, 0], ['3/12', 12, 0],
-               ['4/12', 12, 0], ['3/12', 12, 0], ['6/12', 12, 0],
-               ['7/12', 12, 0], ['8/12', 12, 0], ['9/12', 12, 0],
-               ['10/12', 12, 0], ['11/12', 12, 0]],
-              [['1/16', 4, 0], ['2/16', 4, 0], ['3/16', 4, 0],
-               ['4/16', 4, 0], ['5/16', 4, 0], ['6/16', 4, 0],
-               ['7/16', 4, 0], ['8/16', 4, 0], ['9/16', 4, 0],
-               ['10/16', 4, 0], ['11/16', 4, 0], ['12/16', 4, 0],
-               ['13/16', 4, 0], ['14/16', 4, 0], ['15/16', 4, 0]]]
-REWARD_HEIGHT = 25
+EASY = [['1/2', 2, 0], ['1/3', 3, 0], ['1/4', 4, 0],
+        ['2/4', 4, 0], ['2/3', 3, 0], ['3/4', 4, 0]]
+MEDIUM = [['1/6', 6, 0], ['2/6', 6, 0], ['3/6', 6, 0],
+          ['4/6', 6, 0], ['5/6', 6, 0],
+          ['1/8', 8, 0], ['2/8', 8, 0],  ['3/8', 8, 0],
+          ['4/8', 8, 0], ['5/8', 8, 0],  ['6/8', 8, 0],
+          ['7/8', 8, 0]]
+HARD = [['1/12', 12, 0], ['2/12', 12, 0], ['3/12', 12, 0],
+        ['4/12', 12, 0], ['3/12', 12, 0], ['6/12', 12, 0],
+        ['7/12', 12, 0], ['8/12', 12, 0], ['9/12', 12, 0],
+        ['10/12', 12, 0], ['11/12', 12, 0],
+        ['1/5', 10, 0], ['2/5', 10, 0], ['3/5', 10, 0],
+        ['4/5', 10, 0],
+        ['1/10', 10, 0], ['2/10', 10, 0], ['3/10', 10, 0],
+        ['4/10', 10, 0], ['5/10', 10, 0], ['6/10', 10, 0],
+        ['7/10', 10, 0], ['8/10', 10, 0], ['9/10', 10, 0],
+        ['1/16', 4, 0], ['2/16', 4, 0], ['3/16', 4, 0],
+        ['4/16', 4, 0], ['5/16', 4, 0], ['6/16', 4, 0],
+        ['7/16', 4, 0], ['8/16', 4, 0], ['9/16', 4, 0],
+        ['10/16', 4, 0], ['11/16', 4, 0], ['12/16', 4, 0],
+        ['13/16', 4, 0], ['14/16', 4, 0], ['15/16', 4, 0]]
+EXPERT = 100  # after some number of correct answers, don't segment the bar
+BAR_HEIGHT = 25
 STEPS = 100.  # number of time steps per bounce rise and fall
 STEP_PAUSE = 50  # milliseconds between steps
 BOUNCE_PAUSE = 3000  # milliseconds between bounces
 DX = 10  # starting step size for horizontal movement
 DDX = 1.25  # acceleration during keypress
+ANIMATION = {10: (0, 1), 15: (1, 2), 20: (2, 1), 25: (1, 2), 30: (2, 1),
+             35: (1, 2), 40: (2, 3), 45: (3, 4), 50: (4, 3), 55: (3, 4),
+             60: (4, 3), 65: (3, 4), 70: (4, 5), 75: (5, 6), 80: (6, 5),
+             85: (5, 6), 90: (6, 7)}
 ACCELEROMETER_DEVICE = '/sys/devices/platform/lis3lv02d/position'
 CRASH = 'crash.ogg'  # wrong answer sound
 LAUGH = 'bottle.ogg'  # correct answer sound
 BUBBLES = 'bubbles.ogg'  # Easter Egg sound
+# Easter Egg animation graphics
+TRANSFORMS = ['<g>',
+              '<g transform="matrix(0.83251323,0.17764297,-0.48065174, \
+1.0074555,27.969568,-8.7531294)">',
+              '<g transform="matrix(-0.83251323,0.17764297,0.48065174, \
+1.0074555,57.030432,-8.7531294)">',
+              '<g transform="matrix(0.57147881,-0.357582,-0.32994345, \
+0.96842187,32.525583,15.686767)">',
+              '<g transform="matrix(-0.57147881,-0.357582,0.32994345, \
+0.96842187,52.474417,15.686767)">',
+              '<g transform="matrix(0.39557109,-0.57943591,-0.22838308, \
+0.86196565,35.595823,29.733447)">',
+              '<g transform="matrix(-0.39557109,-0.57943591,0.22838308, \
+0.86196565,49.404177,29.733447)">',
+              '<g transform="matrix(1,0,0,0.08410415,0,73.873449)">']
+PUNCTURE = \
+'  <g \
+     transform="translate(2.5316175, -8)">\
+    <path \
+       d="m 33.19688,68.961518 c 3.900378,7.602149 10.970659,7.634416 \
+13.708164,7.432138"\
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;\
+stroke-miterlimit:4" />\
+    <path \
+       d="m 33.031721,77.05429 c 8.199837,0.123635 12.819227,-7.570626 \
+12.882372,-8.423089" \
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;\
+stroke-miterlimit:4" />\
+  </g>'
+AIR = \
+'  <g \
+     transform="matrix(0.63786322,0,0,0.64837179,17.379518,68.534252)"> \
+    <path \
+       d="M 39.054054,1.75 C 37.741313,16.51834 25.926641,23.082047 \
+25.926641,23.082047 l 0,0" \
+       style="fill:none;stroke:#0ac9fb;stroke-width:6.0;stroke-linecap:round;\
+stroke-miterlimit:4;" />\
+    <path \
+       d="m 39.710425,1.75 c 1.312741,14.76834 13.127413,21.332047 \
+13.127413,21.332047 l 0,0" \
+       style="fill:none;stroke:#0ac9fb;stroke-width:6.0;stroke-linecap:round;\
+stroke-miterlimit:4" />\
+    <path \
+       d="m 39.054054,1.75 c 1.969112,3.281854 -0.656371,20.347491 \
+-0.656371,20.347491 l 0,0" \
+       style="fill:none;stroke:#0ac9fb;stroke-width:6.0;stroke-linecap:round;\
+stroke-miterlimit:4" />\
+  </g>'
 
 import gtk
 from random import uniform
 import os
 import gobject
 
-from svg_utils import svg_header, svg_footer, svg_rect, svg_str_to_pixbuf, \
-    svg_from_file
 from play_audio import play_audio_from_file
-
-from ball import Ball
-from bar import Bar
 
 from gettext import gettext as _
 
@@ -72,6 +120,118 @@ except ImportError:
     GRID_CELL_SIZE = 0
 
 from sprites import Sprites, Sprite
+
+
+def generate_xo_svg(scale=1.0, colors=["#C0C0C0", "#282828"]):
+    ''' Returns an SVG string representing an XO image '''
+    return _svg_header(55, 55, scale) + \
+           _svg_xo(colors[0], colors[1]) + \
+           _svg_footer()
+
+
+def svg_str_to_pixbuf(svg_string):
+    ''' Load pixbuf from SVG string '''
+    pl = gtk.gdk.PixbufLoader('svg')
+    pl.write(svg_string)
+    pl.close()
+    pixbuf = pl.get_pixbuf()
+    return pixbuf
+
+
+def _svg_rect(w, h, rx, ry, x, y, fill, stroke):
+    ''' Returns an SVG rectangle '''
+    svg_string = '       <rect\n'
+    svg_string += '          width="%f"\n' % (w)
+    svg_string += '          height="%f"\n' % (h)
+    svg_string += '          rx="%f"\n' % (rx)
+    svg_string += '          ry="%f"\n' % (ry)
+    svg_string += '          x="%f"\n' % (x)
+    svg_string += '          y="%f"\n' % (y)
+    svg_string += _svg_style('fill:%s;stroke:%s;' % (fill, stroke))
+    return svg_string
+
+
+def _svg_xo(fill, stroke, width=3.5):
+    ''' Returns XO icon graphic '''
+    svg_string = '<path d="M33.233,35.1l10.102,10.1c0.752,\
+0.75,1.217,1.783,1.217,2.932\
+   c0,2.287-1.855,4.143-4.146,4.143c-1.145,0-2.178-0.463-2.932-1.211L27.372,\
+40.961l-10.1,10.1c-0.75,0.75-1.787,1.211-2.934,1.211\
+   c-2.284,0-4.143-1.854-4.143-4.141c0-1.146,0.465-2.184,\
+1.212-2.934l10.104-10.102L11.409,24.995\
+   c-0.747-0.748-1.212-1.785-1.212-2.93c0-2.289,1.854-4.146,4.146-4.146c1.143,\
+0,2.18,0.465,2.93,1.214l10.099,10.102l10.102-10.103\
+   c0.754-0.749,1.787-1.214,2.934-1.214c2.289,0,4.146,1.856,4.146,4.145c0,\
+1.146-0.467,2.18-1.217,2.932L33.233,35.1z" '
+    svg_string += _svg_style('fill:%s;stroke:%s;stroke_width:%f' % (fill,
+                                                                    stroke,
+                                                                    width))
+    svg_string += '\n<circle cx="27.371" cy="10.849" r="8.122" '
+    svg_string += _svg_style('fill:%s;stroke:%s;stroke_width:%f' % (fill,
+                                                                    stroke,
+                                                                    width))
+    return svg_string
+
+
+def _svg_header(w, h, scale, hscale=1.0):
+    ''' Returns SVG header; some beads are elongated (hscale) '''
+    svg_string = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n'
+    svg_string += '<!-- Created with Python -->\n'
+    svg_string += '<svg\n'
+    svg_string += '   xmlns:svg="http://www.w3.org/2000/svg"\n'
+    svg_string += '   xmlns="http://www.w3.org/2000/svg"\n'
+    svg_string += '   version="1.0"\n'
+    svg_string += '   width="%f"\n' % (w * scale)
+    svg_string += '   height="%f">\n' % (h * scale * hscale)
+    svg_string += '<g\n       transform="matrix(%f,0,0,%f,0,0)">\n' % (
+                                  scale, scale)
+    return svg_string
+
+
+def _svg_footer():
+    ''' Returns SVG footer '''
+    svg_string = '</g>\n'
+    svg_string += '</svg>\n'
+    return svg_string
+
+
+def _svg_style(extras=''):
+    ''' Returns SVG style for shape rendering '''
+    return 'style="%s"/>\n' % (extras)
+
+
+def svg_from_file(pathname):
+    ''' Read SVG string from a file '''
+    f = file(pathname, 'r')
+    svg = f.read()
+    f.close()
+    return(svg)
+
+
+def _extract_svg_payload(fd):
+    """Returns everything between <svg ...> and </svg>"""
+    payload = ''
+    looking_for_start_svg_token = True
+    looking_for_close_token = True
+    looking_for_end_svg_token = True
+    for line in fd:
+        if looking_for_start_svg_token:
+            if line.find('<svg') < 0:
+                continue
+            looking_for_start_svg_token = False
+            line = line.split('<svg', 1)[1]
+        if looking_for_close_token:
+            if line.find('>') < 0:
+                continue
+            looking_for_close_token = False
+            line = line.split('>', 1)[1]
+        if looking_for_end_svg_token:
+            if line.find('</svg>') < 0:
+                payload += line
+                continue
+            payload += line.split('</svg>')[0]
+            break
+    return payload
 
 
 class Bounce():
@@ -127,10 +287,8 @@ class Bounce():
 
         self._create_sprites(path)
 
-        self.challenge = 0
-        self.expert = False
         self.challenges = []
-        for challenge in CHALLENGES[self.challenge]:
+        for challenge in EASY:
             self.challenges.append(challenge)
         self.fraction = 0.5  # the target of the current challenge
         self.label = '1/2'  # the label
@@ -158,21 +316,83 @@ class Bounce():
                 os.path.join(path, 'Easter_egg.svg')))
 
         self.blank_graphic = svg_str_to_pixbuf(
-            svg_header(REWARD_HEIGHT, REWARD_HEIGHT, 1.0) + \
-            svg_rect(REWARD_HEIGHT, REWARD_HEIGHT, 5, 5, 0, 0,
-                     '#C0C0C0', '#282828') + \
-            svg_footer())
+            _svg_header(BAR_HEIGHT, BAR_HEIGHT, 1.0) + \
+            _svg_rect(BAR_HEIGHT, BAR_HEIGHT, 5, 5, 0, 0,
+                      '#C0C0C0', '#282828') + \
+            _svg_footer())
 
-        self.ball = Ball(self.sprites, os.path.join(path, 'basketball.svg'))
-        self.current_frame = 0
+        self.ball = Sprite(self.sprites, 0, 0, svg_str_to_pixbuf(
+                svg_from_file(os.path.join(path, 'basketball.svg'))))
+        self.ball.set_layer(1)
+        self.ball.set_label_attributes(24)
 
-        self.bar = Bar(self.sprites, self.width, self.height, self.scale,
-                       self.ball.width())
-        self.current_bar = self.bar.get_bar(2)
+        ball = _extract_svg_payload(
+            file(os.path.join(path, 'basketball.svg'), 'r'))
+        self.cells = []  # Easter Egg animation
+        for i in range(8):
+            self.cells.append(Sprite(
+                    self.sprites, 0, 0, svg_str_to_pixbuf(
+                        _svg_header(85, 85, 1.0) + TRANSFORMS[i] + \
+                            ball + PUNCTURE + AIR + '</g>' + _svg_footer())))
 
-        self.ball_y_max = self.bar.bar_y() - self.ball.height()
-        self.ball.move_ball((int((self.width - self.ball.width()) / 2),
+        for spr in self.cells:
+            spr.set_layer(1)
+            spr.move((0, self.height))  # move animation cells off screen
+        self.frame = 0
+
+        mark = _svg_header(self.ball.rect[2] / 2.,
+                           BAR_HEIGHT * self.scale + 4, 1.0) + \
+               _svg_rect(self.ball.rect[2] / 2.,
+                         BAR_HEIGHT * self.scale + 4, 0, 0, 0, 0,
+                         '#FF0000', '#FF0000') + \
+               _svg_rect(1, BAR_HEIGHT * self.scale + 4, 0, 0,
+                         self.ball.rect[2] / 4., 0, '#000000', '#000000') + \
+               _svg_footer()
+        self.mark = Sprite(self.sprites, 0,
+                           self.height,  # hide off bottom of screen
+                           svg_str_to_pixbuf(mark))
+        self.mark.set_layer(2)
+
+        self.bars = {}
+        self.bars[2] = Sprite(self.sprites, 0, 0,
+                              svg_str_to_pixbuf(self._gen_bar(2)))
+        self.bars[2].move((int(self.ball.rect[2] / 2),
+                           self.height - int((self.ball.rect[3] + \
+                                                  self.bars[2].rect[3]) / 2)))
+        self.current_bar = self.bars[2]
+
+        num = _svg_header(BAR_HEIGHT * self.scale, BAR_HEIGHT * self.scale,
+                           1.0) + \
+              _svg_rect(BAR_HEIGHT * self.scale,
+                        BAR_HEIGHT * self.scale, 0, 0, 0, 0,
+                        'none', 'none') + \
+              _svg_footer()
+        self.left = Sprite(self.sprites, int(self.ball.rect[2] / 4),
+                           self.bars[2].rect[1], svg_str_to_pixbuf(num))
+        self.left.set_label('0')
+        self.right = Sprite(self.sprites,
+                            self.width - int(self.ball.rect[2] / 2),
+                            self.bars[2].rect[1], svg_str_to_pixbuf(num))
+        self.right.set_label('1')
+
+        self.ball_y_max = self.bars[2].rect[1] - self.ball.rect[3]
+        self.ball.move((int((self.width - self.ball.rect[2]) / 2),
                         self.ball_y_max))
+
+    def _gen_bar(self, nsegments):
+        ''' Return a bar with n segments '''
+        svg = _svg_header(self.width - self.ball.rect[2], BAR_HEIGHT, 1.0)
+        dx = (self.width - self.ball.rect[2]) / float(nsegments)
+        for i in range(int(nsegments) / 2):
+            svg += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
+                             i * 2 * dx, 0, '#FFFFFF', '#FFFFFF')
+            svg += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
+                             (i * 2 + 1) * dx, 0, '#AAAAAA', '#AAAAAA')
+        if int(nsegments) % 2 == 1:  # odd
+            svg += _svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
+                             (i * 2 + 2) * dx, 0, '#FFFFFF', '#FFFFFF')
+        svg += _svg_footer()
+        return svg
 
     def pause(self):
         ''' Pause play when visibility changes '''
@@ -238,12 +458,13 @@ class Bounce():
                 if self.select_a_fraction and self.press == self.current_bar:
                     # Find the fraction closest to the click
                     fraction = self._search_challenges(
-                        (x - self.bar.bar_x()) / float(self.bar.width()))
+                        (x - self.current_bar.rect[0]) / \
+                            float(self.current_bar.rect[2]))
                     self.select_a_fraction = False
                     self.activity.send_a_fraction(fraction)
                     self.play_a_fraction(fraction)
             else:
-                if self.timeout is None and self.press == self.ball.ball:
+                if self.timeout is None and self.press == self.ball:
                     self._choose_a_fraction()
                     self._move_ball()
         return True
@@ -263,7 +484,7 @@ class Bounce():
     def _move_ball(self):
         ''' Move the ball and test boundary conditions '''
         if self.new_bounce:
-            self.bar.mark.move((0, self.height))  # hide the mark
+            self.mark.move((0, self.height))  # hide the mark
             if not self.we_are_sharing():
                 self._choose_a_fraction()
             self.new_bounce = False
@@ -276,11 +497,11 @@ class Bounce():
             self.dx = float(xyz[0]) / 18.
             fh.close()
 
-        if self.ball.ball_x() + self.dx > 0 and \
-           self.ball.ball_x() + self.dx < self.width - self.ball.width():
-            self.ball.move_ball_relative((int(self.dx), int(self.dy)))
+        if self.ball.get_xy()[0] + self.dx > 0 and \
+           self.ball.get_xy()[0] + self.dx < self.width - self.ball.rect[2]:
+            self.ball.move_relative((int(self.dx), int(self.dy)))
         else:
-            self.ball.move_ball_relative((0, int(self.dy)))
+            self.ball.move_relative((0, int(self.dy)))
 
         # speed up ball in x while key is pressed
         self.dx *= DDX
@@ -288,9 +509,9 @@ class Bounce():
         # accelerate in y
         self.dy += self.ddy
 
-        if self.ball.ball_y() >= self.ball_y_max:
+        if self.ball.get_xy()[1] >= self.ball_y_max:
             # hit the bottom
-            self.ball.move_ball((self.ball.ball_x(), self.ball_y_max))
+            self.ball.move((self.ball.get_xy()[0], self.ball_y_max))
             self._test()
             self.new_bounce = True
 
@@ -317,11 +538,10 @@ class Bounce():
         if self.new_bounce:
             self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
             self.new_bounce = False
-            self.current_frame = 0
+            self.frame = 0
             self.frame_counter = 0
-            self.ball.move_frame(self.current_frame,
-                                (self.ball.ball_x(), self.ball.ball_y()))
-            self.ball.move_ball((self.ball.ball_x(), self.height))
+            self.cells[self.frame].move(self.ball.get_xy())
+            self.ball.move((self.ball.get_xy()[0], self.height))
             gobject.idle_add(play_audio_from_file, self, self.path_to_bubbles)
 
         if self.accelerometer:
@@ -332,22 +552,29 @@ class Bounce():
             fh.close()
         else:
             self.dx = uniform(-int(DX * self.scale), int(DX * self.scale))
-        self.ball.move_frame_relative(self.current_frame, (int(self.dx),
-                                                           int(self.dy)))
+        self.cells[self.frame].move_relative((int(self.dx), int(self.dy)))
         self.dy += self.ddy
 
         self.frame_counter += 1
-        self.current_frame = self.ball.next_frame(self.frame_counter)
+        if self.frame_counter in ANIMATION:
+            self._switch_cells(ANIMATION[self.frame_counter])
 
-        if self.ball.frame_y(self.current_frame) >= self.ball_y_max:
+        if self.cells[self.frame].get_xy()[1] >= self.ball_y_max:
             # hit the bottom
-            self.ball.move_ball((self.ball.ball_x(), self.ball_y_max))
-            self.ball.hide_frames()
+            self.ball.move((self.ball.get_xy()[0], self.ball_y_max))
+            for spr in self.cells:
+                spr.move((0, self.height))  # hide the animation frames
             self._test(easter_egg=True)
             self.new_bounce = True
             self.timeout = gobject.timeout_add(BOUNCE_PAUSE, self._move_ball)
         else:
             gobject.timeout_add(STEP_PAUSE, self._animate)
+
+    def _switch_cells(self, cells):
+        ''' Switch between cells in the animation '''
+        self.cells[cells[1]].move(self.cells[cells[0]].get_xy())
+        self.cells[cells[0]].move((0, self.height))
+        self.frame = cells[1]
 
     def add_fraction(self, string):
         ''' Add a new challenge; set bar to 2x demominator '''
@@ -383,26 +610,32 @@ class Bounce():
             else:
                 self.label = str(int(self.fraction * 100 + 0.5)) + '%'
         self.activity.reset_label(self.label)
-        self.ball.ball.set_label(self.label)
+        self.ball.set_label(self.label)
 
-        self.bar.hide_bars()
-        if self.expert:  # Show two-segment bar in expert mode
-            self.current_bar = self.bar.get_bar(2)
+        for bar in self.bars:
+            self.bars[bar].set_layer(-1)
+        if self.correct > EXPERT:  # Show two-segment bar in expert mode
+            self.bars[2].set_layer(0)
+            self.current_bar = self.bars[2]
         else:
             if self.mode == 'fractions':
                 nseg = self.challenges[self.n][1]
             else:
                 nseg = 10  # percentages
             # generate new bar on demand
-            self.current_bar = self.bar.get_bar(nseg)
-            self.current_bar.move((self.bar.bar_x(), self.bar.bar_y()))
-        self.current_bar.set_layer(0)
+            if not nseg in self.bars:
+                self.bars[nseg] = Sprite(self.sprites, 0, 0,
+                    svg_str_to_pixbuf(self._gen_bar(nseg)))
+                self.bars[nseg].move((self.bars[2].rect[0],
+                                      self.bars[2].rect[1]))
+            self.bars[nseg].set_layer(0)
+            self.current_bar = self.bars[nseg]
 
     def _easter_egg_test(self):
         ''' Test to see if we show the Easter Egg '''
-        delta = self.ball.width() / 8
-        x = self.ball.ball_x() + self.ball.width() / 2
-        f = self.bar.width() * self.easter_egg / 100.
+        delta = self.ball.rect[2] / 8
+        x = self.ball.get_xy()[0] + self.ball.rect[2] / 2
+        f = self.bars[2].rect[2] * self.easter_egg / 100.
         if x > f - delta and x < f + delta:
             return True
         else:
@@ -411,11 +644,11 @@ class Bounce():
     def _test(self, easter_egg=False):
         ''' Test to see if we estimated correctly '''
         self.timeout = None
-        delta = self.ball.width() / 4
-        x = self.ball.ball_x() + self.ball.width() / 2
-        f = self.ball.width() / 2 + int(self.fraction * self.bar.width())
-        self.bar.mark.move((int(f - self.bar.mark_width() / 2),
-                        self.bar.bar_y() - 2))
+        delta = self.ball.rect[2] / 4
+        x = self.ball.get_xy()[0] + self.ball.rect[2] / 2
+        f = self.ball.rect[2] / 2 + int(self.fraction * self.bars[2].rect[2])
+        self.mark.move((int(f - self.mark.rect[2] / 2),
+                        self.bars[2].rect[1] - 2))
         if self.challenges[self.n][2] == 0:  # label the column
             spr = Sprite(self.sprites, 0, 0, self.blank_graphic)
             spr.set_label(self.label)
@@ -439,13 +672,12 @@ class Bounce():
         spr.set_layer(-1)
 
         # after enough correct answers, up the difficulty
-        if self.correct == len(self.challenges) * 2:
-            self.challenge += 1
-            if self.challenge < len(CHALLENGES):
-                for challenge in CHALLENGES[self.challenge]:
-                    self.challenges.append(challenge)
-            else:
-                self.expert = True
+        if self.correct == len(EASY) * 2:
+            for challenge in MEDIUM:
+                self.challenges.append(challenge)
+        elif self.correct == len(EASY) * 4:
+            for challenge in HARD:
+                self.challenges.append(challenge)
 
         self.count += 1
         self.dx = 0.  # stop horizontal movement between bounces

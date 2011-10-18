@@ -24,8 +24,6 @@ if HAS_TOOLBARBOX:
     from sugar.graphics.toolbarbox import ToolbarButton
     from sugar.activity.widgets import ActivityToolbarButton
     from sugar.activity.widgets import StopButton
-from sugar.graphics.radiotoolbutton import RadioToolButton
-from sugar.graphics.toolbutton import ToolButton
 
 import telepathy
 from dbus.service import signal
@@ -38,145 +36,17 @@ from gettext import gettext as _
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
 
-from bounce import Bounce, svg_str_to_pixbuf, generate_xo_svg
+from toolbar_utils import image_factory, separator_factory, \
+    label_factory, radio_factory, button_factory, entry_factory
+from utils import json_load, json_dump
+from svg_utils import svg_str_to_pixbuf, generate_xo_svg
 
-from StringIO import StringIO
-try:
-    USING_JSON_READWRITE = False
-    import json
-    json.dumps
-    from json import load as jload
-    from json import dump as jdump
-except (ImportError, AttributeError):
-    try:
-        import simplejson as json
-        from simplejson import load as jload
-        from simplejson import dump as jdump
-    except (ImportError, AttributeError):
-        USING_JSON_READWRITE = True
+from bounce import Bounce
 
 
 SERVICE = 'org.sugarlabs.FractionBounceActivity'
 IFACE = SERVICE
 PATH = '/org/augarlabs/FractionBounceActivity'
-
-
-def json_load(text):
-    """ Load JSON data using what ever resources are available. """
-    if USING_JSON_READWRITE is True:
-        listdata = json.read(text)
-    else:
-        # strip out leading and trailing whitespace, nulls, and newlines
-        io = StringIO(text)
-        try:
-            listdata = jload(io)
-        except ValueError:
-            # assume that text is ascii list
-            listdata = text.split()
-            for i, value in enumerate(listdata):
-                listdata[i] = int(value)
-    return listdata
-
-
-def json_dump(data):
-    """ Save data using available JSON tools. """
-    if USING_JSON_READWRITE is True:
-        return json.write(data)
-    else:
-        _io = StringIO()
-        jdump(data, _io)
-        return _io.getvalue()
-
-
-def _entry_factory(default_string, toolbar, tooltip='', max=3):
-    """ Factory for adding a text box to a toolbar """
-    entry = gtk.Entry()
-    entry.set_text(default_string)
-    if hasattr(entry, 'set_tooltip_text'):
-        entry.set_tooltip_text(tooltip)
-    entry.set_width_chars(max)
-    entry.show()
-    toolitem = gtk.ToolItem()
-    toolitem.add(entry)
-    toolbar.insert(toolitem, -1)
-    toolitem.show()
-    return entry
-
-
-def _button_factory(icon_name, toolbar, callback, cb_arg=None, tooltip=None,
-                    accelerator=None):
-    """Factory for making toolbar buttons"""
-    button = ToolButton(icon_name)
-    button.set_tooltip(tooltip)
-    button.props.sensitive = True
-    if accelerator is not None:
-        button.props.accelerator = accelerator
-    if cb_arg is not None:
-        button.connect('clicked', callback, cb_arg)
-    else:
-        button.connect('clicked', callback)
-    if hasattr(toolbar, 'insert'):  # the main toolbar
-        toolbar.insert(button, -1)
-    else:  # or a secondary toolbar
-        toolbar.props.page.insert(button, -1)
-    button.show()
-    return button
-
-
-def _radio_factory(button_name, toolbar, callback, cb_arg=None, tooltip=None,
-                   group=None):
-    ''' Add a radio button to a toolbar '''
-    button = RadioToolButton(group=group)
-    button.set_named_icon(button_name)
-    if callback is not None:
-        if cb_arg is None:
-            button.connect('clicked', callback)
-        else:
-            button.connect('clicked', callback, cb_arg)
-    if hasattr(toolbar, 'insert'):  # Add button to the main toolbar...
-        toolbar.insert(button, -1)
-    else:  # ...or a secondary toolbar.
-        toolbar.props.page.insert(button, -1)
-    button.show()
-    if tooltip is not None:
-        button.set_tooltip(tooltip)
-    return button
-
-
-def _label_factory(toolbar, label_text, width=None):
-    ''' Factory for adding a label to a toolbar '''
-    label = gtk.Label(label_text)
-    label.set_line_wrap(True)
-    if width is not None:
-        label.set_size_request(width, -1)  # doesn't work on XOs
-    label.show()
-    toolitem = gtk.ToolItem()
-    toolitem.add(label)
-    toolbar.insert(toolitem, -1)
-    toolitem.show()
-    return label
-
-
-def _separator_factory(toolbar, expand=False, visible=True):
-    ''' add a separator to a toolbar '''
-    separator = gtk.SeparatorToolItem()
-    separator.props.draw = visible
-    separator.set_expand(expand)
-    toolbar.insert(separator, -1)
-    separator.show()
-
-
-def _image_factory(image, toolbar, tooltip=None):
-    ''' Add an image to the toolbar '''
-    img = gtk.Image()
-    img.set_from_pixbuf(image)
-    img_tool = gtk.ToolItem()
-    img_tool.add(img)
-    if tooltip is not None:
-        img.set_tooltip_text(tooltip)
-    toolbar.insert(img_tool, -1)
-    img_tool.show()
-    return img
 
 
 class FractionBounceActivity(activity.Activity):
@@ -236,7 +106,7 @@ class FractionBounceActivity(activity.Activity):
             custom_toolbar_button.show()
 
             self._load_standard_buttons(self.toolbar)
-            _separator_factory(self.toolbar, expand=True, visible=False)
+            separator_factory(self.toolbar, expand=True, visible=False)
 
             stop_button = StopButton(self)
             stop_button.props.accelerator = _('<Ctrl>Q')
@@ -257,29 +127,29 @@ class FractionBounceActivity(activity.Activity):
 
     def _load_standard_buttons(self, toolbar):
         ''' Load buttons onto whichever toolbar we are using '''
-        self.fraction_button = _radio_factory('fraction', toolbar,
-                                              self._fraction_cb,
-                                              tooltip=_('fractions'),
-                                              group=None)
-        self.percent_button = _radio_factory('percent', toolbar,
-                                             self._percent_cb,
-                                             tooltip=_('percents'),
-                                             group=self.fraction_button)
-        self.player = _image_factory(
+        self.fraction_button = radio_factory('fraction', toolbar,
+                                             self._fraction_cb,
+                                             tooltip=_('fractions'),
+                                             group=None)
+        self.percent_button = radio_factory('percent', toolbar,
+                                            self._percent_cb,
+                                            tooltip=_('percents'),
+                                            group=self.fraction_button)
+        self.player = image_factory(
             svg_str_to_pixbuf(generate_xo_svg(scale=0.8,
                                           colors=['#282828', '#000000'])),
             toolbar, tooltip=self.nick)
-        _separator_factory(toolbar, expand=False, visible=True)
-        self.challenge = _label_factory(toolbar, _("Click the ball to start."))
+        separator_factory(toolbar, expand=False, visible=True)
+        self.challenge = label_factory(toolbar, _("Click the ball to start."))
 
     def _load_custom_buttons(self, toolbar):
         ''' Entry fields and buttons for adding custom fractions '''
-        self.numerator = _entry_factory('', toolbar, tooltip=_('numerator'))
-        _label_factory(toolbar, '   /   ')
-        self.denominator = _entry_factory('', toolbar,
+        self.numerator = entry_factory('', toolbar, tooltip=_('numerator'))
+        label_factory(toolbar, '   /   ')
+        self.denominator = entry_factory('', toolbar,
                                           tooltip=_('denominator'))
-        _separator_factory(toolbar, expand=False, visible=False)
-        self.enter_button = _button_factory('list-add', toolbar,
+        separator_factory(toolbar, expand=False, visible=False)
+        self.enter_button = button_factory('list-add', toolbar,
                                            self._add_fraction_cb,
                                            tooltip=_('add new fraction'),
                                            accelerator='Return')
@@ -348,6 +218,7 @@ class FractionBounceActivity(activity.Activity):
                 _logger.debug('unpause it')
                 self.challenge.set_label(_('Click the ball to continue'))
         '''
+
     # Collaboration-related methods
 
     def _setup_presence_service(self):
