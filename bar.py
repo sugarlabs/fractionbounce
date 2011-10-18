@@ -112,4 +112,3 @@ class Bar():
         self.bars[nsegments].move(
             (int(self.ball_size / 2), self.screen_height - \
                  int((self.ball_size + self.height()) / 2)))
-
