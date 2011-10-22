@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-18 16:24-0400\n"
+"POT-Creation-Date: 2011-10-22 11:31-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,12 +21,13 @@ msgstr ""
 msgid "FractionBounce"
 msgstr ""
 
-#: FractionBounceActivity.py:48 FractionBounceActivity.py:160
-#: FractionBounceActivity.py:177
+#: FractionBounceActivity.py:48 FractionBounceActivity.py:165
+#: FractionBounceActivity.py:182
 msgid "basketball"
 msgstr ""
 
-#: FractionBounceActivity.py:48 FractionBounceActivity.py:180
+#: FractionBounceActivity.py:48 FractionBounceActivity.py:185
+#: FractionBounceActivity.py:195
 msgid "soccer ball"
 msgstr ""
 
@@ -51,45 +52,49 @@ msgid "fractions"
 msgstr ""
 
 #: FractionBounceActivity.py:138
+msgid "sectors"
+msgstr ""
+
+#: FractionBounceActivity.py:142
 msgid "percents"
 msgstr ""
 
-#: FractionBounceActivity.py:145
+#: FractionBounceActivity.py:149
 msgid "Click the ball to start."
 msgstr ""
 
-#: FractionBounceActivity.py:149
+#: FractionBounceActivity.py:153
 msgid "numerator"
 msgstr ""
 
-#: FractionBounceActivity.py:152
+#: FractionBounceActivity.py:156
 msgid "denominator"
 msgstr ""
 
-#: FractionBounceActivity.py:156
+#: FractionBounceActivity.py:160
 msgid "add new fraction"
 msgstr ""
 
-#: FractionBounceActivity.py:161
+#: FractionBounceActivity.py:166
 msgid "choose a ball"
 msgstr ""
 
-#: FractionBounceActivity.py:224
+#: FractionBounceActivity.py:246
 #, python-format
 msgid ""
 "Bounce the ball to a position %(fraction)s of the way from the left side of "
 "the bar."
 msgstr ""
 
-#: FractionBounceActivity.py:292
+#: FractionBounceActivity.py:314
 msgid "Wait for others to join."
 msgstr ""
 
-#: FractionBounceActivity.py:299
+#: FractionBounceActivity.py:321
 msgid "Wait for the sharer to start."
 msgstr ""
 
-#: FractionBounceActivity.py:360
+#: FractionBounceActivity.py:382
 msgid "has joined."
 msgstr ""
 
