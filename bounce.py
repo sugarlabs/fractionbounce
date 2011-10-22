@@ -359,29 +359,23 @@ class Bounce():
         if not self.we_are_sharing():
             self.n = int(uniform(0, len(self.challenges)))
         fstr = self.challenges[self.n][0]
-        saw_a_fraction = False
         if '/' in fstr:  # fraction
             numden = fstr.split('/', 2)
             self.fraction = float(numden[0].strip()) / float(numden[1].strip())
-            saw_a_fraction = True
         elif '%' in fstr:  # percentage
             self.fraction = float(fstr.strip().strip('%').strip()) / 100.
         else:  # To do: add support for decimals (using locale)
             _logger.debug('Could not parse challenge (%s)', fstr)
             fstr = '1/2'
             self.fraction = 0.5
-            saw_a_fraction = True
 
-        if self.mode == 'fractions':
-            if saw_a_fraction:
-                self.label = fstr
-            else:
-                self.label = fstr.strip().strip('%').strip() + '/100'
+        if self.mode == 'percents':
+            self.label = str(int(self.fraction * 100 + 0.5)) + '%'
         else:  # percentage
-            if not saw_a_fraction:
-                self.label = fstr
-            else:
-                self.label = str(int(self.fraction * 100 + 0.5)) + '%'
+            self.label = fstr
+        if self.mode == 'sectors':
+            self.ball.new_ball_from_fraction(self.fraction)
+
         self.activity.reset_label(self.label)
         self.ball.ball.set_label(self.label)
 
@@ -389,10 +383,10 @@ class Bounce():
         if self.expert:  # Show two-segment bar in expert mode
             self.current_bar = self.bar.get_bar(2)
         else:
-            if self.mode == 'fractions':
-                nseg = self.challenges[self.n][1]
+            if self.mode == 'percents':
+                nseg = 10
             else:
-                nseg = 10  # percentages
+                nseg = self.challenges[self.n][1]
             # generate new bar on demand
             self.current_bar = self.bar.get_bar(nseg)
             self.current_bar.move((self.bar.bar_x(), self.bar.bar_y()))

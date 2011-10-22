@@ -12,6 +12,7 @@
 # Boston, MA 02111-1307, USA.
 
 import gtk
+from math import sin, cos, pi
 
 
 def generate_xo_svg(scale=1.0, colors=["#C0C0C0", "#282828"]):
@@ -28,6 +29,19 @@ def svg_str_to_pixbuf(svg_string):
     pl.close()
     pixbuf = pl.get_pixbuf()
     return pixbuf
+
+
+def svg_sector(x, y, r, a, fill, stroke):
+    ''' Returns an SVG sector '''
+    if a < pi:
+        big_arc = 0
+    else:
+        big_arc = 1
+    svg_string = '       <path d="M%f,%f v%f a%f,%f 0 %d,0 %f,%f z"\n' % (
+        x, y, -r, r, r, big_arc, -sin(a) * r, r - cos(a) * r)
+    svg_string += _svg_style('fill:%s;stroke:%s;' % (fill, stroke))
+    print svg_string
+    return svg_string
 
 
 def svg_rect(w, h, rx, ry, x, y, fill, stroke):

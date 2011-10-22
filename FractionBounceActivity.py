@@ -133,6 +133,10 @@ class FractionBounceActivity(activity.Activity):
                                              self._fraction_cb,
                                              tooltip=_('fractions'),
                                              group=None)
+        self.sector_button = radio_factory('sector', toolbar,
+                                           self._sector_cb,
+                                           tooltip=_('sectors'),
+                                           group=self.fraction_button)
         self.percent_button = radio_factory('percent', toolbar,
                                             self._percent_cb,
                                             tooltip=_('percents'),
@@ -156,6 +160,7 @@ class FractionBounceActivity(activity.Activity):
                                            tooltip=_('add new fraction'),
                                            accelerator='Return')
         separator_factory(toolbar, expand=False, visible=True)
+        separator_factory(toolbar, expand=False, visible=False)
         self._ball_selector = combo_factory(BALLS, toolbar, self._combo_cb,
                                             default=_('basketball'),
                                             tooltip=_('choose a ball'))
@@ -183,17 +188,34 @@ class FractionBounceActivity(activity.Activity):
         else:
             chooser(self, '', self._new_ball_from_journal)
 
+    def _reset_ball(self):
+        ''' If we switch back from sector mode, we need to restore the ball '''
+        if self.bounce_window.mode != 'sectors':
+            return
+        if BALLS[self._ball_selector.get_active()] == _('soccer ball'):
+            self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'soccer.svg'))
+        else:
+            self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'basketball.svg'))
+
     def _new_ball_from_journal(self, dsobject):
         ''' Load an image from the Journal. '''
         self.bounce_window.ball.new_ball_from_image(dsobject.file_path)
 
     def _fraction_cb(self, arg=None):
         ''' Set fraction mode '''
+        self._reset_ball()
         self.bounce_window.mode = 'fractions'
 
     def _percent_cb(self, arg=None):
         ''' Set percent mode '''
+        self._reset_ball()
         self.bounce_window.mode = 'percents'
+
+    def _sector_cb(self, arg=None):
+        ''' Set sector mode '''
+        self.bounce_window.mode = 'sectors'
 
     def _add_fraction_cb(self, arg=None):
         ''' Read entries and add a fraction to the list '''

@@ -12,10 +12,11 @@
 # Boston, MA 02111-1307, USA.
 
 import gtk
+from math import pi
 
 from sprites import Sprite
 from svg_utils import svg_header, svg_footer, svg_str_to_pixbuf, \
-    extract_svg_payload, svg_from_file
+    extract_svg_payload, svg_from_file, svg_sector
 
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
@@ -104,7 +105,6 @@ class Ball():
     def new_ball(self, filename):
         ''' Create a ball object and Easter Egg animation from an SVG file. '''
         self.ball.images[0] = svg_str_to_pixbuf(svg_from_file(filename))
-
         ball = extract_svg_payload(file(filename, 'r'))
         for i in range(8):
             self.frames[i].images[0] = svg_str_to_pixbuf(
@@ -121,6 +121,15 @@ class Ball():
                 filename, SIZE, SIZE)
         except:
             _logger.debug('Could not load image from %s.', filename)
+
+    def new_ball_from_fraction(self, fraction):
+        ''' Create a ball with a section of size fraction. '''
+        r = SIZE / 2.0
+        self.ball.images[0] = svg_str_to_pixbuf(
+            svg_header(SIZE, SIZE, 1.0) + \
+            svg_sector(r, r, r - 1, 1.999 * pi, '#A0A0A0', '#ff0000') + \
+            svg_sector(r, r, r - 1, fraction * 2 * pi, '#ffff00', '#ff0000') + \
+            svg_footer())
 
     def ball_x(self):
         return self.ball.get_xy()[0]
