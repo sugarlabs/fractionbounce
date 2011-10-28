@@ -1,3 +1,11 @@
+11
+
+ENHANCEMENT:
+* New translations
+
+BUG FIX:
+* Fixed address in license (#3219)
+
 10
 
 ENHANCEMENT:
@@ -19,7 +27,7 @@ ENHANCEMENTS:
 7
 
 ENHANCEMENTS:
-* simplify EASY level
+* Simplify EASY level
 
 6
 
@@ -65,7 +73,3 @@ BUG FIXES:
 1
 
 * New activity: bounce the ball onto the fraction
-
-
-
-
