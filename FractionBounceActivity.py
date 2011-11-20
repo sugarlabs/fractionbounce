@@ -162,7 +162,7 @@ class FractionBounceActivity(activity.Activity):
         separator_factory(toolbar, expand=False, visible=True)
         separator_factory(toolbar, expand=False, visible=False)
         self._ball_selector = combo_factory(BALLS, toolbar, self._combo_cb,
-                                            default=_('basketball'),
+                                            default=_('soccer ball'),
                                             tooltip=_('choose a ball'))
 
     def _setup_canvas(self):

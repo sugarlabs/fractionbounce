@@ -162,7 +162,7 @@ class Bounce():
                      '#C0C0C0', '#282828') + \
             svg_footer())
 
-        self.ball = Ball(self.sprites, os.path.join(path, 'basketball.svg'))
+        self.ball = Ball(self.sprites, os.path.join(path, 'soccer.svg'))
         self.current_frame = 0
 
         self.bar = Bar(self.sprites, self.width, self.height, self.scale,
@@ -464,8 +464,18 @@ class Bounce():
 
     def _expose_cb(self, win, event):
         ''' Callback to handle window expose events '''
-        self.sprites.redraw_sprites(event.area)
+        self.do_expose_event(event)
         return True
+
+    def do_expose_event(self, event):
+        ''' Handle the expose-event by drawing '''
+        # Restrict Cairo to the exposed area
+        cr = self.canvas.window.cairo_create()
+        cr.rectangle(event.area.x, event.area.y,
+                event.area.width, event.area.height)
+        cr.clip()
+        # Refresh sprite list
+        self.sprites.redraw_sprites(cr=cr)
 
     def _destroy_cb(self, win, event):
         ''' Callback to handle quit '''
