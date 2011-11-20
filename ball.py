@@ -104,12 +104,12 @@ class Ball():
 
     def new_ball(self, filename):
         ''' Create a ball object and Easter Egg animation from an SVG file. '''
-        self.ball.images[0] = svg_str_to_pixbuf(svg_from_file(filename))
+        self.ball.set_shape(svg_str_to_pixbuf(svg_from_file(filename)))
         ball = extract_svg_payload(file(filename, 'r'))
         for i in range(8):
-            self.frames[i].images[0] = svg_str_to_pixbuf(
+            self.frames[i].set_shape(svg_str_to_pixbuf(
                         svg_header(SIZE, SIZE, 1.0) + TRANSFORMS[i] + \
-                            ball + PUNCTURE + AIR + '</g>' + svg_footer())
+                            ball + PUNCTURE + AIR + '</g>' + svg_footer()))
 
     def new_ball_from_image(self, filename):
         ''' Just create a ball object from an image file '''
@@ -117,19 +117,19 @@ class Ball():
             _logger.debug('Image file not found.')
             return
         try:
-            self.ball.images[0] = gtk.gdk.pixbuf_new_from_file_at_size(
-                filename, SIZE, SIZE)
+            self.ball.set_shape(gtk.gdk.pixbuf_new_from_file_at_size(
+                filename, SIZE, SIZE))
         except:
             _logger.debug('Could not load image from %s.', filename)
 
     def new_ball_from_fraction(self, fraction):
         ''' Create a ball with a section of size fraction. '''
         r = SIZE / 2.0
-        self.ball.images[0] = svg_str_to_pixbuf(
+        self.ball.set_shape(svg_str_to_pixbuf(
             svg_header(SIZE, SIZE, 1.0) + \
             svg_sector(r, r, r - 1, 1.999 * pi, '#A0A0A0', '#ff0000') + \
             svg_sector(r, r, r - 1, fraction * 2 * pi, '#ffff00', '#ff0000') + \
-            svg_footer())
+            svg_footer()))
 
     def ball_x(self):
         return self.ball.get_xy()[0]
