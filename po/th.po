@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-10-22 11:31-0400\n"
-"PO-Revision-Date: 2012-02-29 00:01+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"PO-Revision-Date: 2012-03-08 12:38+0200\n"
+"Last-Translator: Meechai <malaku38@hotmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
@@ -19,17 +19,17 @@ msgstr ""
 
 #: activity/activity.info:2
 msgid "FractionBounce"
-msgstr "แฟรกชั่นเบานส์"
+msgstr "FractionBounce"
 
 #: FractionBounceActivity.py:48 FractionBounceActivity.py:165
 #: FractionBounceActivity.py:182
 msgid "basketball"
-msgstr "บาสเกตบอล"
+msgstr "ลูกบาสเกตบอล"
 
 #: FractionBounceActivity.py:48 FractionBounceActivity.py:185
 #: FractionBounceActivity.py:195
 msgid "soccer ball"
-msgstr "ลูกบอล"
+msgstr "ลูกฟุตบอล"
 
 #: FractionBounceActivity.py:48
 msgid "user defined"
@@ -37,7 +37,7 @@ msgstr "กำหนดโดยผู้ใช้"
 
 #: FractionBounceActivity.py:103 FractionBounceActivity.py:125
 msgid "Custom"
-msgstr "ตั้งค่าเอง"
+msgstr "การกำหนดค่า"
 
 #: FractionBounceActivity.py:114
 msgid "<Ctrl>Q"
@@ -45,7 +45,7 @@ msgstr "<Ctrl>Q"
 
 #: FractionBounceActivity.py:124
 msgid "Project"
-msgstr "โปรเจค"
+msgstr "โครงการ"
 
 #: FractionBounceActivity.py:134
 msgid "fractions"
@@ -61,11 +61,11 @@ msgstr "เปอร์เซ็นต์"
 
 #: FractionBounceActivity.py:149
 msgid "Click the ball to start."
-msgstr "กดบอลเพื่อเรื่ม"
+msgstr "คลิกลูกบอลเพื่อเริ่ม"
 
 #: FractionBounceActivity.py:153
 msgid "numerator"
-msgstr "เศษ"
+msgstr "เครื่องนับ"
 
 #: FractionBounceActivity.py:156
 msgid "denominator"
@@ -84,7 +84,7 @@ msgstr "เลือกลูกบอล"
 msgid ""
 "Bounce the ball to a position %(fraction)s of the way from the left side of "
 "the bar."
-msgstr "เลี้ยงลูกบอลไปสู่ตำแหน่ง %(fraction)s จากท้างด้านซ้ายของแถบ"
+msgstr "เลี้ยงลูกบอลไปสู่ตำแหน่ง %(fraction)s นับจากท้างด้านซ้ายของแถบ"
 
 #: FractionBounceActivity.py:314
 msgid "Wait for others to join."
@@ -92,7 +92,7 @@ msgstr "รอให้ผู้อื่นเข้าร่วม"
 
 #: FractionBounceActivity.py:321
 msgid "Wait for the sharer to start."
-msgstr "รอให้ผู้มีส่วนร่วมเรื่ม"
+msgstr "รอให้ผู้มีส่วนร่วมเริ่ม"
 
 #: FractionBounceActivity.py:382
 msgid "has joined."
