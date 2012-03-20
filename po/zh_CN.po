@@ -1,0 +1,116 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-10-22 11:31-0400\n"
+"PO-Revision-Date: 2012-02-03 03:33+0200\n"
+"Last-Translator: lite <litekok@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.0.5\n"
+
+#: activity/activity.info:2
+msgid "FractionBounce"
+msgstr "分数弹跳"
+
+#: FractionBounceActivity.py:48 FractionBounceActivity.py:165
+#: FractionBounceActivity.py:182
+msgid "basketball"
+msgstr "篮球"
+
+#: FractionBounceActivity.py:48 FractionBounceActivity.py:185
+#: FractionBounceActivity.py:195
+msgid "soccer ball"
+msgstr "足球"
+
+#: FractionBounceActivity.py:48
+msgid "user defined"
+msgstr "用户定义"
+
+#: FractionBounceActivity.py:103 FractionBounceActivity.py:125
+msgid "Custom"
+msgstr "定制"
+
+#: FractionBounceActivity.py:114
+msgid "<Ctrl>Q"
+msgstr "<Ctrl>Q"
+
+#: FractionBounceActivity.py:124
+msgid "Project"
+msgstr "项目"
+
+#: FractionBounceActivity.py:134
+msgid "fractions"
+msgstr "分数"
+
+#: FractionBounceActivity.py:138
+msgid "sectors"
+msgstr "扇形"
+
+#: FractionBounceActivity.py:142
+msgid "percents"
+msgstr "％"
+
+#: FractionBounceActivity.py:149
+msgid "Click the ball to start."
+msgstr "点击球开始。"
+
+#: FractionBounceActivity.py:153
+msgid "numerator"
+msgstr "分子"
+
+#: FractionBounceActivity.py:156
+msgid "denominator"
+msgstr "分母"
+
+#: FractionBounceActivity.py:160
+msgid "add new fraction"
+msgstr "添加新的分数"
+
+#: FractionBounceActivity.py:166
+msgid "choose a ball"
+msgstr "选择球"
+
+#: FractionBounceActivity.py:246
+#, python-format
+msgid ""
+"Bounce the ball to a position %(fraction)s of the way from the left side of "
+"the bar."
+msgstr "球弹跳到左边栏 %(fraction)s 的位置。"
+
+#: FractionBounceActivity.py:314
+msgid "Wait for others to join."
+msgstr "等待其他人加入。"
+
+#: FractionBounceActivity.py:321
+msgid "Wait for the sharer to start."
+msgstr "等待分享者开始。"
+
+#: FractionBounceActivity.py:382
+msgid "has joined."
+msgstr "已加入。"
+
+#: bar.py:84
+msgid "0"
+msgstr "0"
+
+#: bar.py:88
+msgid "1"
+msgstr "1"
+
+#: bounce.py:198
+msgid "Click on the bar to choose a fraction."
+msgstr "单击边栏选择分数。"
+
+#: bounce.py:209
+#, python-format
+msgid "Waiting for %(buddy)s"
+msgstr "正在等待 %(buddy)s"
