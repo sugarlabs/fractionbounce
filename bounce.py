@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 #Copyright (c) 2011, Walter Bender, Paulina Clares, Chris Rowe
+# Ported to GTK3 - 2012:
+# Ignacio Rodríguez <ignaciorodriguez@sugarlabs.org>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,11 +48,11 @@ ACCELEROMETER_DEVICE = '/sys/devices/platform/lis3lv02d/position'
 CRASH = 'crash.ogg'  # wrong answer sound
 LAUGH = 'bottle.ogg'  # correct answer sound
 BUBBLES = 'bubbles.ogg'  # Easter Egg sound
+from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
 
-import gtk
 from random import uniform
 import os
-import gobject
+
 
 from svg_utils import svg_header, svg_footer, svg_rect, svg_str_to_pixbuf, \
     svg_from_file
@@ -65,7 +67,7 @@ import logging
 _logger = logging.getLogger('fractionbounce-activity')
 
 try:
-    from sugar.graphics import style
+    from sugar3.graphics import style
     GRID_CELL_SIZE = style.GRID_CELL_SIZE
 except ImportError:
     GRID_CELL_SIZE = 0
@@ -95,55 +97,53 @@ class Bounce():
             self.accelerometer = True
         else:
             self.accelerometer = False
+		self.canvas.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+		self.canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
+		self.canvas.add_events(Gdk.EventMask.POINTER_MOTION_MASK) 
+		self.canvas.add_events(Gdk.EventMask.KEY_PRESS_MASK)
+		self.canvas.add_events(Gdk.EventMask.KEY_RELEASE_MASK)
+		self.canvas.connect('draw', self.__draw_cb)
+		self.canvas.connect('button-press-event', self._button_press_cb)
+		self.canvas.connect('button-release-event', self._button_release_cb)
+		self.canvas.connect('key_press_event', self._keypress_cb)
+		self.canvas.connect('key_release_event', self._keyrelease_cb)
+		self.width = Gdk.Screen.width()
+		self.height = Gdk.Screen.height() - GRID_CELL_SIZE
+		self.sprites = Sprites(self.canvas)
+		self.scale = Gdk.Screen.height() / 900.0
+		self.timeout = None
 
-        self.canvas.set_flags(gtk.CAN_FOCUS)
-        self.canvas.add_events(gtk.gdk.BUTTON_PRESS_MASK)
-        self.canvas.add_events(gtk.gdk.BUTTON_RELEASE_MASK)
-        self.canvas.add_events(gtk.gdk.POINTER_MOTION_MASK)
-        self.canvas.add_events(gtk.gdk.KEY_PRESS_MASK)
-        self.canvas.add_events(gtk.gdk.KEY_RELEASE_MASK)
-        self.canvas.connect('expose-event', self._expose_cb)
-        self.canvas.connect('button-press-event', self._button_press_cb)
-        self.canvas.connect('button-release-event', self._button_release_cb)
-        self.canvas.connect('key_press_event', self._keypress_cb)
-        self.canvas.connect('key_release_event', self._keyrelease_cb)
-        self.width = gtk.gdk.screen_width()
-        self.height = gtk.gdk.screen_height() - GRID_CELL_SIZE
-        self.sprites = Sprites(self.canvas)
-        self.scale = gtk.gdk.screen_height() / 900.0
-        self.timeout = None
+		self.buddies = []  # used for sharing
+		self.my_turn = False
+		self.select_a_fraction = False
 
-        self.buddies = []  # used for sharing
-        self.my_turn = False
-        self.select_a_fraction = False
+		self.easter_egg = int(uniform(1, 100))
 
-        self.easter_egg = int(uniform(1, 100))
+		# Find paths to sound files
+		self.path_to_success = os.path.join(path, LAUGH)
+		self.path_to_failure = os.path.join(path, CRASH)
+		self.path_to_bubbles = os.path.join(path, BUBBLES)
 
-        # Find paths to sound files
-        self.path_to_success = os.path.join(path, LAUGH)
-        self.path_to_failure = os.path.join(path, CRASH)
-        self.path_to_bubbles = os.path.join(path, BUBBLES)
+		self._create_sprites(path)
 
-        self._create_sprites(path)
+		self.challenge = 0
+		self.expert = False
+		self.challenges = []
+		for challenge in CHALLENGES[self.challenge]:
+			self.challenges.append(challenge)
+		self.fraction = 0.5  # the target of the current challenge
+		self.label = '1/2'  # the label
+		self.count = 0  # number of bounces played
+		self.correct = 0  # number of correct answers
+		self.press = None  # sprite under mouse click
+		self.mode = 'fractions'
+		self.new_bounce = False
+		self.n = 0
 
-        self.challenge = 0
-        self.expert = False
-        self.challenges = []
-        for challenge in CHALLENGES[self.challenge]:
-            self.challenges.append(challenge)
-        self.fraction = 0.5  # the target of the current challenge
-        self.label = '1/2'  # the label
-        self.count = 0  # number of bounces played
-        self.correct = 0  # number of correct answers
-        self.press = None  # sprite under mouse click
-        self.mode = 'fractions'
-        self.new_bounce = False
-        self.n = 0
-
-        self.dx = 0.  # ball horizontal trajectory
-        # acceleration (with dampening)
-        self.ddy = (6.67 * self.height) / (STEPS * STEPS)
-        self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
+		self.dx = 0.  # ball horizontal trajectory
+		# acceleration (with dampening)
+		self.ddy = (6.67 * self.height) / (STEPS * STEPS)
+		self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
 
     def _create_sprites(self, path):
         ''' Create all of the sprites we'll need '''
@@ -176,7 +176,7 @@ class Bounce():
     def pause(self):
         ''' Pause play when visibility changes '''
         if self.timeout is not None:
-            gobject.source_remove(self.timeout)
+            GObject.source_remove(self.timeout)
             self.timeout = None
 
     def we_are_sharing(self):
@@ -186,7 +186,7 @@ class Bounce():
 
     def its_my_turn(self):
         ''' When sharing, it is your turn... '''
-        gobject.timeout_add(1000, self._take_a_turn)
+        GObject.timeout_add(1000, self._take_a_turn)
 
     def _take_a_turn(self):
         ''' On your turn, choose a fraction. '''
@@ -198,7 +198,7 @@ class Bounce():
 
     def its_their_turn(self, nick):
         ''' When sharing, it is nick's turn... '''
-        gobject.timeout_add(1000, self._wait_your_turn, nick)
+        GObject.timeout_add(1000, self._wait_your_turn, nick)
 
     def _wait_your_turn(self, nick):
         ''' Wait for nick to choose a fraction. '''
@@ -304,12 +304,12 @@ class Bounce():
                 if self._easter_egg_test():
                     self._animate()
                 else:
-                    self.timeout = gobject.timeout_add(
+                    self.timeout = GObject.timeout_add(
                         max(STEP_PAUSE,
                             BOUNCE_PAUSE - self.count * STEP_PAUSE),
                         self._move_ball)
         else:
-            self.timeout = gobject.timeout_add(STEP_PAUSE, self._move_ball)
+            self.timeout = GObject.timeout_add(STEP_PAUSE, self._move_ball)
 
     def _animate(self):
         ''' A little Easter Egg just for fun. '''
@@ -321,7 +321,7 @@ class Bounce():
             self.ball.move_frame(self.current_frame,
                                 (self.ball.ball_x(), self.ball.ball_y()))
             self.ball.move_ball((self.ball.ball_x(), self.height))
-            gobject.idle_add(play_audio_from_file, self, self.path_to_bubbles)
+            GObject.idle_add(play_audio_from_file, self, self.path_to_bubbles)
 
         if self.accelerometer:
             fh = open(ACCELEROMETER_DEVICE)
@@ -344,9 +344,9 @@ class Bounce():
             self.ball.hide_frames()
             self._test(easter_egg=True)
             self.new_bounce = True
-            self.timeout = gobject.timeout_add(BOUNCE_PAUSE, self._move_ball)
+            self.timeout = GObject.timeout_add(BOUNCE_PAUSE, self._move_ball)
         else:
-            gobject.timeout_add(STEP_PAUSE, self._animate)
+            GObject.timeout_add(STEP_PAUSE, self._animate)
 
     def add_fraction(self, string):
         ''' Add a new challenge; set bar to 2x demominator '''
@@ -419,11 +419,11 @@ class Bounce():
             if not easter_egg:
                 spr = Sprite(self.sprites, 0, 0, self.smiley_graphic)
             self.correct += 1
-            gobject.idle_add(play_audio_from_file, self, self.path_to_success)
+            GObject.idle_add(play_audio_from_file, self, self.path_to_success)
         else:
             if not easter_egg:
                 spr = Sprite(self.sprites, 0, 0, self.frown_graphic)
-            gobject.idle_add(play_audio_from_file, self, self.path_to_failure)
+            GObject.idle_add(play_audio_from_file, self, self.path_to_failure)
 
         if easter_egg:
             spr = Sprite(self.sprites, 0, 0, self.egg_graphic)
@@ -445,7 +445,7 @@ class Bounce():
 
     def _keypress_cb(self, area, event):
         ''' Keypress: moving the slides with the arrow keys '''
-        k = gtk.gdk.keyval_name(event.keyval)
+        k = Gdk.keyval_name(event.keyval)
         if k in ['h', 'Left', 'KP_Left']:
             self.dx = -DX * self.scale
         elif k in ['l', 'Right', 'KP_Right']:
@@ -462,10 +462,8 @@ class Bounce():
         self.dx = 0.
         return True
 
-    def _expose_cb(self, win, event):
-        ''' Callback to handle window expose events '''
-        self.do_expose_event(event)
-        return True
+    def __draw_cb(self, canvas, cr):
+        self.sprites.redraw_sprites(cr=cr)
 
     def do_expose_event(self, event):
         ''' Handle the expose-event by drawing '''
@@ -474,9 +472,8 @@ class Bounce():
         cr.rectangle(event.area.x, event.area.y,
                 event.area.width, event.area.height)
         cr.clip()
-        # Refresh sprite list
         self.sprites.redraw_sprites(cr=cr)
 
     def _destroy_cb(self, win, event):
         ''' Callback to handle quit '''
-        gtk.main_quit()
+        Gtk.main_quit()

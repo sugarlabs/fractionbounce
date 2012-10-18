@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 #Copyright (c) 2011, Walter Bender, Paulina Clares, Chris Rowe
 
+# Ported to GTK3 - 2012:
+# Ignacio Rodríguez <ignaciorodriguez@sugarlabs.org>
+
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
@@ -9,28 +12,26 @@
 # You should have received a copy of the GNU General Public License
 # along with this library; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
-
-
-import gtk
+from gi.repository import Gdk, GdkPixbuf, GObject, Gtk
 import os
 
-from sugar.activity import activity
-from sugar import profile
+from sugar3.activity import activity
+from sugar3 import profile
 try:  # 0.86+ toolbar widgets
-    from sugar.graphics.toolbarbox import ToolbarBox
+    from sugar3.graphics.toolbarbox import ToolbarBox
     HAS_TOOLBARBOX = True
 except ImportError:
     HAS_TOOLBARBOX = False
 if HAS_TOOLBARBOX:
-    from sugar.graphics.toolbarbox import ToolbarButton
-    from sugar.activity.widgets import ActivityToolbarButton
-    from sugar.activity.widgets import StopButton
+    from sugar3.graphics.toolbarbox import ToolbarButton
+    from sugar3.activity.widgets import ActivityToolbarButton
+    from sugar3.activity.widgets import StopButton
 
 import telepathy
 from dbus.service import signal
 from dbus.gobject_service import ExportedGObject
-from sugar.presence import presenceservice
-from sugar.presence.tubeconn import TubeConnection
+from sugar3.presence import presenceservice
+from sugar3.presence.tubeconn import TubeConnection
 
 from gettext import gettext as _
 
@@ -63,7 +64,7 @@ class FractionBounceActivity(activity.Activity):
         else:
             self.colors = ['#A0FFA0', '#FF8080']
 
-        self.add_events(gtk.gdk.VISIBILITY_NOTIFY_MASK)
+        self.add_events(Gdk.EventMask.VISIBILITY_NOTIFY_MASK)
         self.connect('visibility-notify-event', self.__visibility_notify_cb)
 
         self.max_participants = 4  # sharing
@@ -91,7 +92,7 @@ class FractionBounceActivity(activity.Activity):
 
     def _setup_toolbars(self):
         ''' Add buttons to toolbars '''
-        custom_toolbar = gtk.Toolbar()
+        custom_toolbar = Gtk.Toolbar()
         if HAS_TOOLBARBOX:
             toolbox = ToolbarBox()
             self.toolbar = toolbox.toolbar
@@ -114,13 +115,13 @@ class FractionBounceActivity(activity.Activity):
             stop_button.props.accelerator = _('<Ctrl>Q')
             self.toolbar.insert(stop_button, -1)
             stop_button.show()
-
-            self.set_toolbox(toolbox)
+            self.set_toolbar_box(toolbox)
             toolbox.show()
+
         else:
             toolbox = activity.ActivityToolbox(self)
             self.set_toolbox(toolbox)
-            self.toolbar = gtk.Toolbar()
+            self.toolbar = Gtk.Toolbar()
             toolbox.add_toolbar(_('Project'), self.toolbar)
             toolbox.add_toolbar(_('Custom'), custom_toolbar)
             self._load_standard_buttons(self.toolbar)
@@ -167,9 +168,9 @@ class FractionBounceActivity(activity.Activity):
 
     def _setup_canvas(self):
         ''' Create a canvas '''
-        canvas = gtk.DrawingArea()
-        canvas.set_size_request(gtk.gdk.screen_width(),
-                                gtk.gdk.screen_height())
+        canvas = Gtk.DrawingArea()
+        canvas.set_size_request(Gdk.Screen.width(),
+                                Gdk.Screen.height())
         self.set_canvas(canvas)
         canvas.show()
         self.show_all()

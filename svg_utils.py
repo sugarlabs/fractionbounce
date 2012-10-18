@@ -9,9 +9,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this library; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
+from gi.repository import GdkPixbuf
 
-
-import gtk
 from math import sin, cos, pi
 
 
@@ -24,7 +23,7 @@ def generate_xo_svg(scale=1.0, colors=["#C0C0C0", "#282828"]):
 
 def svg_str_to_pixbuf(svg_string):
     ''' Load pixbuf from SVG string '''
-    pl = gtk.gdk.PixbufLoader('svg')
+    pl = GdkPixbuf.PixbufLoader.new_with_type('svg') 
     pl.write(svg_string)
     pl.close()
     pixbuf = pl.get_pixbuf()

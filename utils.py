@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2011, Walter Bender
+# Ported to gtk 3: Ignacio Rodríguez
+# <ignaciorodriguez@sugarlabs.org>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,7 +13,7 @@
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
 
-import gtk
+from gi.repository import Gtk
 
 from sugar.graphics.objectchooser import ObjectChooser
 
@@ -65,11 +67,11 @@ def chooser(parent_window, filter, action):
         chooser = ObjectChooser(parent=parent_window, what_filter=filter)
     except TypeError:
         chooser = ObjectChooser(None, parent_window,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT)
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT)
     if chooser is not None:
         try:
             result = chooser.run()
-            if result == gtk.RESPONSE_ACCEPT:
+            if result == Gtk.ResponseType.ACCEPT:
                 dsobject = chooser.get_selected_object()
                 action(dsobject)
                 dsobject.destroy()
