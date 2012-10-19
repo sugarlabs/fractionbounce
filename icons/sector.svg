@@ -11,8 +11,29 @@
    width="55"
    height="55"
    id="svg2">
+  <metadata
+     id="metadata3930">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3928" />
+  <rect
+     width="55"
+     height="55"
+     x="0"
+     y="0"
+     id="rect2984"
+     style="fill:#282828;fill-opacity:1;stroke:none" />
   <path
-     d="M 47.142859,25.588802 A 19.855213,18.581081 0 1 1 27.35948,7.0078426 l -0.07184,18.5809594 z"
+     d="M 47.142859,25.588802 A 19.855213,18.581081 0 1 1 27.35948,7.0078426 L 27.28764,25.588802 z"
      transform="matrix(0,-1.0906182,-1.1654035,0,57.32128,57.260403)"
      id="path2984"
      style="fill:#c0c0c0;fill-opacity:1;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
