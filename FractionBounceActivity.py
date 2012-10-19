@@ -67,11 +67,8 @@ class FractionBounceActivity(activity.Activity):
 
         self.max_participants = 4  # sharing
 
-        print "setup toolbars"
         self._setup_toolbars()
-        print "setup dispatch table"
         self._setup_dispatch_table()
-        print "setup canvas"
         canvas = self._setup_canvas()
 
         # Read any custom fractions from the project metadata
@@ -81,7 +78,6 @@ class FractionBounceActivity(activity.Activity):
             custom = None
 
         # Initialize the canvas
-        print "bounce window"
         self.bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
 
         # Restore any custom fractions
