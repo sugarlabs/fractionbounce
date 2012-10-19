@@ -17,15 +17,10 @@ import os
 
 from sugar3.activity import activity
 from sugar3 import profile
-try:  # 0.86+ toolbar widgets
-    from sugar3.graphics.toolbarbox import ToolbarBox
-    HAS_TOOLBARBOX = True
-except ImportError:
-    HAS_TOOLBARBOX = False
-if HAS_TOOLBARBOX:
-    from sugar3.graphics.toolbarbox import ToolbarButton
-    from sugar3.activity.widgets import ActivityToolbarButton
-    from sugar3.activity.widgets import StopButton
+from sugar3.graphics.toolbarbox import ToolbarBox
+from sugar3.graphics.toolbarbox import ToolbarButton
+from sugar3.activity.widgets import ActivityToolbarButton
+from sugar3.activity.widgets import StopButton
 
 import telepathy
 from dbus.service import signal
@@ -40,7 +35,8 @@ _logger = logging.getLogger('fractionbounce-activity')
 
 from toolbar_utils import image_factory, separator_factory, combo_factory, \
     label_factory, radio_factory, button_factory, entry_factory
-from utils import json_load, json_dump, chooser
+
+# from utils import json_load, json_dump, chooser
 from svg_utils import svg_str_to_pixbuf, generate_xo_svg
 
 from bounce import Bounce
@@ -64,13 +60,18 @@ class FractionBounceActivity(activity.Activity):
         else:
             self.colors = ['#A0FFA0', '#FF8080']
 
+        '''
         self.add_events(Gdk.EventMask.VISIBILITY_NOTIFY_MASK)
         self.connect('visibility-notify-event', self.__visibility_notify_cb)
+        '''
 
         self.max_participants = 4  # sharing
 
+        print "setup toolbars"
         self._setup_toolbars()
+        print "setup dispatch table"
         self._setup_dispatch_table()
+        print "setup canvas"
         canvas = self._setup_canvas()
 
         # Read any custom fractions from the project metadata
@@ -80,6 +81,7 @@ class FractionBounceActivity(activity.Activity):
             custom = None
 
         # Initialize the canvas
+        print "bounce window"
         self.bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
 
         # Restore any custom fractions
@@ -93,38 +95,29 @@ class FractionBounceActivity(activity.Activity):
     def _setup_toolbars(self):
         ''' Add buttons to toolbars '''
         custom_toolbar = Gtk.Toolbar()
-        if HAS_TOOLBARBOX:
-            toolbox = ToolbarBox()
-            self.toolbar = toolbox.toolbar
-            activity_button = ActivityToolbarButton(self)
-            self.toolbar.insert(activity_button, 0)
-            activity_button.show()
+        toolbox = ToolbarBox()
+        self.toolbar = toolbox.toolbar
+        activity_button = ActivityToolbarButton(self)
+        self.toolbar.insert(activity_button, 0)
+        activity_button.show()
 
-            custom_toolbar_button = ToolbarButton(
-                label=_('Custom'),
-                page=custom_toolbar,
-                icon_name='view-source')
-            custom_toolbar.show()
-            self.toolbar.insert(custom_toolbar_button, -1)
-            custom_toolbar_button.show()
+        custom_toolbar_button = ToolbarButton(
+            label=_('Custom'),
+            page=custom_toolbar,
+            icon_name='view-source')
+        custom_toolbar.show()
+        self.toolbar.insert(custom_toolbar_button, -1)
+        custom_toolbar_button.show()
 
-            self._load_standard_buttons(self.toolbar)
-            separator_factory(self.toolbar, expand=True, visible=False)
+        self._load_standard_buttons(self.toolbar)
+        separator_factory(self.toolbar, expand=True, visible=False)
 
-            stop_button = StopButton(self)
-            stop_button.props.accelerator = _('<Ctrl>Q')
-            self.toolbar.insert(stop_button, -1)
-            stop_button.show()
-            self.set_toolbar_box(toolbox)
-            toolbox.show()
-
-        else:
-            toolbox = activity.ActivityToolbox(self)
-            self.set_toolbox(toolbox)
-            self.toolbar = Gtk.Toolbar()
-            toolbox.add_toolbar(_('Project'), self.toolbar)
-            toolbox.add_toolbar(_('Custom'), custom_toolbar)
-            self._load_standard_buttons(self.toolbar)
+        stop_button = StopButton(self)
+        stop_button.props.accelerator = _('<Ctrl>Q')
+        self.toolbar.insert(stop_button, -1)
+        stop_button.show()
+        self.set_toolbar_box(toolbox)
+        toolbox.show()
 
         self._load_custom_buttons(custom_toolbar)
 
@@ -252,18 +245,6 @@ class FractionBounceActivity(activity.Activity):
         ''' Callback method for when the activity's visibility changes. '''
         # _logger.debug('%s', str(event.state))
         return
-
-        '''
-        # Awaiting resolution of #2570
-        if event.state == gtk.gdk.VISIBILITY_FULLY_OBSCURED:
-            _logger.debug('pause it')
-            self.bounce_window.pause()
-        elif event.state in \
-            [gtk.gdk.VISIBILITY_UNOBSCURED, gtk.gdk.VISIBILITY_PARTIAL]:
-            if not self.bounce_window.paused:
-                _logger.debug('unpause it')
-                self.challenge.set_label(_('Click the ball to continue'))
-        '''
 
     # Collaboration-related methods
 

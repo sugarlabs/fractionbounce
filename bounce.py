@@ -97,53 +97,54 @@ class Bounce():
             self.accelerometer = True
         else:
             self.accelerometer = False
-		self.canvas.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-		self.canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
-		self.canvas.add_events(Gdk.EventMask.POINTER_MOTION_MASK) 
-		self.canvas.add_events(Gdk.EventMask.KEY_PRESS_MASK)
-		self.canvas.add_events(Gdk.EventMask.KEY_RELEASE_MASK)
-		self.canvas.connect('draw', self.__draw_cb)
-		self.canvas.connect('button-press-event', self._button_press_cb)
-		self.canvas.connect('button-release-event', self._button_release_cb)
-		self.canvas.connect('key_press_event', self._keypress_cb)
-		self.canvas.connect('key_release_event', self._keyrelease_cb)
-		self.width = Gdk.Screen.width()
-		self.height = Gdk.Screen.height() - GRID_CELL_SIZE
-		self.sprites = Sprites(self.canvas)
-		self.scale = Gdk.Screen.height() / 900.0
-		self.timeout = None
 
-		self.buddies = []  # used for sharing
-		self.my_turn = False
-		self.select_a_fraction = False
+        self.canvas.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
+        self.canvas.add_events(Gdk.EventMask.POINTER_MOTION_MASK) 
+        self.canvas.add_events(Gdk.EventMask.KEY_PRESS_MASK)
+        self.canvas.add_events(Gdk.EventMask.KEY_RELEASE_MASK)
+        self.canvas.connect('draw', self.__draw_cb)
+        self.canvas.connect('button-press-event', self._button_press_cb)
+        self.canvas.connect('button-release-event', self._button_release_cb)
+        self.canvas.connect('key_press_event', self._keypress_cb)
+        self.canvas.connect('key_release_event', self._keyrelease_cb)
+        self.width = Gdk.Screen.width()
+        self.height = Gdk.Screen.height() - GRID_CELL_SIZE
+        self.sprites = Sprites(self.canvas)
+        self.scale = Gdk.Screen.height() / 900.0
+        self.timeout = None
 
-		self.easter_egg = int(uniform(1, 100))
+        self.buddies = []  # used for sharing
+        self.my_turn = False
+        self.select_a_fraction = False
 
-		# Find paths to sound files
-		self.path_to_success = os.path.join(path, LAUGH)
-		self.path_to_failure = os.path.join(path, CRASH)
-		self.path_to_bubbles = os.path.join(path, BUBBLES)
+        self.easter_egg = int(uniform(1, 100))
 
-		self._create_sprites(path)
+	# Find paths to sound files
+        self.path_to_success = os.path.join(path, LAUGH)
+        self.path_to_failure = os.path.join(path, CRASH)
+        self.path_to_bubbles = os.path.join(path, BUBBLES)
 
-		self.challenge = 0
-		self.expert = False
-		self.challenges = []
-		for challenge in CHALLENGES[self.challenge]:
-			self.challenges.append(challenge)
-		self.fraction = 0.5  # the target of the current challenge
-		self.label = '1/2'  # the label
-		self.count = 0  # number of bounces played
-		self.correct = 0  # number of correct answers
-		self.press = None  # sprite under mouse click
-		self.mode = 'fractions'
-		self.new_bounce = False
-		self.n = 0
+        self._create_sprites(path)
 
-		self.dx = 0.  # ball horizontal trajectory
-		# acceleration (with dampening)
-		self.ddy = (6.67 * self.height) / (STEPS * STEPS)
-		self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
+        self.challenge = 0
+        self.expert = False
+        self.challenges = []
+        for challenge in CHALLENGES[self.challenge]:
+            self.challenges.append(challenge)
+        self.fraction = 0.5  # the target of the current challenge
+        self.label = '1/2'  # the label
+        self.count = 0  # number of bounces played
+        self.correct = 0  # number of correct answers
+        self.press = None  # sprite under mouse click
+        self.mode = 'fractions'
+        self.new_bounce = False
+        self.n = 0
+
+        self.dx = 0.  # ball horizontal trajectory
+	# acceleration (with dampening)
+        self.ddy = (6.67 * self.height) / (STEPS * STEPS)
+        self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
 
     def _create_sprites(self, path):
         ''' Create all of the sprites we'll need '''
