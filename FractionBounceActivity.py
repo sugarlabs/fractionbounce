@@ -136,7 +136,8 @@ class FractionBounceActivity(activity.Activity):
                                           colors=['#282828', '#000000'])),
             toolbar, tooltip=self.nick)
         separator_factory(toolbar, expand=False, visible=True)
-        self.challenge = label_factory(toolbar, _("Click the ball to start."))
+        self.challenge = label_factory(toolbar, _("Click the ball to start."),
+                                       width=400)  # FIXME: default not working
 
     def _load_custom_buttons(self, toolbar):
         ''' Entry fields and buttons for adding custom fractions '''
