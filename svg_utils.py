@@ -56,7 +56,7 @@ def svg_rect(w, h, rx, ry, x, y, fill, stroke):
     return svg_string
 
 
-def _svg_xo(fill, stroke, width=3.5):
+def _svg_xo(fill, stroke, width=5.5):
     ''' Returns XO icon graphic '''
     svg_string = '<path d="M33.233,35.1l10.102,10.1c0.752,\
 0.75,1.217,1.783,1.217,2.932\

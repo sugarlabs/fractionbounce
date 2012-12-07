@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #Copyright (c) 2011, Walter Bender, Paulina Clares, Chris Rowe
-
+#Copyright (c) 2012, Ignacio Rodriguez
 # Ported to GTK3 - 2012:
 # Ignacio Rodríguez <ignaciorodriguez@sugarlabs.org>
 
@@ -19,9 +19,14 @@ from sugar3.activity import activity
 from sugar3 import profile
 from sugar3.graphics.toolbarbox import ToolbarBox
 from sugar3.graphics.toolbarbox import ToolbarButton
+from sugar3.graphics.toolbutton import ToolButton
+from sugar3.graphics.toolbutton import ToolButton
+# This is for test case in sugar 0.96#
+from sugar3.graphics.colorbutton import ColorToolButton
+
 from sugar3.activity.widgets import ActivityToolbarButton
 from sugar3.activity.widgets import StopButton
-
+import utils
 import telepathy
 from dbus.service import signal
 from dbus.gobject_service import ExportedGObject
@@ -37,15 +42,20 @@ from toolbar_utils import image_factory, separator_factory, combo_factory, \
     label_factory, radio_factory, button_factory, entry_factory
 
 # from utils import json_load, json_dump, chooser
+from utils import chooser
 from svg_utils import svg_str_to_pixbuf, generate_xo_svg
-
+from utils import rgb2html
+from utils import get_user_fill_color as acolor
+from utils import get_user_stroke_color as bcolor
 from bounce import Bounce
 
 
-BALLS = [_('basketball'), _('soccer ball'), _('user defined')]
+BALLS = [_('basketball'), _('soccer ball'), _('tennis ball'), _('baseball'),
+         _('beachball'), _('sun ball'), _('user defined')]
 SERVICE = 'org.sugarlabs.FractionBounceActivity'
 IFACE = SERVICE
 PATH = '/org/augarlabs/FractionBounceActivity'
+canvas = Gtk.DrawingArea()
 
 
 class FractionBounceActivity(activity.Activity):
@@ -107,7 +117,6 @@ class FractionBounceActivity(activity.Activity):
 
         self._load_standard_buttons(self.toolbar)
         separator_factory(self.toolbar, expand=True, visible=False)
-
         stop_button = StopButton(self)
         stop_button.props.accelerator = _('<Ctrl>Q')
         self.toolbar.insert(stop_button, -1)
@@ -116,7 +125,12 @@ class FractionBounceActivity(activity.Activity):
         toolbox.show()
 
         self._load_custom_buttons(custom_toolbar)
-
+    def unfullscreen(self):
+	utils.full = False
+	activity.Activity.unfullscreen(self)
+    def __fullscreen_clicked_cb(self, button):
+	utils.full = True
+        self.fullscreen()
     def _load_standard_buttons(self, toolbar):
         ''' Load buttons onto whichever toolbar we are using '''
         self.fraction_button = radio_factory('fraction', toolbar,
@@ -132,13 +146,17 @@ class FractionBounceActivity(activity.Activity):
                                             tooltip=_('percents'),
                                             group=self.fraction_button)
         self.player = image_factory(
-            svg_str_to_pixbuf(generate_xo_svg(scale=0.8,
-                                          colors=['#282828', '#000000'])),
+            svg_str_to_pixbuf(generate_xo_svg(scale=1,
+                                          colors=[acolor(), bcolor()])),
             toolbar, tooltip=self.nick)
         separator_factory(toolbar, expand=False, visible=True)
         self.challenge = label_factory(toolbar, _("Click the ball to start."),
                                        width=400)  # FIXME: default not working
 
+    def _setup_color(self,widget,pspec):
+	Htmlcolor = rgb2html(widget.get_color())
+	canvas.modify_bg(Gtk.StateType.NORMAL,Gdk.color_parse(Htmlcolor))
+	canvas.show()
     def _load_custom_buttons(self, toolbar):
         ''' Entry fields and buttons for adding custom fractions '''
         self.numerator = entry_factory('', toolbar, tooltip=_('numerator'))
@@ -155,14 +173,32 @@ class FractionBounceActivity(activity.Activity):
         self._ball_selector = combo_factory(BALLS, toolbar, self._combo_cb,
                                             default=_('soccer ball'),
                                             tooltip=_('choose a ball'))
-
+	item_label = Gtk.ToolItem()
+	label = Gtk.Label(_('Color for the screen'))
+	item_label.add(label)
+	item_label.show_all()
+	fullscreen = ToolButton('view-fullscreen')
+	fullscreen.set_tooltip(_('Fullscreen'))
+	fullscreen.connect('clicked',self.__fullscreen_clicked_cb)
+	try:
+		color = ColorToolButton()
+	        color.connect('notify::color', self._setup_color)
+	except:
+		pass
+	toolbar.insert(Gtk.SeparatorToolItem(),-1)
+	toolbar.insert(fullscreen,-1)
+	toolbar.insert(Gtk.SeparatorToolItem(),-1)
+	toolbar.insert(item_label,-1)
+	try:
+		toolbar.insert(color,-1)
+	except:
+		pass
+	toolbar.show_all()
     def _setup_canvas(self):
         ''' Create a canvas '''
-        canvas = Gtk.DrawingArea()
         canvas.set_size_request(Gdk.Screen.width(),
                                 Gdk.Screen.height())
         self.set_canvas(canvas)
-        canvas.show()
         self.show_all()
         return canvas
 
@@ -172,10 +208,22 @@ class FractionBounceActivity(activity.Activity):
             return
         if BALLS[self._ball_selector.get_active()] == _('basketball'):
             self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'basketball.svg'))
+                    activity.get_bundle_path(), 'balls/basketball.svg'))
         elif BALLS[self._ball_selector.get_active()] == _('soccer ball'):
             self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'soccer.svg'))
+                    activity.get_bundle_path(), 'balls/soccer.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('tennis ball'):
+            self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'balls/tennis.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('baseball'):
+		self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'balls/baseball.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('beachball'):
+		self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'balls/beachball.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('sun ball'):
+		self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'balls/sunball.svg'))
         else:
             chooser(self, '', self._new_ball_from_journal)
 
@@ -184,12 +232,23 @@ class FractionBounceActivity(activity.Activity):
         if self.bounce_window.mode != 'sectors':
             return
         if BALLS[self._ball_selector.get_active()] == _('soccer ball'):
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'soccer.svg'))
-        else:
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'basketball.svg'))
-
+		self.bounce_window.ball.new_ball(os.path.join(
+			activity.get_bundle_path(), 'balls/soccer.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('basketball'):
+		self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'balls/basketball.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('tennis ball'):
+		self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'balls/tennis.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('baseball'):
+		self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'balls/baseball.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('beachball'):
+		self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'balls/beachball.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('sun ball'):
+		self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'balls/sunball.svg'))
     def _new_ball_from_journal(self, dsobject):
         ''' Load an image from the Journal. '''
         self.bounce_window.ball.new_ball_from_image(dsobject.file_path)

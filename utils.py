@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2011, Walter Bender
-# Ported to gtk 3: Ignacio Rodríguez
-# <ignaciorodriguez@sugarlabs.org>
+# Copyright (c) 2012, Ignacio Rodriguez
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,13 +14,61 @@
 
 from gi.repository import Gtk
 
-from sugar.graphics.objectchooser import ObjectChooser
+from sugar3.graphics.objectchooser import ObjectChooser
+from sugar3 import profile
+from sugar3.graphics.style import Color
 
 from StringIO import StringIO
 import json
 json.dumps
 from json import load as jload
 from json import dump as jdump
+full = False
+
+
+def rgb2html(color):
+    """Returns a html string from a Gdk color"""
+    red = "%x" % int(color.red / 65535.0 * 255)
+    if len(red) == 1:
+            red = "0%s" % red
+
+    green = "%x" % int(color.green / 65535.0 * 255)
+
+    if len(green) == 1:
+            green = "0%s" % green
+
+    blue = "%x" % int(color.blue / 65535.0 * 255)
+
+    if len(blue) == 1:
+            blue = "0%s" % blue
+
+    new_color = "#%s%s%s" % (red, green, blue)
+
+    return new_color
+def get_user_fill_color(type='str'):
+    """Returns the user fill color"""
+    color = profile.get_color()
+
+    if type == 'gdk':
+        rcolor = Color(color.get_fill_color()).get_gdk_color()
+
+    elif type == 'str':
+        rcolor = color.get_fill_color()
+
+    return rcolor
+
+
+def get_user_stroke_color(type='str'):
+    """Returns the user stroke color"""
+    color = profile.get_color()
+
+    if type == 'gdk':
+        rcolor = Color(color.get_stroke_color()).get_gdk_color()
+
+    elif type == 'str':
+        rcolor = color.get_stroke_color()
+
+    return rcolor
 
 def json_load(text):
     """ Load JSON data using what ever resources are available. """

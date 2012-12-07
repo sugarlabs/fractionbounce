@@ -16,6 +16,7 @@
 # [a fraction to display on the ball,
 #  the number of segments in the bar,
 #  the number of times this challenge has been played]
+import os
 
 CHALLENGES = [[['1/2', 2, 0], ['1/3', 3, 0], ['1/4', 4, 0],
                ['2/4', 4, 0], ['2/3', 3, 0], ['3/4', 4, 0]],
@@ -45,14 +46,16 @@ BOUNCE_PAUSE = 3000  # milliseconds between bounces
 DX = 10  # starting step size for horizontal movement
 DDX = 1.25  # acceleration during keypress
 ACCELEROMETER_DEVICE = '/sys/devices/platform/lis3lv02d/position'
+
 CRASH = 'crash.ogg'  # wrong answer sound
 LAUGH = 'bottle.ogg'  # correct answer sound
 BUBBLES = 'bubbles.ogg'  # Easter Egg sound
+
+
 from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
 
 from random import uniform
-import os
-
+import utils
 
 from svg_utils import svg_header, svg_footer, svg_rect, svg_str_to_pixbuf, \
     svg_from_file
@@ -71,7 +74,7 @@ try:
     GRID_CELL_SIZE = style.GRID_CELL_SIZE
 except ImportError:
     GRID_CELL_SIZE = 0
-
+from sugar3.graphics.alert import  NotifyAlert
 from sprites import Sprites, Sprite
 
 
@@ -143,7 +146,7 @@ class Bounce():
 
         self.dx = 0.  # ball horizontal trajectory
 	# acceleration (with dampening)
-        self.ddy = (6.67 * self.height) / (STEPS * STEPS)
+        self.ddy = (6.7 * self.height) / (STEPS * STEPS)
         self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
 
     def _create_sprites(self, path):
@@ -163,7 +166,7 @@ class Bounce():
                      '#C0C0C0', '#282828') + \
             svg_footer())
 
-        self.ball = Ball(self.sprites, os.path.join(path, 'soccer.svg'))
+        self.ball = Ball(self.sprites, os.path.join(path, 'balls/soccer.svg'))
         self.current_frame = 0
 
         self.bar = Bar(self.sprites, self.width, self.height, self.scale,
@@ -420,10 +423,23 @@ class Bounce():
             if not easter_egg:
                 spr = Sprite(self.sprites, 0, 0, self.smiley_graphic)
             self.correct += 1
+	    if utils.full:
+		    self.alert = NotifyAlert(3)
+		    self.alert.props.title = _('Great')
+		    self.alert.props.msg = _('Level up!')
+		    self.alert.connect('response', lambda w, i: self.activity.remove_alert(w))
+		    self.activity.add_alert(self.alert)
             GObject.idle_add(play_audio_from_file, self, self.path_to_success)
         else:
             if not easter_egg:
                 spr = Sprite(self.sprites, 0, 0, self.frown_graphic)
+	    if utils.full:
+		    self.alert = NotifyAlert(3)
+		    self.alert.props.title = _('Oh..')
+		    self.alert.props.msg = _('Level down')
+		    self.alert.connect('response', lambda w, i: self.activity.remove_alert(w))
+		    self.activity.add_alert(self.alert)
+
             GObject.idle_add(play_audio_from_file, self, self.path_to_failure)
 
         if easter_egg:
@@ -435,12 +451,18 @@ class Bounce():
         # after enough correct answers, up the difficulty
         if self.correct == len(self.challenges) * 2:
             self.challenge += 1
+
+	    #
             if self.challenge < len(CHALLENGES):
                 for challenge in CHALLENGES[self.challenge]:
                     self.challenges.append(challenge)
             else:
                 self.expert = True
-
+		self.alert = NotifyAlert(10)
+		self.alert.props.title = _('Great')
+		self.alert.props.msg = _('Now are in expert levels')
+		self.alert.connect('response', lambda w, i: self.activity.remove_alert(w))
+		self.activity.add_alert(alerta)
         self.count += 1
         self.dx = 0.  # stop horizontal movement between bounces
 

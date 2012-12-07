@@ -1,3 +1,14 @@
+16
+
+ENHANCEMENTS:
+* Added Fullscreen mode (Ignacio Rodriguez)
+* Added ColorToolButton to set background screen color (Ignacio Rodriguez)
+* Added more default balls (Ignacio Rodriguez)
+* Edited icon. Now is a real soccer ball :)
+
+BUG FIX:
+* Fixed chooser for loading user-defined balls
+
 15
 
 ENHANCEMENT:

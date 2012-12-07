@@ -129,7 +129,7 @@ class Ball():
         r = SIZE / 2.0
         self.ball.set_shape(svg_str_to_pixbuf(
             svg_header(SIZE, SIZE, 1.0) + \
-            svg_sector(r, r, r - 1, 1.999 * pi, '#A0A0A0', '#ff0000') + \
+            svg_sector(r, r, r - 1, 1.999 * pi, '#A0A0A0', '#ff00FF') + \
             svg_sector(r, r, r - 1, fraction * 2 * pi, '#ffff00', '#ff0000') + \
             svg_footer()))
 
