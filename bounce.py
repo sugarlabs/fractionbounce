@@ -266,7 +266,7 @@ class Bounce():
     def _move_ball(self):
         ''' Move the ball and test boundary conditions '''
         if self.new_bounce:
-            self.bar.mark.move((0, self.height))  # hide the mark
+            self.bar.mark.move((0, self.height * 2))  # hide the mark
             if not self.we_are_sharing():
                 self._choose_a_fraction()
             self.new_bounce = False
@@ -435,7 +435,7 @@ class Bounce():
                 spr = Sprite(self.sprites, 0, 0, self.frown_graphic)
 	    if utils.full:
 		    self.alert = NotifyAlert(3)
-		    self.alert.props.title = _('Oh..')
+		    self.alert.props.title = _('Oh...')
 		    self.alert.props.msg = _('Level down')
 		    self.alert.connect('response', lambda w, i: self.activity.remove_alert(w))
 		    self.activity.add_alert(self.alert)

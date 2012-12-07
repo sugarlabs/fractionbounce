@@ -48,7 +48,7 @@ class Bar():
                         self.ball_size / 4., 0, '#000000', '#000000') + \
                svg_footer()
         self.mark = Sprite(self.sprites, 0,
-                           self.screen_height,  # hide off bottom of screen
+                           self.screen_height * 2,  # hide off bottom of screen
                            svg_str_to_pixbuf(mark))
         self.mark.set_layer(2)
 
