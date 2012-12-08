@@ -100,12 +100,21 @@ class FractionBounceActivity(activity.Activity):
 
     def _setup_toolbars(self):
         ''' Add buttons to toolbars '''
+        view_toolbar = Gtk.Toolbar()
         custom_toolbar = Gtk.Toolbar()
         toolbox = ToolbarBox()
         self.toolbar = toolbox.toolbar
         activity_button = ActivityToolbarButton(self)
         self.toolbar.insert(activity_button, 0)
         activity_button.show()
+
+        view_toolbar_button = ToolbarButton(
+            label=_('View'),
+            page=view_toolbar,
+            icon_name='toolbar-view')
+        view_toolbar.show()
+        self.toolbar.insert(view_toolbar_button, -1)
+        view_toolbar_button.show()
 
         custom_toolbar_button = ToolbarButton(
             label=_('Custom'),
@@ -124,13 +133,17 @@ class FractionBounceActivity(activity.Activity):
         self.set_toolbar_box(toolbox)
         toolbox.show()
 
+        self._load_view_buttons(view_toolbar)
         self._load_custom_buttons(custom_toolbar)
+
     def unfullscreen(self):
 	utils.full = False
 	activity.Activity.unfullscreen(self)
+
     def __fullscreen_clicked_cb(self, button):
 	utils.full = True
         self.fullscreen()
+
     def _load_standard_buttons(self, toolbar):
         ''' Load buttons onto whichever toolbar we are using '''
         self.fraction_button = radio_factory('fraction', toolbar,
@@ -149,14 +162,33 @@ class FractionBounceActivity(activity.Activity):
             svg_str_to_pixbuf(generate_xo_svg(scale=1,
                                           colors=[acolor(), bcolor()])),
             toolbar, tooltip=self.nick)
-        separator_factory(toolbar, expand=False, visible=True)
+
         self.challenge = label_factory(toolbar, _("Click the ball to start."),
-                                       width=400)  # FIXME: default not working
+                                       width=200)
 
     def _setup_color(self,widget,pspec):
 	Htmlcolor = rgb2html(widget.get_color())
 	canvas.modify_bg(Gtk.StateType.NORMAL,Gdk.color_parse(Htmlcolor))
 	canvas.show()
+
+    def _load_view_buttons(self, toolbar):
+	item_label = Gtk.ToolItem()
+	label = Gtk.Label(_('Set background color'))
+	item_label.add(label)
+	item_label.show_all()
+
+	fullscreen = ToolButton('view-fullscreen')
+	fullscreen.set_tooltip(_('Fullscreen'))
+	fullscreen.connect('clicked',self.__fullscreen_clicked_cb)
+        color = ColorToolButton()
+        color.connect('notify::color', self._setup_color)
+
+	toolbar.insert(fullscreen,-1)
+        separator_factory(toolbar, expand=False, visible=False)
+	toolbar.insert(item_label,-1)
+        toolbar.insert(color,-1)
+	toolbar.show_all()
+
     def _load_custom_buttons(self, toolbar):
         ''' Entry fields and buttons for adding custom fractions '''
         self.numerator = entry_factory('', toolbar, tooltip=_('numerator'))
@@ -169,31 +201,11 @@ class FractionBounceActivity(activity.Activity):
                                            tooltip=_('add new fraction'),
                                            accelerator='Return')
         separator_factory(toolbar, expand=False, visible=True)
-        separator_factory(toolbar, expand=False, visible=False)
         self._ball_selector = combo_factory(BALLS, toolbar, self._combo_cb,
                                             default=_('soccer ball'),
                                             tooltip=_('choose a ball'))
-	item_label = Gtk.ToolItem()
-	label = Gtk.Label(_('Color for the screen'))
-	item_label.add(label)
-	item_label.show_all()
-	fullscreen = ToolButton('view-fullscreen')
-	fullscreen.set_tooltip(_('Fullscreen'))
-	fullscreen.connect('clicked',self.__fullscreen_clicked_cb)
-	try:
-		color = ColorToolButton()
-	        color.connect('notify::color', self._setup_color)
-	except:
-		pass
-	toolbar.insert(Gtk.SeparatorToolItem(),-1)
-	toolbar.insert(fullscreen,-1)
-	toolbar.insert(Gtk.SeparatorToolItem(),-1)
-	toolbar.insert(item_label,-1)
-	try:
-		toolbar.insert(color,-1)
-	except:
-		pass
 	toolbar.show_all()
+
     def _setup_canvas(self):
         ''' Create a canvas '''
         canvas.set_size_request(Gdk.Screen.width(),
