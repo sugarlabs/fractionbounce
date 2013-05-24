@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 #Copyright (c) 2011, Walter Bender, Paulina Clares, Chris Rowe
 
+# Ported to GTK3 - 2012:
+# Ignacio Rodríguez <ignaciorodriguez@sugarlabs.org>
+
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
@@ -9,28 +12,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this library; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
-
-
-import gtk
+from gi.repository import Gdk, GdkPixbuf, GObject, Gtk
 import os
 
-from sugar.activity import activity
-from sugar import profile
-try:  # 0.86+ toolbar widgets
-    from sugar.graphics.toolbarbox import ToolbarBox
-    HAS_TOOLBARBOX = True
-except ImportError:
-    HAS_TOOLBARBOX = False
-if HAS_TOOLBARBOX:
-    from sugar.graphics.toolbarbox import ToolbarButton
-    from sugar.activity.widgets import ActivityToolbarButton
-    from sugar.activity.widgets import StopButton
+from sugar3.activity import activity
+from sugar3 import profile
+from sugar3.graphics.toolbarbox import ToolbarBox
+from sugar3.graphics.toolbarbox import ToolbarButton
+from sugar3.activity.widgets import ActivityToolbarButton
+from sugar3.activity.widgets import StopButton
 
 import telepathy
 from dbus.service import signal
 from dbus.gobject_service import ExportedGObject
-from sugar.presence import presenceservice
-from sugar.presence.tubeconn import TubeConnection
+from sugar3.presence import presenceservice
+from sugar3.presence.tubeconn import TubeConnection
 
 from gettext import gettext as _
 
@@ -39,7 +35,8 @@ _logger = logging.getLogger('fractionbounce-activity')
 
 from toolbar_utils import image_factory, separator_factory, combo_factory, \
     label_factory, radio_factory, button_factory, entry_factory
-from utils import json_load, json_dump, chooser
+
+# from utils import json_load, json_dump, chooser
 from svg_utils import svg_str_to_pixbuf, generate_xo_svg
 
 from bounce import Bounce
@@ -63,8 +60,10 @@ class FractionBounceActivity(activity.Activity):
         else:
             self.colors = ['#A0FFA0', '#FF8080']
 
-        self.add_events(gtk.gdk.VISIBILITY_NOTIFY_MASK)
+        '''
+        self.add_events(Gdk.EventMask.VISIBILITY_NOTIFY_MASK)
         self.connect('visibility-notify-event', self.__visibility_notify_cb)
+        '''
 
         self.max_participants = 4  # sharing
 
@@ -91,39 +90,30 @@ class FractionBounceActivity(activity.Activity):
 
     def _setup_toolbars(self):
         ''' Add buttons to toolbars '''
-        custom_toolbar = gtk.Toolbar()
-        if HAS_TOOLBARBOX:
-            toolbox = ToolbarBox()
-            self.toolbar = toolbox.toolbar
-            activity_button = ActivityToolbarButton(self)
-            self.toolbar.insert(activity_button, 0)
-            activity_button.show()
+        custom_toolbar = Gtk.Toolbar()
+        toolbox = ToolbarBox()
+        self.toolbar = toolbox.toolbar
+        activity_button = ActivityToolbarButton(self)
+        self.toolbar.insert(activity_button, 0)
+        activity_button.show()
 
-            custom_toolbar_button = ToolbarButton(
-                label=_('Custom'),
-                page=custom_toolbar,
-                icon_name='view-source')
-            custom_toolbar.show()
-            self.toolbar.insert(custom_toolbar_button, -1)
-            custom_toolbar_button.show()
+        custom_toolbar_button = ToolbarButton(
+            label=_('Custom'),
+            page=custom_toolbar,
+            icon_name='view-source')
+        custom_toolbar.show()
+        self.toolbar.insert(custom_toolbar_button, -1)
+        custom_toolbar_button.show()
 
-            self._load_standard_buttons(self.toolbar)
-            separator_factory(self.toolbar, expand=True, visible=False)
+        self._load_standard_buttons(self.toolbar)
+        separator_factory(self.toolbar, expand=True, visible=False)
 
-            stop_button = StopButton(self)
-            stop_button.props.accelerator = _('<Ctrl>Q')
-            self.toolbar.insert(stop_button, -1)
-            stop_button.show()
-
-            self.set_toolbox(toolbox)
-            toolbox.show()
-        else:
-            toolbox = activity.ActivityToolbox(self)
-            self.set_toolbox(toolbox)
-            self.toolbar = gtk.Toolbar()
-            toolbox.add_toolbar(_('Project'), self.toolbar)
-            toolbox.add_toolbar(_('Custom'), custom_toolbar)
-            self._load_standard_buttons(self.toolbar)
+        stop_button = StopButton(self)
+        stop_button.props.accelerator = _('<Ctrl>Q')
+        self.toolbar.insert(stop_button, -1)
+        stop_button.show()
+        self.set_toolbar_box(toolbox)
+        toolbox.show()
 
         self._load_custom_buttons(custom_toolbar)
 
@@ -146,7 +136,8 @@ class FractionBounceActivity(activity.Activity):
                                           colors=['#282828', '#000000'])),
             toolbar, tooltip=self.nick)
         separator_factory(toolbar, expand=False, visible=True)
-        self.challenge = label_factory(toolbar, _("Click the ball to start."))
+        self.challenge = label_factory(toolbar, _("Click the ball to start."),
+                                       width=400)  # FIXME: default not working
 
     def _load_custom_buttons(self, toolbar):
         ''' Entry fields and buttons for adding custom fractions '''
@@ -167,9 +158,9 @@ class FractionBounceActivity(activity.Activity):
 
     def _setup_canvas(self):
         ''' Create a canvas '''
-        canvas = gtk.DrawingArea()
-        canvas.set_size_request(gtk.gdk.screen_width(),
-                                gtk.gdk.screen_height())
+        canvas = Gtk.DrawingArea()
+        canvas.set_size_request(Gdk.Screen.width(),
+                                Gdk.Screen.height())
         self.set_canvas(canvas)
         canvas.show()
         self.show_all()
@@ -251,18 +242,6 @@ class FractionBounceActivity(activity.Activity):
         ''' Callback method for when the activity's visibility changes. '''
         # _logger.debug('%s', str(event.state))
         return
-
-        '''
-        # Awaiting resolution of #2570
-        if event.state == gtk.gdk.VISIBILITY_FULLY_OBSCURED:
-            _logger.debug('pause it')
-            self.bounce_window.pause()
-        elif event.state in \
-            [gtk.gdk.VISIBILITY_UNOBSCURED, gtk.gdk.VISIBILITY_PARTIAL]:
-            if not self.bounce_window.paused:
-                _logger.debug('unpause it')
-                self.challenge.set_label(_('Click the ball to continue'))
-        '''
 
     # Collaboration-related methods
 
