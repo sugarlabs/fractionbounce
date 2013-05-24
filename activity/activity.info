@@ -1,8 +1,10 @@
 [Activity]
 name = FractionBounce
-activity_version = 14
+activity_version = 15
 license = GPLv3
 bundle_id = org.sugarlabs.FractionBounceActivity
 exec = sugar-activity FractionBounceActivity.FractionBounceActivity
 icon = activity-fractionbounce
 show_launcher = yes
+summary = interactive fraction game
+
