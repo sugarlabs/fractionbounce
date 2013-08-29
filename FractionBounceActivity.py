@@ -65,7 +65,7 @@ class FractionBounceActivity(activity.Activity):
         self.connect('visibility-notify-event', self.__visibility_notify_cb)
         '''
 
-        self.max_participants = 4  # sharing
+        self.max_participants = 2  # sharing
 
         self._setup_toolbars()
         self._setup_dispatch_table()

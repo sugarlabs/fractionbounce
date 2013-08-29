@@ -1,3 +1,9 @@
+19
+
+ENHANCEMENTS:
+* Max participants = 2
+* New translations
+
 17
 
 ENHANCEMENT:
@@ -15,7 +21,7 @@ ENHANCEMENT:
 
 13
 
-ENHANCEMENT:
+ENHANCEMENTS:
 * Update to Cairo graphics
 * Make default futbol instead of basketball
 * Change icon to futbol so as not to confuse with Browse icon
