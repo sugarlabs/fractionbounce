@@ -106,8 +106,10 @@ class Bounce():
         self.canvas.connect('draw', self.__draw_cb)
         self.canvas.connect('button-press-event', self._button_press_cb)
         self.canvas.connect('button-release-event', self._button_release_cb)
-        self.canvas.connect('key_press_event', self._keypress_cb)
-        self.canvas.connect('key_release_event', self._keyrelease_cb)
+        self.canvas.connect('key-press-event', self._keypress_cb)
+        self.canvas.connect('key-release-event', self._keyrelease_cb)
+        self.canvas.set_can_focus(True)
+        self.canvas.grab_focus()
         self.width = Gdk.Screen.width()
         self.height = Gdk.Screen.height() - GRID_CELL_SIZE
         self.sprites = Sprites(self.canvas)
@@ -447,6 +449,7 @@ class Bounce():
     def _keypress_cb(self, area, event):
         ''' Keypress: moving the slides with the arrow keys '''
         k = Gdk.keyval_name(event.keyval)
+        _logger.error(k)
         if k in ['h', 'Left', 'KP_Left']:
             self.dx = -DX * self.scale
         elif k in ['l', 'Right', 'KP_Right']:
