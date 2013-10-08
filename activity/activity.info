@@ -1,6 +1,6 @@
 [Activity]
 name = FractionBounce
-activity_version = 19
+activity_version = 21
 license = GPLv3
 bundle_id = org.sugarlabs.FractionBounceActivity
 exec = sugar-activity FractionBounceActivity.FractionBounceActivity
