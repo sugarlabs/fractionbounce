@@ -100,6 +100,7 @@ class Bounce():
     def __init__(self, canvas, path, parent=None):
         ''' Initialize the canvas and set up the callbacks. '''
         self.activity = parent
+        self.fraction = None
 
         if parent is None:        # Starting from command line
             self.sugar = False
@@ -372,21 +373,31 @@ class Bounce():
         numden = string.split('/', 2)
         self.challenges.append([string, int(numden[1]), 0])
 
-    def _choose_a_fraction(self):
+    def _get_new_fraction(self):
         ''' Select a new fraction challenge from the table '''
         if not self.we_are_sharing():
-            self.n = int(uniform(0, len(self.challenges)))
-        fstr = self.challenges[self.n][0]
+            n = int(uniform(0, len(self.challenges)))
+        fstr = self.challenges[n][0]
         if '/' in fstr:  # fraction
             numden = fstr.split('/', 2)
-            self.fraction = float(numden[0].strip()) / float(numden[1].strip())
+            fraction = float(numden[0].strip()) / float(numden[1].strip())
         elif '%' in fstr:  # percentage
-            self.fraction = float(fstr.strip().strip('%').strip()) / 100.
+            fraction = float(fstr.strip().strip('%').strip()) / 100.
         else:  # To do: add support for decimals (using locale)
             _logger.debug('Could not parse challenge (%s)', fstr)
             fstr = '1/2'
-            self.fraction = 0.5
+            fraction = 0.5
+        return fraction, fstr, n
 
+    def _choose_a_fraction(self):
+        ''' choose a new fraction and set the corresponding bar '''
+        # Don't repeat the same fraction twice in a row
+        fraction, fstr, n = self._get_new_fraction()
+        while fraction == self.fraction:
+            fraction, fstr, n = self._get_new_fraction()
+
+        self.fraction = fraction
+        self.n = n
         if self.mode == 'percents':
             self.label = str(int(self.fraction * 100 + 0.5)) + '%'
         else:  # percentage
