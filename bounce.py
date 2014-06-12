@@ -52,6 +52,7 @@ from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
 
 from random import uniform
 import os
+import subprocess
 
 
 from svg_utils import (svg_header, svg_footer, svg_rect, svg_str_to_pixbuf,
@@ -78,6 +79,20 @@ except:
 from sprites import Sprites, Sprite
 
 
+def _is_tablet_mode():
+    if not os.path.exists('/dev/input/event4'):
+        return False
+    try:
+        output = subprocess.call(
+            ['evtest', '--query', '/dev/input/event4', 'EV_SW',
+             'SW_TABLET_MODE'])
+    except (OSError, subprocess.CalledProcessError):
+        return False
+    if str(output) == '10':
+        return True
+    return False
+
+
 class Bounce():
     ''' The Bounce class is used to define the ball and the user
     interaction. '''
@@ -96,10 +111,8 @@ class Bounce():
 
         self.canvas.grab_focus()
 
-        if os.path.exists(ACCELEROMETER_DEVICE):
-            self.accelerometer = True
-        else:
-            self.accelerometer = False
+        self.accelerometer = os.path.exists(ACCELEROMETER_DEVICE) and \
+                             _is_tablet_mode()
 
         self.canvas.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self.canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
