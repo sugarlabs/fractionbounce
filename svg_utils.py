@@ -39,7 +39,20 @@ def svg_sector(x, y, r, a, fill, stroke):
     svg_string = '       <path d="M%f,%f v%f a%f,%f 0 %d,0 %f,%f z"\n' % (
         x, y, -r, r, r, big_arc, -sin(a) * r, r - cos(a) * r)
     svg_string += _svg_style('fill:%s;stroke:%s;' % (fill, stroke))
-    print svg_string
+    return svg_string
+
+
+def svg_wedge(w, h, dx, l, r, fill, stroke, stroke_width=3.5):
+    ''' Returns an SVG wedge: assumes  '''
+    svg_string = '  <path\n'
+    svg_string += '    d="m %f,%f ' % (dx + stroke_width/2.0,
+                                       h - stroke_width/2.0)
+    svg_string += '%f,0 ' % (w - stroke_width/2.0)
+    svg_string += '0,-%f ' % (r - stroke_width/2.0)
+    svg_string += '-%f,%f z"\n' % (w - stroke_width/2.0,
+                                   (r - l) - stroke_width/2.0)
+    svg_string += _svg_style('fill:%s;stroke:%s;stroke_width:%f' %
+                             (fill, stroke, stroke_width))
     return svg_string
 
 

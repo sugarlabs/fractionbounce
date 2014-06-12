@@ -54,8 +54,8 @@ from random import uniform
 import os
 
 
-from svg_utils import svg_header, svg_footer, svg_rect, svg_str_to_pixbuf, \
-    svg_from_file
+from svg_utils import (svg_header, svg_footer, svg_rect, svg_str_to_pixbuf,
+                       svg_from_file)
 from play_audio import play_audio_from_file
 
 from ball import Ball
@@ -67,10 +67,13 @@ import logging
 _logger = logging.getLogger('fractionbounce-activity')
 
 try:
+    from sugar3 import profile
+    COLORS = profile.get_color().to_string().split(',')
     from sugar3.graphics import style
     GRID_CELL_SIZE = style.GRID_CELL_SIZE
-except ImportError:
-    GRID_CELL_SIZE = 0
+except:
+    COLORS = ['#FFFFFF', '#AAAAAA']
+    GRID_CELL_SIZE = 55
 
 from sprites import Sprites, Sprite
 
@@ -169,7 +172,7 @@ class Bounce():
         self.current_frame = 0
 
         self.bar = Bar(self.sprites, self.width, self.height, self.scale,
-                       self.ball.width())
+                       self.ball.width(), COLORS)
         self.current_bar = self.bar.get_bar(2)
 
         self.ball_y_max = self.bar.bar_y() - self.ball.height()
@@ -383,16 +386,15 @@ class Bounce():
 
         self.bar.hide_bars()
         if self.expert:  # Show two-segment bar in expert mode
-            self.current_bar = self.bar.get_bar(2)
+            nseg = 2
         else:
             if self.mode == 'percents':
                 nseg = 10
             else:
                 nseg = self.challenges[self.n][1]
-            # generate new bar on demand
-            self.current_bar = self.bar.get_bar(nseg)
-            self.current_bar.move((self.bar.bar_x(), self.bar.bar_y()))
-        self.current_bar.set_layer(0)
+        # generate new bar on demand
+        self.current_bar = self.bar.get_bar(nseg)
+        self.bar.show_bar(nseg)
 
     def _easter_egg_test(self):
         ''' Test to see if we show the Easter Egg '''

@@ -12,7 +12,8 @@
 
 
 from sprites import Sprite
-from svg_utils import svg_header, svg_footer, svg_rect, svg_str_to_pixbuf
+from svg_utils import (svg_header, svg_footer, svg_rect, svg_str_to_pixbuf,
+                       svg_wedge)
 
 from gettext import gettext as _
 
@@ -24,9 +25,11 @@ class Bar():
     ''' The Bar class is used to define the bars at the bottom of the
     screen '''
 
-    def __init__(self, sprites, width, height, scale, size):
+    def __init__(self, sprites, width, height, scale, size,
+                 colors=['#FFFFFF', '#AAAAAA']):
         ''' Initialize the 2-segment bar, labels, and mark '''
         self.sprites = sprites
+        self.colors = colors[:]
         self.bars = {}
         self.screen_width = width
         self.screen_height = height
@@ -59,7 +62,10 @@ class Bar():
         return self.bars[2].get_xy()[0]
 
     def bar_y(self):
-        return self.bars[2].get_xy()[1]
+        if self.bars[2].get_xy()[1] < 0:
+            return self.bars[2].get_xy()[1] + 1000
+        else:
+            return self.bars[2].get_xy()[1]
 
     def width(self):
         return self.bars[2].rect[2]
@@ -67,10 +73,15 @@ class Bar():
     def height(self):
         return self.bars[2].rect[3]
 
+    def show_bar(self, n):
+        if n in self.bars:
+            self.bars[n].move([self.bar_x(), self.bar_y()])
+
     def hide_bars(self):
         ''' Hide all of the bars '''
         for bar in self.bars:
-            self.bars[bar].set_layer(-1)
+            if self.bars[bar].get_xy()[1] > 0:
+                self.bars[bar].move_relative([0, -1000])
 
     def make_labels(self):
         ''' Label the bar '''
@@ -94,17 +105,49 @@ class Bar():
         return self.bars[nsegments]
 
     def make_bar(self, nsegments):
+        return self.make_wedge_bar(nsegments)
+
+    def make_rect_bar(self, nsegments):
         ''' Create a bar with n segments '''
         svg = svg_header(self.screen_width - self.ball_size, BAR_HEIGHT, 1.0)
         dx = (self.screen_width - self.ball_size) / float(nsegments)
         for i in range(int(nsegments) / 2):
             svg += svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
-                            i * 2 * dx, 0, '#FFFFFF', '#FFFFFF')
+                            i * 2 * dx, 0, self.colors[0], self.colors[0])
             svg += svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
-                            (i * 2 + 1) * dx, 0, '#AAAAAA', '#AAAAAA')
+                            (i * 2 + 1) * dx, 0, self.colors[1], self.colors[1])
         if int(nsegments) % 2 == 1:  # odd
             svg += svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
-                            (i * 2 + 2) * dx, 0, '#FFFFFF', '#FFFFFF')
+                            (i * 2 + 2) * dx, 0, self.colors[0], self.colors[0])
+        svg += svg_footer()
+
+        self.bars[nsegments] = Sprite(self.sprites, 0, 0,
+                                      svg_str_to_pixbuf(svg))
+        self.bars[nsegments].move(
+            (int(self.ball_size / 2), self.screen_height - \
+                 int((self.ball_size + self.height()) / 2)))
+
+    def make_wedge_bar(self, nsegments):
+        ''' Create a wedged-shaped bar with n segments '''
+        svg = svg_header(self.screen_width - self.ball_size, BAR_HEIGHT, 1.0)
+        dx = (self.screen_width - self.ball_size) / float(nsegments)
+        dy = BAR_HEIGHT * self.scale / float(nsegments)
+        print 'nsegments', nsegments
+        for i in range(int(nsegments) / 2):
+            print i, i * 2 * dy, (i * 2 + 1) * dy,
+            svg += svg_wedge(dx, BAR_HEIGHT * self.scale,
+                             i * 2 * dx,
+                             i * 2 * dy, (i * 2 + 1) * dy,
+                             self.colors[0], self.colors[0])
+            svg += svg_wedge(dx, BAR_HEIGHT * self.scale,
+                             (i * 2 + 1) * dx,
+                             (i * 2 + 1) * dy, (i * 2 + 2) * dy,
+                             self.colors[1], self.colors[1])
+        if int(nsegments) % 2 == 1:  # odd
+            svg += svg_wedge(dx, BAR_HEIGHT * self.scale,
+                             (i * 2 + 2) * dx,
+                             (i * 2 + 2) * dy, BAR_HEIGHT * self.scale,
+                             self.colors[0], self.colors[0])
         svg += svg_footer()
 
         self.bars[nsegments] = Sprite(self.sprites, 0, 0,
