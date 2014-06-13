@@ -21,6 +21,7 @@ from sugar3.graphics.toolbarbox import ToolbarBox
 from sugar3.graphics.toolbarbox import ToolbarButton
 from sugar3.activity.widgets import ActivityToolbarButton
 from sugar3.activity.widgets import StopButton
+from sugar3.graphics.alert import NotifyAlert
 
 import telepathy
 from dbus.service import signal
@@ -251,6 +252,11 @@ class FractionBounceActivity(activity.Activity):
             else:
                 self.metadata['custom'] = '%d/%d' % (numerator, denominator)
 
+            self._alert(
+                _('New fraction'),
+                _('Your fraction, %d/%d, has been added to the program' %
+                  (numerator, denominator)))
+
     def reset_label(self, fraction):
         ''' update the challenge label '''
         self.challenge.set_label(_('Bounce the ball to a position \
@@ -261,6 +267,17 @@ class FractionBounceActivity(activity.Activity):
         ''' Callback method for when the activity's visibility changes. '''
         # _logger.debug('%s', str(event.state))
         return
+
+    def _alert(self, title, text=None):
+        alert = NotifyAlert(timeout=5)
+        alert.props.title = title
+        alert.props.msg = text
+        self.add_alert(alert)
+        alert.connect('response', self._alert_cancel_cb)
+        alert.show()
+
+    def _alert_cancel_cb(self, alert, response_id):
+        self.remove_alert(alert)
 
     # Collaboration-related methods
 
