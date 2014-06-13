@@ -141,3 +141,16 @@ msgstr "Nueva fracción"
 msgid "Your fraction, %s, has been added to the program"
 msgstr "Su nueva fracción, %s, ha sido añadido al juego"
 
+#: bounce.py:172
+msgid ""
+"Click the ball to start. The rock the computer left and right to move the "
+"ball."
+msgstr ""
+"Haga clic en la bola para comenzar. La roca del equipo dejó "
+"y derecha para mover el balón."
+
+#: bounce.py:177
+msgid "Click the ball to start. Then use the arrow keys to move the ball."
+msgstr ""
+"Haga clic en la bola para comenzar. A continuación, utilice las teclas "
+"de flecha para mover el balón."

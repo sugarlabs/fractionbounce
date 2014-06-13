@@ -253,7 +253,7 @@ class FractionBounceActivity(activity.Activity):
             else:
                 self.metadata['custom'] = fraction
 
-            self._alert(
+            self.alert(
                 _('New fraction'),
                 _('Your fraction, %s, has been added to the program' %
                   (fraction)))
@@ -269,7 +269,7 @@ class FractionBounceActivity(activity.Activity):
         # _logger.debug('%s', str(event.state))
         return
 
-    def _alert(self, title, text=None):
+    def alert(self, title, text=None):
         alert = NotifyAlert(timeout=5)
         alert.props.title = title
         alert.props.msg = text

@@ -165,6 +165,18 @@ class Bounce():
         self.ddy = (6.67 * self.height) / (STEPS * STEPS)
         self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
 
+        if self.sugar:
+            if _is_tablet_mode():
+                self.activity.alert(
+                    _('FractionBounce'),
+                    _('Click the ball to start. The rock the computer left '
+                      'and right to move the ball.'))
+            else:
+                self.activity.alert(
+                    _('FractionBounce'),
+                    _('Click the ball to start. Then use the arrow keys to '
+                      'move the ball.'))
+
     def _create_sprites(self, path):
         ''' Create all of the sprites we'll need '''
         self.smiley_graphic = svg_str_to_pixbuf(svg_from_file(
