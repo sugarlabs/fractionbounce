@@ -5,6 +5,8 @@ ENHANCEMENTS:
 * Use user colors in bar
 * Use accelerometer in tablet mode; otherwise, use keyboard
 * Three new objects: bowling ball, beachball, feather
+* Notify user when a new fraction has been added
+* Use white background color
 
 21
 
