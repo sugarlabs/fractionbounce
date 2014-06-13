@@ -194,7 +194,6 @@ class Bounce():
                         self.ball_y_max))
 
         max_size = max(Gdk.Screen.width(), Gdk.Screen.height())
-        print genblank(max_size, max_size, ('#FFFFFF', '#FFFFFF'))
         self._my_canvas = Sprite(
             self.sprites, 0, 0, svg_str_to_pixbuf(genblank(
                 max_size, max_size, ('#FFFFFF', '#FFFFFF'))))
