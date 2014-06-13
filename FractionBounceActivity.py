@@ -245,17 +245,18 @@ class FractionBounceActivity(activity.Activity):
         if numerator > denominator:
             numerator = 0
         if numerator > 0 and denominator > 1:
-            self.bounce_window.add_fraction('%d/%d' % (numerator, denominator))
+            fraction = '%d/%d' % (numerator, denominator)
+            self.bounce_window.add_fraction(fraction)
             if 'custom' in self.metadata:  # Save to Journal
-                self.metadata['custom'] = '%s,%d/%d' % (
-                    self.metadata['custom'], numerator, denominator)
+                self.metadata['custom'] = '%s,%s' % (
+                    self.metadata['custom'], fraction)
             else:
-                self.metadata['custom'] = '%d/%d' % (numerator, denominator)
+                self.metadata['custom'] = fraction
 
             self._alert(
                 _('New fraction'),
-                _('Your fraction, %d/%d, has been added to the program' %
-                  (numerator, denominator)))
+                _('Your fraction, %s, has been added to the program' %
+                  (fraction)))
 
     def reset_label(self, fraction):
         ''' update the challenge label '''
