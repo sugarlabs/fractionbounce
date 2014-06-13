@@ -42,7 +42,8 @@ from svg_utils import svg_str_to_pixbuf, generate_xo_svg
 from bounce import Bounce
 
 
-BALLS = [_('basketball'), _('soccer ball'), _('user defined')]
+BALLS = [_('basketball'), _('soccer ball'), _('feather'), _('bowling ball'),
+         _('beachball'), _('user defined')]
 SERVICE = 'org.sugarlabs.FractionBounceActivity'
 IFACE = SERVICE
 PATH = '/org/augarlabs/FractionBounceActivity'
@@ -176,6 +177,15 @@ class FractionBounceActivity(activity.Activity):
         elif BALLS[self._ball_selector.get_active()] == _('soccer ball'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'soccer.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('bowling ball'):
+            self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'bowlingball.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('beachball'):
+            self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'beachball.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('feather'):
+            self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'feather.svg'))
         else:
             chooser(self, '', self._new_ball_from_journal)
 
@@ -186,6 +196,15 @@ class FractionBounceActivity(activity.Activity):
         if BALLS[self._ball_selector.get_active()] == _('soccer ball'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'soccer.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('bowling ball'):
+            self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'bowlingball.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('beachball'):
+            self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'beachball.svg'))
+        elif BALLS[self._ball_selector.get_active()] == _('feather'):
+            self.bounce_window.ball.new_ball(os.path.join(
+                    activity.get_bundle_path(), 'feather.svg'))
         else:
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'basketball.svg'))
