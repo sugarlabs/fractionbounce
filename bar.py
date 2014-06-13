@@ -132,9 +132,7 @@ class Bar():
         svg = svg_header(self.screen_width - self.ball_size, BAR_HEIGHT, 1.0)
         dx = (self.screen_width - self.ball_size) / float(nsegments)
         dy = BAR_HEIGHT * self.scale / float(nsegments)
-        print 'nsegments', nsegments
         for i in range(int(nsegments) / 2):
-            print i, i * 2 * dy, (i * 2 + 1) * dy,
             svg += svg_wedge(dx, BAR_HEIGHT * self.scale,
                              i * 2 * dx,
                              i * 2 * dy, (i * 2 + 1) * dy,

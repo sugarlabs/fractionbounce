@@ -48,9 +48,8 @@ def svg_wedge(w, h, dx, l, r, fill, stroke, stroke_width=3.5):
     svg_string += '    d="m %f,%f ' % (dx + stroke_width/2.0,
                                        h - stroke_width/2.0)
     svg_string += '%f,0 ' % (w - stroke_width/2.0)
-    svg_string += '0,-%f ' % (r - stroke_width/2.0)
-    svg_string += '-%f,%f z"\n' % (w - stroke_width/2.0,
-                                   (r - l) - stroke_width/2.0)
+    svg_string += '0,-%f ' % (r)
+    svg_string += '-%f,%f z"\n' % (w - stroke_width/2.0, (r - l))
     svg_string += _svg_style('fill:%s;stroke:%s;stroke_width:%f' %
                              (fill, stroke, stroke_width))
     return svg_string
@@ -67,6 +66,12 @@ def svg_rect(w, h, rx, ry, x, y, fill, stroke):
     svg_string += '          y="%f"\n' % (y)
     svg_string += _svg_style('fill:%s;stroke:%s;' % (fill, stroke))
     return svg_string
+
+
+def genblank(w, h, colors, stroke_width=1.0):
+    return svg_header(w, h, 1.0) + \
+           svg_rect(w, h, 0, 0, 0, 0, colors[0], colors[1]) + \
+           svg_footer()
 
 
 def _svg_xo(fill, stroke, width=3.5):

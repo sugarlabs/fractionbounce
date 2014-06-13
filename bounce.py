@@ -56,7 +56,7 @@ import subprocess
 
 
 from svg_utils import (svg_header, svg_footer, svg_rect, svg_str_to_pixbuf,
-                       svg_from_file)
+                       svg_from_file, genblank)
 from play_audio import play_audio_from_file
 
 from ball import Ball
@@ -192,6 +192,15 @@ class Bounce():
         self.ball_y_max = self.bar.bar_y() - self.ball.height()
         self.ball.move_ball((int((self.width - self.ball.width()) / 2),
                         self.ball_y_max))
+
+        max_size = max(Gdk.Screen.width(), Gdk.Screen.height())
+        print genblank(max_size, max_size, ('#FFFFFF', '#FFFFFF'))
+        self._my_canvas = Sprite(
+            self.sprites, 0, 0, svg_str_to_pixbuf(genblank(
+                max_size, max_size, ('#FFFFFF', '#FFFFFF'))))
+
+        self._my_canvas.set_layer(-100)
+        self._my_canvas.type = 'background'
 
     def pause(self):
         ''' Pause play when visibility changes '''
