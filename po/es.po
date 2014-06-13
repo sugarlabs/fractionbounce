@@ -116,3 +116,28 @@ msgstr "Haga clic en la barra para escoger una fracción."
 #, python-format
 msgid "Waiting for %(buddy)s"
 msgstr "Esperando a %(buddy)s"
+
+#: FractionBounceActivity.py:46 FractionBounceActivity.py:187
+#: FractionBounceActivity.py:206
+msgid "feather"
+msgstr "pluma "
+
+#: FractionBounceActivity.py:46 FractionBounceActivity.py:181
+#: FractionBounceActivity.py:200
+msgid "bowling ball"
+msgstr "bola de bolos"
+
+#: FractionBounceActivity.py:47 FractionBounceActivity.py:184
+#: FractionBounceActivity.py:203
+msgid "beachball"
+msgstr "pelota de playa"
+
+#: FractionBounceActivity.py:257
+msgid "New fraction"
+msgstr "Nueva fracción"
+
+#: FractionBounceActivity.py:258
+#, python-format
+msgid "Your fraction, %s, has been added to the program"
+msgstr "Su nueva fracción, %s, ha sido añadido al juego"
+
