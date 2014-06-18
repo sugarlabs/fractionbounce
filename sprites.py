@@ -169,7 +169,7 @@ class Sprite:
         self._fd = None
         self._bold = False
         self._italic = False
-        self._color = None
+        self._colors = []
         self._margins = [0, 0, 0, 0]
         self.layer = 100
         self.labels = []
@@ -261,12 +261,14 @@ class Sprite:
         ''' Set the margins for drawing the label '''
         self._margins = [l, t, r, b]
 
+    def _extend_colors_array(self, i):
+        while len(self._colors) < i + 1:
+            self._colors.append([0., 0., 0.])
+
     def _extend_labels_array(self, i):
         ''' Append to the labels attribute list '''
         if self._fd is None:
             self.set_font('Sans')
-        if self._color is None:
-            self._color = (0., 0., 0.)
         while len(self.labels) < i + 1:
             self.labels.append(" ")
             self._scale.append(self._scale[0])
@@ -275,12 +277,13 @@ class Sprite:
             self._vert_align.append(self._vert_align[0])
             self._x_pos.append(self._x_pos[0])
             self._y_pos.append(self._y_pos[0])
+        self._extend_colors_array(i)
 
     def set_font(self, font):
         ''' Set the font for a label '''
         self._fd = Pango.FontDescription(font)
 
-    def set_label_color(self, rgb):
+    def set_label_color(self, rgb, i=0):
         ''' Set the font color for a label '''
         COLORTABLE = {'black': '#000000', 'white': '#FFFFFF',
                       'red': '#FF0000', 'yellow': '#FFFF00',
@@ -290,9 +293,10 @@ class Sprite:
         if rgb.lower() in COLORTABLE:
             rgb = COLORTABLE[rgb.lower()]
         # Convert from '#RRGGBB' to floats
-        self._color = (int('0x' + rgb[1:3], 16) / 256.,
-                       int('0x' + rgb[3:5], 16) / 256.,
-                       int('0x' + rgb[5:7], 16) / 256.)
+        self._extend_colors_array(i)
+        self._colors[i] = [int('0x' + rgb[1:3], 16) / 256.,
+                           int('0x' + rgb[3:5], 16) / 256.,
+                           int('0x' + rgb[5:7], 16) / 256.]
         return
 
     def set_label_attributes(self, scale, rescale=True, horiz_align="center",
@@ -412,7 +416,8 @@ class Sprite:
                 y = int(self.rect[1] + self.rect[3] - h - self._margins[3])
             cr.save()
             cr.translate(x, y)
-            cr.set_source_rgb(self._color[0], self._color[1], self._color[2])
+            cr.set_source_rgb(self._colors[i][0], self._colors[i][1],
+                              self._colors[i][2])
             PangoCairo.update_layout(cr, pl)
             PangoCairo.show_layout(cr, pl)
             cr.restore()
