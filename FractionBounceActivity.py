@@ -198,12 +198,15 @@ class FractionBounceActivity(activity.Activity):
         if BALLS[self._ball_selector.get_active()] == _('basketball'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'basketball.svg'))
+            self.bounce_window.set_background('parquet.png')
         elif BALLS[self._ball_selector.get_active()] == _('soccer ball'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'soccer.svg'))
+            self.bounce_window.set_background('grass.png')
         elif BALLS[self._ball_selector.get_active()] == _('bowling ball'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'bowlingball.svg'))
+            self.bounce_window.set_background('parquet.png')
         elif BALLS[self._ball_selector.get_active()] == _('beachball'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'beachball.svg'))

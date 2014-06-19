@@ -90,7 +90,7 @@ class Ball():
         self.ball = Sprite(self.sprites, 0, 0, svg_str_to_pixbuf(
                 svg_from_file(filename)))
 
-        self.ball.set_layer(1)
+        self.ball.set_layer(3)
         self.ball.set_label_attributes(24)
 
         ball = extract_svg_payload(file(filename, 'r'))
@@ -101,7 +101,7 @@ class Ball():
                             ball + PUNCTURE + AIR + '</g>' + svg_footer())))
 
         for frame in self.frames:
-            frame.set_layer(1)
+            frame.set_layer(3)
             frame.move((0, -SIZE))  # move animation frames off screen
 
     def new_ball(self, filename):

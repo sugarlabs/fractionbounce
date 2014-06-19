@@ -61,7 +61,7 @@ class Bar():
         self.mark = Sprite(self.sprites, 0,
                            self.screen_height,  # hide off bottom of screen
                            svg_str_to_pixbuf(mark))
-        self.mark.set_layer(2)
+        self.mark.set_layer(1)
 
     def make_mark(self):
         ''' Make a mark to show the fraction position on the bar. '''
@@ -76,7 +76,7 @@ class Bar():
         self.mark = Sprite(self.sprites, 0,
                            self.screen_height,  # hide off bottom of screen
                            svg_str_to_pixbuf(mark))
-        self.mark.set_layer(2)
+        self.mark.set_layer(1)
 
     def mark_width(self):
         return self.mark.rect[2]
@@ -171,6 +171,7 @@ class Bar():
 
         self.bars[nsegments] = Sprite(self.sprites, 0, 0,
                                       svg_str_to_pixbuf(svg))
+        self.bars[nsegments].set_layer(2)
         self.bars[nsegments].set_label_attributes(18, horiz_align="left", i=0)
         self.bars[nsegments].set_label_attributes(18, horiz_align="right", i=1)
         self.bars[nsegments].set_label_color('black', i=0)

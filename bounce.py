@@ -211,12 +211,33 @@ class Bounce():
                         self.ball_y_max))
 
         max_size = max(Gdk.Screen.width(), Gdk.Screen.height())
-        self._my_canvas = Sprite(
+        self.backgrounds = {}
+        self.backgrounds['blank'] = Sprite(
             self.sprites, 0, 0, svg_str_to_pixbuf(genblank(
                 max_size, max_size, ('#FFFFFF', '#FFFFFF'))))
+        self.backgrounds['blank'].set_layer(-100)
+        self.backgrounds['blank'].type = 'background'
 
-        self._my_canvas.set_layer(-100)
-        self._my_canvas.type = 'background'
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+            os.path.join(path, 'grass.png'), max_size, max_size)
+        self.backgrounds['grass.png'] = Sprite(
+            self.sprites, 0, 0, pixbuf)
+        self.backgrounds['grass.png'].set_layer(-99)
+        self.backgrounds['grass.png'].type = 'background'
+
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+            os.path.join(path, 'parquet.png'), max_size, max_size)
+        self.backgrounds['parquet.png'] = Sprite(
+            self.sprites, 0, 0, pixbuf)
+        self.backgrounds['parquet.png'].set_layer(-100)
+        self.backgrounds['parquet.png'].type = 'background'
+
+    def set_background(self, name):
+        for k in self.backgrounds.keys():
+            if k == name:
+                self.backgrounds[k].set_layer(-99)
+            else:
+                self.backgrounds[k].set_layer(-100)
 
     def pause(self):
         ''' Pause play when visibility changes '''
