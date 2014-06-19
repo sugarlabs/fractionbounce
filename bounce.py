@@ -332,8 +332,7 @@ class Bounce():
 
         # Calculate a new ball_y_max depending on the x position
         self.ball_y_max = self.bar.bar_y() - self.ball.height() + \
-                          int(BAR_HEIGHT * (1 - (self.ball.ball_x() /
-                                            float(self.bar.width()))))
+                          self._wedge_offset()
 
         if self.ball.ball_y() >= self.ball_y_max:
             # hit the bottom
@@ -358,6 +357,13 @@ class Bounce():
                         self._move_ball)
         else:
             self.timeout = GObject.timeout_add(STEP_PAUSE, self._move_ball)
+
+    def _wedge_offset(self):
+        return int(BAR_HEIGHT * (1 - (self.ball.ball_x() /
+                                      float(self.bar.width()))))
+
+    def _mark_offset(self, x):
+        return int(BAR_HEIGHT * (1 - (x / float(self.bar.width())))) - 12
 
     def _animate(self):
         ''' A little Easter Egg just for fun. '''
@@ -465,7 +471,7 @@ class Bounce():
         x = self.ball.ball_x() + self.ball.width() / 2
         f = self.ball.width() / 2 + int(self.fraction * self.bar.width())
         self.bar.mark.move((int(f - self.bar.mark_width() / 2),
-                        self.bar.bar_y() - 2))
+                            int(self.bar.bar_y() + self._mark_offset(f))))
         if self.challenges[self.n][2] == 0:  # label the column
             spr = Sprite(self.sprites, 0, 0, self.blank_graphic)
             spr.set_label(self.label)
