@@ -10,6 +10,7 @@
 # along with this library; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
+from sugar3.graphics import style
 
 from sprites import Sprite
 from svg_utils import (svg_header, svg_footer, svg_rect, svg_str_to_pixbuf,
@@ -18,7 +19,7 @@ from svg_utils import (svg_header, svg_footer, svg_rect, svg_str_to_pixbuf,
 from gettext import gettext as _
 
 
-BAR_HEIGHT = 55
+BAR_HEIGHT = style.GRID_CELL_SIZE
 
 
 class Bar():
@@ -167,5 +168,6 @@ class Bar():
         self.bars[nsegments].set_label(' 0', i=0)
         self.bars[nsegments].set_label('1 ', i=1)
         self.bars[nsegments].move(
-            (int(self.ball_size / 2), self.screen_height - \
-                 int((self.ball_size + self.height()) / 2)))
+            (int(self.ball_size / 2),
+             self.screen_height - BAR_HEIGHT * self.scale))
+                 # int((self.ball_size + self.height()) / 2)))
