@@ -22,6 +22,7 @@ from sugar3.graphics.toolbarbox import ToolbarButton
 from sugar3.activity.widgets import ActivityToolbarButton
 from sugar3.activity.widgets import StopButton
 from sugar3.graphics.alert import NotifyAlert
+from sugar3.graphics import style
 
 import telepathy
 from dbus.service import signal
@@ -82,6 +83,9 @@ class FractionBounceActivity(activity.Activity):
         # Initialize the canvas
         self.bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
 
+        # Gdk.Screen.get_default().connect('size-changed',
+        #                                  self.bounce_window.configure_cb)
+
         # Restore any custom fractions
         if custom is not None:
             fractions = custom.split(',')
@@ -90,22 +94,41 @@ class FractionBounceActivity(activity.Activity):
 
         self._setup_presence_service()
 
+    def toolbar_expanded(self):
+        if self.activity_button.is_expanded():
+            return True
+        elif self.custom_toolbar_button.is_expanded():
+            return True
+        return False
+
+    def _update_graphics(self, widget):
+        if self.toolbar_expanded():
+            self.bounce_window.bar.bump_bars('up')
+            self.bounce_window.ball.ball.move_relative(
+                (0, -style.GRID_CELL_SIZE))
+        else:
+            self.bounce_window.bar.bump_bars('down')
+            self.bounce_window.ball.ball.move_relative(
+                (0, style.GRID_CELL_SIZE))
+
     def _setup_toolbars(self):
         ''' Add buttons to toolbars '''
         custom_toolbar = Gtk.Toolbar()
         toolbox = ToolbarBox()
         self.toolbar = toolbox.toolbar
-        activity_button = ActivityToolbarButton(self)
-        self.toolbar.insert(activity_button, 0)
-        activity_button.show()
+        self.activity_button = ActivityToolbarButton(self)
+        self.activity_button.connect('clicked', self._update_graphics)
+        self.toolbar.insert(self.activity_button, 0)
+        self.activity_button.show()
 
-        custom_toolbar_button = ToolbarButton(
+        self.custom_toolbar_button = ToolbarButton(
             label=_('Custom'),
             page=custom_toolbar,
             icon_name='view-source')
+        self.custom_toolbar_button.connect('clicked', self._update_graphics)
         custom_toolbar.show()
-        self.toolbar.insert(custom_toolbar_button, -1)
-        custom_toolbar_button.show()
+        self.toolbar.insert(self.custom_toolbar_button, -1)
+        self.custom_toolbar_button.show()
 
         self._load_standard_buttons(self.toolbar)
         separator_factory(self.toolbar, expand=True, visible=False)

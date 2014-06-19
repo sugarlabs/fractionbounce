@@ -169,15 +169,26 @@ class Bounce():
 
         if self.sugar:
             if _is_tablet_mode():
-                self.activity.alert(
-                    _('FractionBounce'),
+                self.activity.challenge.set_label(
                     _('Click the ball to start. The rock the computer left '
                       'and right to move the ball.'))
             else:
-                self.activity.alert(
-                    _('FractionBounce'),
+                self.activity.challenge.set_label(
                     _('Click the ball to start. Then use the arrow keys to '
                       'move the ball.'))
+
+    def configure_cb(self, event):
+        # TODO: deal with rotation
+        logging.error('CONFIGURE CB')
+        if self.sugar:
+            if self.activity.toolbar_expanded():
+                logging.error('BUMP UP')
+                self.bar.bump_bars('up')
+                self.ball.move_relative((0, -GRID_CELL_SIZE))
+            else:
+                logging.error('BUMP DOWN')
+                self.bar.bump_bars('down')
+                self.ball.move_relative((0, GRID_CELL_SIZE))
 
     def _create_sprites(self, path):
         ''' Create all of the sprites we'll need '''

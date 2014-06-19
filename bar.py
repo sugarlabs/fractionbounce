@@ -100,6 +100,16 @@ class Bar():
         if n in self.bars:
             self.bars[n].move([self.bar_x(), self.bar_y()])
 
+    def bump_bars(self, direction='up'):
+        ''' when the toolbars expand and contract, we need to move the bar '''
+        if direction == 'up':
+            dy = -style.GRID_CELL_SIZE
+        else:
+            dy = style.GRID_CELL_SIZE
+        for bar in self.bars:
+            self.bars[bar].move_relative([0, dy])
+        self.mark.move_relative([0, dy])
+
     def hide_bars(self):
         ''' Hide all of the bars '''
         for bar in self.bars:
