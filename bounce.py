@@ -38,6 +38,7 @@ CHALLENGES = [[['1/2', 2, 0], ['1/3', 3, 0], ['1/4', 4, 0],
                ['7/16', 4, 0], ['8/16', 4, 0], ['9/16', 4, 0],
                ['10/16', 4, 0], ['11/16', 4, 0], ['12/16', 4, 0],
                ['13/16', 4, 0], ['14/16', 4, 0], ['15/16', 4, 0]]]
+
 REWARD_HEIGHT = 25
 STEPS = 100.  # number of time steps per bounce rise and fall
 STEP_PAUSE = 50  # milliseconds between steps
@@ -48,6 +49,7 @@ ACCELEROMETER_DEVICE = '/sys/devices/platform/lis3lv02d/position'
 CRASH = 'crash.ogg'  # wrong answer sound
 LAUGH = 'bottle.ogg'  # correct answer sound
 BUBBLES = 'bubbles.ogg'  # Easter Egg sound
+
 from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
 
 from random import uniform
@@ -60,7 +62,7 @@ from svg_utils import (svg_header, svg_footer, svg_rect, svg_str_to_pixbuf,
 from play_audio import play_audio_from_file
 
 from ball import Ball
-from bar import Bar
+from bar import Bar, BAR_HEIGHT
 
 from gettext import gettext as _
 
@@ -201,7 +203,8 @@ class Bounce():
                        self.ball.width(), COLORS)
         self.current_bar = self.bar.get_bar(2)
 
-        self.ball_y_max = self.bar.bar_y() - self.ball.height()
+        self.ball_y_max = self.bar.bar_y() - self.ball.height() + \
+                          int(BAR_HEIGHT / 2.)
         self.ball.move_ball((int((self.width - self.ball.width()) / 2),
                         self.ball_y_max))
 
@@ -326,6 +329,11 @@ class Bounce():
 
         # accelerate in y
         self.dy += self.ddy
+
+        # Calculate a new ball_y_max depending on the x position
+        self.ball_y_max = self.bar.bar_y() - self.ball.height() + \
+                          int(BAR_HEIGHT * (1 - (self.ball.ball_x() /
+                                            float(self.bar.width()))))
 
         if self.ball.ball_y() >= self.ball_y_max:
             # hit the bottom
