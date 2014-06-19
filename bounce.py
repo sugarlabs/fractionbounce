@@ -180,15 +180,6 @@ class Bounce():
     def configure_cb(self, event):
         # TODO: deal with rotation
         logging.error('CONFIGURE CB')
-        if self.sugar:
-            if self.activity.toolbar_expanded():
-                logging.error('BUMP UP')
-                self.bar.bump_bars('up')
-                self.ball.move_relative((0, -GRID_CELL_SIZE))
-            else:
-                logging.error('BUMP DOWN')
-                self.bar.bump_bars('down')
-                self.ball.move_relative((0, GRID_CELL_SIZE))
 
     def _create_sprites(self, path):
         ''' Create all of the sprites we'll need '''
@@ -478,7 +469,12 @@ class Bounce():
     def _test(self, easter_egg=False):
         ''' Test to see if we estimated correctly '''
         self.timeout = None
-        delta = self.ball.width() / 4
+
+        if self.expert:
+            delta = self.ball.width() / 6
+        else:
+            delta = self.ball.width() / 3
+
         x = self.ball.ball_x() + self.ball.width() / 2
         f = self.ball.width() / 2 + int(self.fraction * self.bar.width())
         self.bar.mark.move((int(f - self.bar.mark_width() / 2),
@@ -486,7 +482,7 @@ class Bounce():
         if self.challenges[self.n][2] == 0:  # label the column
             spr = Sprite(self.sprites, 0, 0, self.blank_graphic)
             spr.set_label(self.label)
-            spr.move((int(self.n * 25), 0))
+            spr.move((int(self.n * 27), 0))
             spr.set_layer(-1)
         self.challenges[self.n][2] += 1
         if x > f - delta and x < f + delta:
@@ -497,7 +493,7 @@ class Bounce():
             spr = Sprite(self.sprites, 0, 0, self.frown_graphic)
             GObject.idle_add(play_audio_from_file, self, self.path_to_failure)
 
-        spr.move((int(self.n * 25), int(self.challenges[self.n][2] * 25)))
+        spr.move((int(self.n * 27), int(self.challenges[self.n][2] * 27)))
         spr.set_layer(-1)
 
         # after enough correct answers, up the difficulty
@@ -515,7 +511,6 @@ class Bounce():
     def _keypress_cb(self, area, event):
         ''' Keypress: moving the slides with the arrow keys '''
         k = Gdk.keyval_name(event.keyval)
-        _logger.error(k)
         if k in ['h', 'Left', 'KP_Left']:
             self.dx = -DX * self.scale
         elif k in ['l', 'Right', 'KP_Right']:
