@@ -18,13 +18,19 @@ from math import pi
 
 from sprites import Sprite
 from svg_utils import svg_header, svg_footer, svg_str_to_pixbuf, \
-    extract_svg_payload, svg_from_file, svg_sector
+    extract_svg_payload, svg_from_file, svg_sector, svg_rect
 
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
 
+try:
+    from sugar3 import profile
+    COLORS = profile.get_color().to_string().split(',')
+except:
+    COLORS = ['#FFFF00', '#00AAAA']
 
-SIZE = 85
+SIZE = [85, 120]
+BOX = [85, 32]
 ANIMATION = {10: (0, 1), 15: (1, 2), 20: (2, 1), 25: (1, 2), 30: (2, 1),
              35: (1, 2), 40: (2, 3), 45: (3, 4), 50: (4, 3), 55: (3, 4),
              60: (4, 3), 65: (3, 4), 70: (4, 5), 75: (5, 6), 80: (6, 5),
@@ -97,12 +103,12 @@ class Ball():
         for i in range(8):
             self.frames.append(Sprite(
                     self.sprites, 0, 0, svg_str_to_pixbuf(
-                        svg_header(SIZE, SIZE, 1.0) + TRANSFORMS[i] + \
+                        svg_header(SIZE[0], SIZE[1], 1.0) + TRANSFORMS[i] + \
                             ball + PUNCTURE + AIR + '</g>' + svg_footer())))
 
         for frame in self.frames:
             frame.set_layer(3)
-            frame.move((0, -SIZE))  # move animation frames off screen
+            frame.move((0, -SIZE[1]))  # move animation frames off screen
 
     def new_ball(self, filename):
         ''' Create a ball object and Easter Egg animation from an SVG file. '''
@@ -110,7 +116,7 @@ class Ball():
         ball = extract_svg_payload(file(filename, 'r'))
         for i in range(8):
             self.frames[i].set_shape(svg_str_to_pixbuf(
-                        svg_header(SIZE, SIZE, 1.0) + TRANSFORMS[i] + \
+                        svg_header(SIZE[0], SIZE[1], 1.0) + TRANSFORMS[i] + \
                             ball + PUNCTURE + AIR + '</g>' + svg_footer()))
 
     def new_ball_from_image(self, filename):
@@ -120,17 +126,21 @@ class Ball():
             return
         try:
             self.ball.set_shape(GdkPixbuf.Pixbuf.new_from_file_at_size(
-                filename, SIZE, SIZE))
+                filename, SIZE[0], SIZE[1]))
         except:
             _logger.debug('Could not load image from %s.', filename)
 
     def new_ball_from_fraction(self, fraction):
         ''' Create a ball with a section of size fraction. '''
-        r = SIZE / 2.0
+        print COLORS
+        r = SIZE[0] / 2.0
         self.ball.set_shape(svg_str_to_pixbuf(
-            svg_header(SIZE, SIZE, 1.0) + \
-            svg_sector(r, r, r - 1, 1.999 * pi, '#A0A0A0', '#ff0000') + \
-            svg_sector(r, r, r - 1, fraction * 2 * pi, '#ffff00', '#ff0000') + \
+            svg_header(SIZE[0], SIZE[1], 1.0) + \
+            svg_sector(r, r + BOX[1], r - 1, 1.999 * pi,
+                       COLORS[0], COLORS[1]) + \
+            svg_sector(r, r + BOX[1], r - 1, fraction * 2 * pi,
+                       COLORS[1], COLORS[0]) + \
+            svg_rect(BOX[0], BOX[1], 4, 4, 0, 0, '#FFFFFF', 'none') + \
             svg_footer()))
 
     def ball_x(self):
@@ -165,7 +175,7 @@ class Ball():
 
     def hide_frames(self):
         for frame in self.frames:
-            frame.move((0, -SIZE))  # hide the animation frames
+            frame.move((0, -SIZE[1]))  # hide the animation frames
 
     def next_frame(self, frame_counter):
         if frame_counter in ANIMATION:
@@ -176,5 +186,5 @@ class Ball():
         ''' Switch between frames in the animation '''
         self.move_frame(frames[1], (self.frame_x(frames[0]),
                                   self.frame_y(frames[0])))
-        self.move_frame(frames[0], ((0, -SIZE)))  # hide the frame
+        self.move_frame(frames[0], ((0, -SIZE[1])))  # hide the frame
         self.current_frame = frames[1]
