@@ -57,7 +57,6 @@ class Bar():
                           (i * 2 + 1) * dy + s, (i * 2 + 2) * dy + s,
                           '#FF0000', '#FFFFFF')
         mark += svg_footer()
-        print mark
         self.mark = Sprite(self.sprites, 0,
                            self.screen_height,  # hide off bottom of screen
                            svg_str_to_pixbuf(mark))
