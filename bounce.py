@@ -204,7 +204,7 @@ class Bounce():
         self.blank_graphic = svg_str_to_pixbuf(
             svg_header(REWARD_HEIGHT, REWARD_HEIGHT, 1.0) + \
             svg_rect(REWARD_HEIGHT, REWARD_HEIGHT, 5, 5, 0, 0,
-                     '#C0C0C0', '#282828') + \
+                     'none', 'none') + \
             svg_footer())
 
         self.ball = Ball(self.sprites, os.path.join(path, 'soccer.svg'))
@@ -490,17 +490,12 @@ class Bounce():
             spr.set_layer(-1)
         self.challenges[self.n][2] += 1
         if x > f - delta and x < f + delta:
-            if not easter_egg:
-                spr = Sprite(self.sprites, 0, 0, self.smiley_graphic)
+            spr = Sprite(self.sprites, 0, 0, self.smiley_graphic)
             self.correct += 1
             GObject.idle_add(play_audio_from_file, self, self.path_to_success)
         else:
-            if not easter_egg:
-                spr = Sprite(self.sprites, 0, 0, self.frown_graphic)
+            spr = Sprite(self.sprites, 0, 0, self.frown_graphic)
             GObject.idle_add(play_audio_from_file, self, self.path_to_failure)
-
-        if easter_egg:
-            spr = Sprite(self.sprites, 0, 0, self.egg_graphic)
 
         spr.move((int(self.n * 25), int(self.challenges[self.n][2] * 25)))
         spr.set_layer(-1)
