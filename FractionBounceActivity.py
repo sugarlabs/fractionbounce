@@ -210,11 +210,14 @@ class FractionBounceActivity(activity.Activity):
         elif BALLS[self._ball_selector.get_active()] == _('beachball'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'beachball.svg'))
+            self.bounce_window.set_background('blank')
         elif BALLS[self._ball_selector.get_active()] == _('feather'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'feather.svg'))
+            self.bounce_window.set_background('blank')
         else:
             chooser(self, '', self._new_ball_from_journal)
+            self.bounce_window.set_background('blank')
 
     def _reset_ball(self):
         ''' If we switch back from sector mode, we need to restore the ball '''

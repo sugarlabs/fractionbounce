@@ -91,7 +91,7 @@ class Ball():
                 svg_from_file(filename)))
 
         self.ball.set_layer(3)
-        self.ball.set_label_attributes(24)
+        self.ball.set_label_attributes(24, vert_align='top')
 
         ball = extract_svg_payload(file(filename, 'r'))
         for i in range(8):
