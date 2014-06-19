@@ -38,7 +38,7 @@ _logger = logging.getLogger('fractionbounce-activity')
 from toolbar_utils import image_factory, separator_factory, combo_factory, \
     label_factory, radio_factory, button_factory, entry_factory
 
-# from utils import json_load, json_dump, chooser
+from utils import json_load, json_dump, chooser
 from svg_utils import svg_str_to_pixbuf, generate_xo_svg
 
 from bounce import Bounce
@@ -46,6 +46,7 @@ from bounce import Bounce
 
 BALLS = [_('basketball'), _('soccer ball'), _('feather'), _('bowling ball'),
          _('beachball'), _('user defined')]
+BACKGROUND = [_('grass'), _('wood'), _('blank'), _('user defined')]
 SERVICE = 'org.sugarlabs.FractionBounceActivity'
 IFACE = SERVICE
 PATH = '/org/augarlabs/FractionBounceActivity'
@@ -175,11 +176,16 @@ class FractionBounceActivity(activity.Activity):
                                            self._add_fraction_cb,
                                            tooltip=_('add new fraction'),
                                            accelerator='Return')
-        separator_factory(toolbar, expand=False, visible=True)
         separator_factory(toolbar, expand=False, visible=False)
-        self._ball_selector = combo_factory(BALLS, toolbar, self._combo_cb,
+        self._ball_selector = combo_factory(BALLS, toolbar,
+                                            self._ball_combo_cb,
                                             default=_('soccer ball'),
                                             tooltip=_('choose a ball'))
+        separator_factory(toolbar, expand=False, visible=False)
+        self._background_selector = combo_factory(BACKGROUND, toolbar,
+                                            self._bg_combo_cb,
+                                            default=_('grass'),
+                                            tooltip=_('choose a background'))
 
     def _setup_canvas(self):
         ''' Create a canvas '''
@@ -191,7 +197,20 @@ class FractionBounceActivity(activity.Activity):
         self.show_all()
         return canvas
 
-    def _combo_cb(self, arg=None):
+    def _bg_combo_cb(self, arg=None):
+        ''' Load a new background based on the selector value. '''
+        if not hasattr(self, '_background_selector'):
+            return
+        if BACKGROUND[self._background_selector.get_active()] == _('grass'):
+            self.bounce_window.set_background('grass.png')
+        elif BACKGROUND[self._background_selector.get_active()] == _('wood'):
+            self.bounce_window.set_background('parquet.png')
+        elif BACKGROUND[self._background_selector.get_active()] == _('blank'):
+            self.bounce_window.set_background('blank')
+        else:
+            chooser(self, '', self._new_background_from_journal)
+
+    def _ball_combo_cb(self, arg=None):
         ''' Load a new ball based on the selector value. '''
         if not hasattr(self, '_ball_selector'):
             return
@@ -217,7 +236,6 @@ class FractionBounceActivity(activity.Activity):
             self.bounce_window.set_background('blank')
         else:
             chooser(self, '', self._new_ball_from_journal)
-            self.bounce_window.set_background('blank')
 
     def _reset_ball(self):
         ''' If we switch back from sector mode, we need to restore the ball '''
@@ -242,6 +260,10 @@ class FractionBounceActivity(activity.Activity):
     def _new_ball_from_journal(self, dsobject):
         ''' Load an image from the Journal. '''
         self.bounce_window.ball.new_ball_from_image(dsobject.file_path)
+
+    def _new_background_from_journal(self, dsobject):
+        ''' Load an image from the Journal. '''
+        self.bounce_window.new_background_from_image(dsobject.file_path)
 
     def _fraction_cb(self, arg=None):
         ''' Set fraction mode '''

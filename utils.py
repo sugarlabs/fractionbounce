@@ -15,7 +15,7 @@
 
 from gi.repository import Gtk
 
-from sugar.graphics.objectchooser import ObjectChooser
+from sugar3.graphics.objectchooser import ObjectChooser
 
 from StringIO import StringIO
 import json

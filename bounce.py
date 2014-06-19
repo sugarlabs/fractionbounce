@@ -232,7 +232,19 @@ class Bounce():
         self.backgrounds['parquet.png'].set_layer(-100)
         self.backgrounds['parquet.png'].type = 'background'
 
+    def new_background_from_image(self, path):
+        max_size = max(Gdk.Screen.width(), Gdk.Screen.height())
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+            path, max_size, max_size)
+        self.backgrounds['custom'] = Sprite(
+            self.sprites, 0, 0, pixbuf)
+        self.backgrounds['custom'].set_layer(-100)
+        self.backgrounds['custom'].type = 'background'
+        self.set_background('custom')
+
     def set_background(self, name):
+        if not name in self.backgrounds:
+            name = 'blank'
         for k in self.backgrounds.keys():
             if k == name:
                 self.backgrounds[k].set_layer(-99)

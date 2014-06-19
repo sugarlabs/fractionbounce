@@ -13,7 +13,7 @@
 # along with this library; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
-from gi.repository import Gtk, Gdk, GObject
+from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
 from math import pi
 
 from sprites import Sprite
@@ -127,8 +127,8 @@ class Ball():
         try:
             self.ball.set_shape(GdkPixbuf.Pixbuf.new_from_file_at_size(
                 filename, SIZE[0], SIZE[1]))
-        except:
-            _logger.debug('Could not load image from %s.', filename)
+        except Exception as e:
+            _logger.error('Could not load image from %s: %s' % (filename, e))
 
     def new_ball_from_fraction(self, fraction):
         ''' Create a ball with a section of size fraction. '''
