@@ -37,7 +37,31 @@ class Bar():
         self.ball_size = size
 
         self.make_bar(2)
-        self.make_mark()
+        self.make_wedge_mark()
+
+    def make_wedge_mark(self):
+        ''' Make a mark to show the fraction position on the bar. '''
+        dx = self.ball_size / 2.
+        n = (self.screen_width - self.ball_size) / dx
+        dy = (BAR_HEIGHT * self.scale) / n
+        s = 3.5
+        i = int(n / 2) - 1
+        mark = svg_header(self.ball_size,
+                          BAR_HEIGHT * self.scale + s, 1.0)
+        mark += svg_wedge(dx, BAR_HEIGHT * self.scale + s,
+                          s,
+                          i * 2 * dy + s, (i * 2 + 1) * dy + s,
+                          '#FF0000', '#FFFFFF')
+        mark += svg_wedge(dx, BAR_HEIGHT * self.scale + s,
+                          dx + s,
+                          (i * 2 + 1) * dy + s, (i * 2 + 2) * dy + s,
+                          '#FF0000', '#FFFFFF')
+        mark += svg_footer()
+        print mark
+        self.mark = Sprite(self.sprites, 0,
+                           self.screen_height,  # hide off bottom of screen
+                           svg_str_to_pixbuf(mark))
+        self.mark.set_layer(2)
 
     def make_mark(self):
         ''' Make a mark to show the fraction position on the bar. '''
@@ -93,7 +117,8 @@ class Bar():
 
     def make_rect_bar(self, nsegments):
         ''' Create a bar with n segments '''
-        svg = svg_header(self.screen_width - self.ball_size, BAR_HEIGHT, 1.0)
+        svg = svg_header(self.screen_width - self.ball_size,
+                         BAR_HEIGHT * self.scale, 1.0)
         dx = (self.screen_width - self.ball_size) / float(nsegments)
         for i in range(int(nsegments) / 2):
             svg += svg_rect(dx, BAR_HEIGHT * self.scale, 0, 0,
@@ -113,23 +138,25 @@ class Bar():
 
     def make_wedge_bar(self, nsegments):
         ''' Create a wedged-shaped bar with n segments '''
-        svg = svg_header(self.screen_width - self.ball_size, BAR_HEIGHT, 1.0)
+        s = 3.5  # add provision for stroke width
+        svg = svg_header(self.screen_width - self.ball_size,
+                         BAR_HEIGHT * self.scale + s, 1.0)
         dx = (self.screen_width - self.ball_size) / float(nsegments)
-        dy = BAR_HEIGHT * self.scale / float(nsegments)
+        dy = (BAR_HEIGHT * self.scale) / float(nsegments)
         for i in range(int(nsegments) / 2):
-            svg += svg_wedge(dx, BAR_HEIGHT * self.scale,
-                             i * 2 * dx,
-                             i * 2 * dy, (i * 2 + 1) * dy,
-                             self.colors[0], 'none')
-            svg += svg_wedge(dx, BAR_HEIGHT * self.scale,
-                             (i * 2 + 1) * dx,
-                             (i * 2 + 1) * dy, (i * 2 + 2) * dy,
-                             self.colors[1], 'none')
+            svg += svg_wedge(dx, BAR_HEIGHT * self.scale + s,
+                             i * 2 * dx + s,
+                             i * 2 * dy + s, (i * 2 + 1) * dy + s,
+                             '#000000', '#FFFFFF')
+            svg += svg_wedge(dx, BAR_HEIGHT * self.scale + s,
+                             (i * 2 + 1) * dx + s,
+                             (i * 2 + 1) * dy + s, (i * 2 + 2) * dy + s,
+                             '#000000', '#FFFFFF')
         if int(nsegments) % 2 == 1:  # odd
-            svg += svg_wedge(dx, BAR_HEIGHT * self.scale,
-                             (i * 2 + 2) * dx,
-                             (i * 2 + 2) * dy, BAR_HEIGHT * self.scale,
-                             self.colors[0], 'none')
+            svg += svg_wedge(dx, BAR_HEIGHT * self.scale + s,
+                             (i * 2 + 2) * dx + s,
+                             (i * 2 + 2) * dy + s, BAR_HEIGHT * self.scale + s,
+                             '#000000', '#FFFFFF')
         svg += svg_footer()
 
         self.bars[nsegments] = Sprite(self.sprites, 0, 0,

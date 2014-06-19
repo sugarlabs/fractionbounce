@@ -42,14 +42,15 @@ def svg_sector(x, y, r, a, fill, stroke):
     return svg_string
 
 
-def svg_wedge(w, h, dx, l, r, fill, stroke, stroke_width=3.5):
+def svg_wedge(w, h, dx, dyl, dyr, fill, stroke, stroke_width=3.5):
     ''' Returns an SVG wedge: assumes  '''
-    svg_string = '  <path\n'
-    svg_string += '    d="m %f,%f ' % (dx + stroke_width/2.0,
-                                       h - stroke_width/2.0)
-    svg_string += '%f,0 ' % (w - stroke_width/2.0)
-    svg_string += '0,-%f ' % (r)
-    svg_string += '-%f,%f z"\n' % (w - stroke_width/2.0, (r - l))
+    s = stroke_width
+    s2 = stroke_width / 2.0
+    svg_string = '<path\n'
+    svg_string += 'd="m %f,%f ' % (dx + s2, h - s2)
+    svg_string += '%f,%f ' % (w - s2, 0)
+    svg_string += '%f,-%f ' % (0, dyr - s2)
+    svg_string += '-%f,%f z"\n' % (w - s2, (dyr - dyl))
     svg_string += _svg_style('fill:%s;stroke:%s;stroke_width:%f' %
                              (fill, stroke, stroke_width))
     return svg_string
@@ -96,7 +97,7 @@ def _svg_xo(fill, stroke, width=3.5):
     return svg_string
 
 
-def svg_header(w, h, scale, hscale=1.0):
+def svg_header(w, h, scale):
     ''' Returns SVG header; some beads are elongated (hscale) '''
     svg_string = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n'
     svg_string += '<!-- Created with Python -->\n'
@@ -105,7 +106,7 @@ def svg_header(w, h, scale, hscale=1.0):
     svg_string += '   xmlns="http://www.w3.org/2000/svg"\n'
     svg_string += '   version="1.0"\n'
     svg_string += '   width="%f"\n' % (w * scale)
-    svg_string += '   height="%f">\n' % (h * scale * hscale)
+    svg_string += '   height="%f">\n' % (h * scale)
     svg_string += '<g\n       transform="matrix(%f,0,0,%f,0,0)">\n' % (
                                   scale, scale)
     return svg_string
