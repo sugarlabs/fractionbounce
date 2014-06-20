@@ -194,7 +194,7 @@ class Bounce():
                     self.custom_path, width, height)
             else:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                    os.path.join(path, 'images', bg),
+                    os.path.join(self.path, 'images', bg),
                     width, height)
             self.backgrounds[bg] = Sprite(self.sprites, 0, 0, pixbuf)
             if self.current_bg == bg:
