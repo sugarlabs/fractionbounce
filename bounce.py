@@ -161,6 +161,9 @@ class Bounce():
         self.mode = 'fractions'
         self.new_bounce = False
         self.n = 0
+        self.accel_index = 0
+        self.accel_flip = False
+        self._guess_orientation()
 
         self.dx = 0.  # ball horizontal trajectory
 	# acceleration (with dampening)
@@ -345,6 +348,21 @@ class Bounce():
                 closest = c[0]
         return closest
 
+    def _guess_orientaton(self):
+        if self.accelerometer:
+            fh = open(ACCELEROMETER_DEVICE)
+            string = fh.read()
+            fh.close()
+            xyz = string[1:-2].split(',')
+            x = int(xyz[0])
+            y = int(xyz[1])
+            if abs(x) > abs(y):
+                self.accel_index = 1  # Portrait mode
+                self.accel_flip = x > 0
+            else:
+                self.accel_index = 0  # Landscape mode
+                self.accel_flip = y < 0
+
     def _move_ball(self):
         ''' Move the ball and test boundary conditions '''
         if self.new_bounce:
@@ -353,13 +371,16 @@ class Bounce():
                 self._choose_a_fraction()
             self.new_bounce = False
             self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
+            self._guess_orientation()
 
         if self.accelerometer:
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
-            xyz = string[1:-2].split(',')
-            self.dx = float(xyz[0]) / 18.
             fh.close()
+            xyz = string[1:-2].split(',')
+            self.dx = float(xyz[self.accel_index]) / 18.
+            if self.accel_flip:
+                self.dx *= -1
 
         if self.ball.ball_x() + self.dx > 0 and \
            self.ball.ball_x() + self.dx < self.width - self.ball.width():
