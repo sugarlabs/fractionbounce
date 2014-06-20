@@ -199,7 +199,7 @@ class Bounce():
                      'none', 'none') + \
             svg_footer())
 
-        self.ball = Ball(self.sprites, os.path.join(path, 'soccer.svg'))
+        self.ball = Ball(self.sprites, os.path.join(path, 'soccerball.svg'))
         self.current_frame = 0
 
         self.bar = Bar(self.sprites, self.width, self.height, self.scale,

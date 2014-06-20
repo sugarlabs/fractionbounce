@@ -36,19 +36,26 @@ from gettext import gettext as _
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
 
-from toolbar_utils import image_factory, separator_factory, combo_factory, \
-    label_factory, radio_factory, button_factory, entry_factory
+from toolbar_utils import (image_factory, separator_factory, label_factory,
+                           radio_factory, button_factory, entry_factory)
 
 from utils import json_load, json_dump, chooser
 from svg_utils import svg_str_to_pixbuf, generate_xo_svg
 
 from bounce import Bounce
 
+BALLDICT = {'basketball': [_('basketball'), 'wood'],
+            'soccerball': [_('soccer ball'), 'grass'],
+            'bowlingball': [_('bowling ball'), 'wood'],
+            'beachball': [_('beachball'), 'sand'],
+            'feather': [_('feather'), 'tile'],
+            'custom': [_('user defined'), None]}
+BGDICT = {'grass': [_('grass'), 'grass_background.png'],
+          'wood': [_('wood'), 'parquet_background.png'],
+          'tile': [_('tile'), 'feather_background.png'],
+          'sand': [_('sand'), 'beach_background.png'],
+          'custom': [_('user defined'), None]}
 
-BALLS = [_('basketball'), _('soccer ball'), _('feather'), _('bowling ball'),
-         _('beachball'), _('user defined')]
-BACKGROUND = [_('grass'), _('wood'), _('beach'), _('tile'), _('blank'),
-              _('user defined')]
 SERVICE = 'org.sugarlabs.FractionBounceActivity'
 IFACE = SERVICE
 PATH = '/org/augarlabs/FractionBounceActivity'
@@ -82,6 +89,8 @@ class FractionBounceActivity(activity.Activity):
             custom = self.metadata['custom']
         else:
             custom = None
+
+        self.current_ball = 'soccerball'
 
         # Initialize the canvas
         self.bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
@@ -177,31 +186,60 @@ class FractionBounceActivity(activity.Activity):
         self.enter_button = button_factory('list-add', toolbar,
                                            self._add_fraction_cb,
                                            tooltip=_('add new fraction'),
-                                           accelerator='Return')
-        separator_factory(toolbar, expand=False, visible=False)
-        self._ball_selector = combo_factory(BALLS, toolbar,
-                                            self._ball_combo_cb,
-                                            default=_('soccer ball'),
-                                            tooltip=_('choose a ball'))
-        separator_factory(toolbar, expand=False, visible=False)
-        self._background_selector = combo_factory(BACKGROUND, toolbar,
-                                            self._bg_combo_cb,
-                                            default=_('grass'),
-                                            tooltip=_('choose a background'))
 
-        # TODO: use a palette instead of combo boxes
-        self.ball_selector_button = button_factory('list-add', toolbar,
+                                           accelerator='Return')
+
+        separator_factory(toolbar, expand=False, visible=False)
+        self.ball_selector_button = button_factory('soccerball', toolbar,
                                                    self._button_palette_cb,
                                                    tooltip=_('choose a ball'))
         self.ball_palette = self.ball_selector_button.get_palette()
         button_grid = Gtk.Grid()
-        button = ToolButton('list-add')
-        label = Gtk.Label(_('basketball'))
-        button_grid.attach(button, 0, 0, 1, 1)
-        button.show()
-        button_grid.attach(label, 1, 0, 1, 1)
-        label.show()
+        row = 0
+        for ball in BALLDICT.keys():
+            if ball == 'custom':
+                button = ToolButton('view-source')
+            else:
+                button = ToolButton(ball)
+            button.connect('clicked', self._load_ball_cb, None, ball)
+            eventbox = Gtk.EventBox()
+            eventbox.connect('button_press_event', self._load_ball_cb,
+                             ball)
+            label = Gtk.Label(BALLDICT[ball][0])
+            eventbox.add(label)
+            label.show()
+            button_grid.attach(button, 0, row, 1, 1)
+            button.show()
+            button_grid.attach(eventbox, 1, row, 1, 1)
+            eventbox.show()
+            row += 1
         self.ball_palette.set_content(button_grid)
+        button_grid.show()
+
+        separator_factory(toolbar, expand=False, visible=False)
+        self.bg_selector_button = button_factory(
+            'insert-picture', toolbar, self._button_palette_cb,
+            tooltip=_('choose a background'))
+        self.bg_palette = self.bg_selector_button.get_palette()
+        button_grid = Gtk.Grid()
+        row = 0
+        for bg in BGDICT.keys():
+            if bg == 'custom':
+                button = ToolButton('view-source')
+            else:
+                button = ToolButton(bg)
+            button.connect('clicked', self._load_bg_cb, None, bg)
+            eventbox = Gtk.EventBox()
+            eventbox.connect('button_press_event', self._load_bg_cb, bg)
+            label = Gtk.Label(BGDICT[bg][0])
+            eventbox.add(label)
+            label.show()
+            button_grid.attach(button, 0, row, 1, 1)
+            button.show()
+            button_grid.attach(eventbox, 1, row, 1, 1)
+            eventbox.show()
+            row += 1
+        self.bg_palette.set_content(button_grid)
         button_grid.show()
 
     def _button_palette_cb(self, button):
@@ -222,69 +260,30 @@ class FractionBounceActivity(activity.Activity):
         self.show_all()
         return canvas
 
-    def _bg_combo_cb(self, arg=None):
-        ''' Load a new background based on the selector value. '''
-        if not hasattr(self, '_background_selector'):
-            return
-        if BACKGROUND[self._background_selector.get_active()] == _('grass'):
-            self.bounce_window.set_background('grass_background.png')
-        elif BACKGROUND[self._background_selector.get_active()] == _('wood'):
-            self.bounce_window.set_background('parquet_background.png')
-        elif BACKGROUND[self._background_selector.get_active()] == _('beach'):
-            self.bounce_window.set_background('beach_background.png')
-        elif BACKGROUND[self._background_selector.get_active()] == _('tile'):
-            self.bounce_window.set_background('tile_background.png')
-        elif BACKGROUND[self._background_selector.get_active()] == _('blank'):
-            self.bounce_window.set_background('blank')
+    def _load_bg_cb(self, widget, event, bg):
+        if bg == 'custom':
+            chooser(self, 'Image', self._new_background_from_journal)
         else:
-            chooser(self, '', self._new_background_from_journal)
+            self.bounce_window.set_background(BGDICT[bg][1])
 
-    def _ball_combo_cb(self, arg=None):
-        ''' Load a new ball based on the selector value. '''
-        if not hasattr(self, '_ball_selector'):
-            return
-        if BALLS[self._ball_selector.get_active()] == _('basketball'):
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'basketball.svg'))
-            self.bounce_window.set_background('parquet_background.png')
-        elif BALLS[self._ball_selector.get_active()] == _('soccer ball'):
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'soccer.svg'))
-            self.bounce_window.set_background('grass_background.png')
-        elif BALLS[self._ball_selector.get_active()] == _('bowling ball'):
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'bowlingball.svg'))
-            self.bounce_window.set_background('parquet_background.png')
-        elif BALLS[self._ball_selector.get_active()] == _('beachball'):
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'beachball.svg'))
-            self.bounce_window.set_background('beach_background.png')
-        elif BALLS[self._ball_selector.get_active()] == _('feather'):
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'feather.svg'))
-            self.bounce_window.set_background('feather_background.png')
+    def _load_ball_cb(self, widget, event, ball):
+        if ball == 'custom':
+            chooser(self, 'Image', self._new_ball_from_journal)
         else:
-            chooser(self, '', self._new_ball_from_journal)
+            self.bounce_window.ball.new_ball(os.path.join(
+                activity.get_bundle_path(), ball + '.svg'))
+            self.bounce_window.set_background(BGDICT[BALLDICT[ball][1]][1])
+        self.current_ball = ball
 
     def _reset_ball(self):
         ''' If we switch back from sector mode, we need to restore the ball '''
         if self.bounce_window.mode != 'sectors':
             return
-        if BALLS[self._ball_selector.get_active()] == _('soccer ball'):
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'soccer.svg'))
-        elif BALLS[self._ball_selector.get_active()] == _('bowling ball'):
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'bowlingball.svg'))
-        elif BALLS[self._ball_selector.get_active()] == _('beachball'):
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'beachball.svg'))
-        elif BALLS[self._ball_selector.get_active()] == _('feather'):
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'feather.svg'))
-        else:
-            self.bounce_window.ball.new_ball(os.path.join(
-                    activity.get_bundle_path(), 'basketball.svg'))
+
+        if self.current_ball == 'custom':  # TODO: Reload custom ball
+            self.current_ball = 'soccerball'
+        self.bounce_window.ball.new_ball(os.path.join(
+            activity.get_bundle_path(), self.current_ball + '.svg'))
 
     def _new_ball_from_journal(self, dsobject):
         ''' Load an image from the Journal. '''
