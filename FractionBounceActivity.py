@@ -21,6 +21,7 @@ from sugar3.graphics.toolbarbox import ToolbarBox
 from sugar3.graphics.toolbarbox import ToolbarButton
 from sugar3.activity.widgets import ActivityToolbarButton
 from sugar3.activity.widgets import StopButton
+from sugar3.graphics.toolbutton import ToolButton
 from sugar3.graphics.alert import NotifyAlert
 from sugar3.graphics import style
 
@@ -46,7 +47,8 @@ from bounce import Bounce
 
 BALLS = [_('basketball'), _('soccer ball'), _('feather'), _('bowling ball'),
          _('beachball'), _('user defined')]
-BACKGROUND = [_('grass'), _('wood'), _('blank'), _('user defined')]
+BACKGROUND = [_('grass'), _('wood'), _('beach'), _('tile'), _('blank'),
+              _('user defined')]
 SERVICE = 'org.sugarlabs.FractionBounceActivity'
 IFACE = SERVICE
 PATH = '/org/augarlabs/FractionBounceActivity'
@@ -187,6 +189,29 @@ class FractionBounceActivity(activity.Activity):
                                             default=_('grass'),
                                             tooltip=_('choose a background'))
 
+        # TODO: use a palette instead of combo boxes
+        self.ball_selector_button = button_factory('list-add', toolbar,
+                                                   self._button_palette_cb,
+                                                   tooltip=_('choose a ball'))
+        self.ball_palette = self.ball_selector_button.get_palette()
+        button_grid = Gtk.Grid()
+        button = ToolButton('list-add')
+        label = Gtk.Label(_('basketball'))
+        button_grid.attach(button, 0, 0, 1, 1)
+        button.show()
+        button_grid.attach(label, 1, 0, 1, 1)
+        label.show()
+        self.ball_palette.set_content(button_grid)
+        button_grid.show()
+
+    def _button_palette_cb(self, button):
+        palette = button.get_palette()
+        if palette:
+            if not palette.is_up():
+                palette.popup(immediate=True, state=palette.SECONDARY)
+            else:
+                palette.popdown(immediate=True)
+
     def _setup_canvas(self):
         ''' Create a canvas '''
         canvas = Gtk.DrawingArea()
@@ -202,9 +227,13 @@ class FractionBounceActivity(activity.Activity):
         if not hasattr(self, '_background_selector'):
             return
         if BACKGROUND[self._background_selector.get_active()] == _('grass'):
-            self.bounce_window.set_background('grass.png')
+            self.bounce_window.set_background('grass_background.png')
         elif BACKGROUND[self._background_selector.get_active()] == _('wood'):
-            self.bounce_window.set_background('parquet.png')
+            self.bounce_window.set_background('parquet_background.png')
+        elif BACKGROUND[self._background_selector.get_active()] == _('beach'):
+            self.bounce_window.set_background('beach_background.png')
+        elif BACKGROUND[self._background_selector.get_active()] == _('tile'):
+            self.bounce_window.set_background('tile_background.png')
         elif BACKGROUND[self._background_selector.get_active()] == _('blank'):
             self.bounce_window.set_background('blank')
         else:
@@ -217,23 +246,23 @@ class FractionBounceActivity(activity.Activity):
         if BALLS[self._ball_selector.get_active()] == _('basketball'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'basketball.svg'))
-            self.bounce_window.set_background('parquet.png')
+            self.bounce_window.set_background('parquet_background.png')
         elif BALLS[self._ball_selector.get_active()] == _('soccer ball'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'soccer.svg'))
-            self.bounce_window.set_background('grass.png')
+            self.bounce_window.set_background('grass_background.png')
         elif BALLS[self._ball_selector.get_active()] == _('bowling ball'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'bowlingball.svg'))
-            self.bounce_window.set_background('parquet.png')
+            self.bounce_window.set_background('parquet_background.png')
         elif BALLS[self._ball_selector.get_active()] == _('beachball'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'beachball.svg'))
-            self.bounce_window.set_background('blank')
+            self.bounce_window.set_background('beach_background.png')
         elif BALLS[self._ball_selector.get_active()] == _('feather'):
             self.bounce_window.ball.new_ball(os.path.join(
                     activity.get_bundle_path(), 'feather.svg'))
-            self.bounce_window.set_background('blank')
+            self.bounce_window.set_background('feather_background.png')
         else:
             chooser(self, '', self._new_ball_from_journal)
 

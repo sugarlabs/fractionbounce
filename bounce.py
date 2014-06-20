@@ -103,6 +103,7 @@ class Bounce():
         ''' Initialize the canvas and set up the callbacks. '''
         self.activity = parent
         self.fraction = None
+        self.path = path
 
         if parent is None:        # Starting from command line
             self.sugar = False
@@ -219,18 +220,11 @@ class Bounce():
         self.backgrounds['blank'].type = 'background'
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            os.path.join(path, 'grass.png'), max_size, max_size)
-        self.backgrounds['grass.png'] = Sprite(
+            os.path.join(path, 'grass_background.png'), max_size, max_size)
+        self.backgrounds['grass_background.png'] = Sprite(
             self.sprites, 0, 0, pixbuf)
-        self.backgrounds['grass.png'].set_layer(-99)
-        self.backgrounds['grass.png'].type = 'background'
-
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            os.path.join(path, 'parquet.png'), max_size, max_size)
-        self.backgrounds['parquet.png'] = Sprite(
-            self.sprites, 0, 0, pixbuf)
-        self.backgrounds['parquet.png'].set_layer(-100)
-        self.backgrounds['parquet.png'].type = 'background'
+        self.backgrounds['grass_background.png'].set_layer(-99)
+        self.backgrounds['grass_background.png'].type = 'background'
 
     def new_background_from_image(self, path):
         max_size = max(Gdk.Screen.width(), Gdk.Screen.height())
@@ -244,7 +238,13 @@ class Bounce():
 
     def set_background(self, name):
         if not name in self.backgrounds:
-            name = 'blank'
+            max_size = max(Gdk.Screen.width(), Gdk.Screen.height())
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                os.path.join(self.path, name), max_size, max_size)
+            self.backgrounds[name] = Sprite(
+                self.sprites, 0, 0, pixbuf)
+            self.backgrounds[name].set_layer(-100)
+            self.backgrounds[name].type = 'background'
         for k in self.backgrounds.keys():
             if k == name:
                 self.backgrounds[k].set_layer(-99)
