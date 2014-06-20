@@ -144,8 +144,10 @@ class FractionBounceActivity(activity.Activity):
         self.custom_toolbar_button.show()
 
         self._load_standard_buttons(self.toolbar)
-        separator_factory(self.toolbar, expand=True, visible=False)
-
+        self.separator = separator_factory(
+            self.toolbar, expand=True, visible=False)
+        if Gdk.Screen.width() < 1024:
+            self.separator.hide()
         stop_button = StopButton(self)
         stop_button.props.accelerator = _('<Ctrl>Q')
         self.toolbar.insert(stop_button, -1)
@@ -171,11 +173,12 @@ class FractionBounceActivity(activity.Activity):
                                             group=self.fraction_button)
         self.player = image_factory(
             svg_str_to_pixbuf(generate_xo_svg(scale=0.8,
-                                          colors=['#282828', '#000000'])),
+                                          colors=['#282828', '#282828'])),
             toolbar, tooltip=self.nick)
-        separator_factory(toolbar, expand=False, visible=True)
+        if Gdk.Screen.width() < 1024:
+            self.player.hide()
         self.challenge = label_factory(toolbar, _("Click the ball to start."),
-                                       width=400)  # FIXME: default not working
+                                       width=300)  # FIXME: default not working
 
     def _load_custom_buttons(self, toolbar):
         ''' Entry fields and buttons for adding custom fractions '''

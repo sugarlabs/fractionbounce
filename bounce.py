@@ -209,26 +209,31 @@ class Bounce():
         self.ball.move_ball((int((self.width - self.ball.width()) / 2),
                         self.ball_y_max))
 
-        max_size = max(Gdk.Screen.width(), Gdk.Screen.height())
+        if Gdk.Screen.height() > Gdk.Screen.width():
+            height = Gdk.Screen.height()
+            width = int(4 * height / 3)
+        else:
+            width = Gdk.Screen.width()
+            height = int(3 * width / 4)
+        
         self.backgrounds = {}
-        self.backgrounds['blank'] = Sprite(
-            self.sprites, 0, 0, svg_str_to_pixbuf(genblank(
-                max_size, max_size, ('#FFFFFF', '#FFFFFF'))))
-        self.backgrounds['blank'].set_layer(-100)
-        self.backgrounds['blank'].type = 'background'
-
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(path, 'images', 'grass_background.png'),
-            max_size, max_size)
+            width, height)
         self.backgrounds['grass_background.png'] = Sprite(
             self.sprites, 0, 0, pixbuf)
         self.backgrounds['grass_background.png'].set_layer(-99)
         self.backgrounds['grass_background.png'].type = 'background'
 
     def new_background_from_image(self, path):
-        max_size = max(Gdk.Screen.width(), Gdk.Screen.height())
+        if Gdk.Screen.height() > Gdk.Screen.width():
+            height = Gdk.Screen.height()
+            width = int(4 * height / 3)
+        else:
+            width = Gdk.Screen.width()
+            height = int(3 * width / 4)
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            path, max_size, max_size)
+            path, width, height)
         self.backgrounds['custom'] = Sprite(
             self.sprites, 0, 0, pixbuf)
         self.backgrounds['custom'].set_layer(-100)
@@ -237,9 +242,14 @@ class Bounce():
 
     def set_background(self, name):
         if not name in self.backgrounds:
-            max_size = max(Gdk.Screen.width(), Gdk.Screen.height())
+            if Gdk.Screen.height() > Gdk.Screen.width():
+                height = Gdk.Screen.height()
+                width = int(4 * height / 3)
+            else:
+                width = Gdk.Screen.width()
+                height = int(3 * width / 4)
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                os.path.join(self.path, 'images', name), max_size, max_size)
+                os.path.join(self.path, 'images', name), width, height)
             self.backgrounds[name] = Sprite(
                 self.sprites, 0, 0, pixbuf)
             self.backgrounds[name].set_layer(-100)
