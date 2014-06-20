@@ -185,13 +185,10 @@ class Bounce():
     def _create_sprites(self, path):
         ''' Create all of the sprites we'll need '''
         self.smiley_graphic = svg_str_to_pixbuf(svg_from_file(
-                os.path.join(path, 'smiley.svg')))
+                os.path.join(path, 'images', 'smiley.svg')))
 
         self.frown_graphic = svg_str_to_pixbuf(svg_from_file(
-                os.path.join(path, 'frown.svg')))
-
-        self.egg_graphic = svg_str_to_pixbuf(svg_from_file(
-                os.path.join(path, 'Easter_egg.svg')))
+                os.path.join(path, 'images', 'frown.svg')))
 
         self.blank_graphic = svg_str_to_pixbuf(
             svg_header(REWARD_HEIGHT, REWARD_HEIGHT, 1.0) + \
@@ -199,7 +196,8 @@ class Bounce():
                      'none', 'none') + \
             svg_footer())
 
-        self.ball = Ball(self.sprites, os.path.join(path, 'soccerball.svg'))
+        self.ball = Ball(self.sprites,
+                         os.path.join(path, 'images', 'soccerball.svg'))
         self.current_frame = 0
 
         self.bar = Bar(self.sprites, self.width, self.height, self.scale,
@@ -220,7 +218,8 @@ class Bounce():
         self.backgrounds['blank'].type = 'background'
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-            os.path.join(path, 'grass_background.png'), max_size, max_size)
+            os.path.join(path, 'images', 'grass_background.png'),
+            max_size, max_size)
         self.backgrounds['grass_background.png'] = Sprite(
             self.sprites, 0, 0, pixbuf)
         self.backgrounds['grass_background.png'].set_layer(-99)
@@ -240,7 +239,7 @@ class Bounce():
         if not name in self.backgrounds:
             max_size = max(Gdk.Screen.width(), Gdk.Screen.height())
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                os.path.join(self.path, name), max_size, max_size)
+                os.path.join(self.path, 'images', name), max_size, max_size)
             self.backgrounds[name] = Sprite(
                 self.sprites, 0, 0, pixbuf)
             self.backgrounds[name].set_layer(-100)

@@ -272,7 +272,7 @@ class FractionBounceActivity(activity.Activity):
             chooser(self, 'Image', self._new_ball_from_journal)
         else:
             self.bounce_window.ball.new_ball(os.path.join(
-                activity.get_bundle_path(), ball + '.svg'))
+                activity.get_bundle_path(), 'images', ball + '.svg'))
             self.bounce_window.set_background(BGDICT[BALLDICT[ball][1]][1])
         self.current_ball = ball
 
@@ -284,7 +284,7 @@ class FractionBounceActivity(activity.Activity):
         if self.current_ball == 'custom':  # TODO: Reload custom ball
             self.current_ball = 'soccerball'
         self.bounce_window.ball.new_ball(os.path.join(
-            activity.get_bundle_path(), self.current_ball + '.svg'))
+            activity.get_bundle_path(), 'images', self.current_ball + '.svg'))
 
     def _new_ball_from_journal(self, dsobject):
         ''' Load an image from the Journal. '''
