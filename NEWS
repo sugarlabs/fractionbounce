@@ -3,11 +3,18 @@
 ENHANCEMENTS:
 * Make bar wedge-shaped to make it easier to tell which direction is 0 vs 1
 * <strike>Use user colors in bar</strike>Use black and white bar
+* Use user colors in section ball
 * Use accelerometer in tablet mode; otherwise, use keyboard
-* Three new objects: bowling ball, beachball, feather
+* Four new 'balls': bowling ball, beachball, feather, rugby
 * Notify user when a new fraction has been added
-* Use white background color
+* Use images in background
+* Add custom background capability
 * Take into account expanded toolbars when positioning objects
+* Set mime type to image for chooser (custom ball and image)
+
+BUG FIX:
+* Replace combo boxes with button palettes
+* Finish incomplete migration to GTK3 for custom ball
 
 21
 

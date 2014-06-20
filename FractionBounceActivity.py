@@ -46,6 +46,7 @@ from bounce import Bounce
 
 BALLDICT = {'basketball': [_('basketball'), 'wood'],
             'soccerball': [_('soccer ball'), 'grass'],
+            'rugbyball': [_('rugby ball'), 'grass'],
             'bowlingball': [_('bowling ball'), 'wood'],
             'beachball': [_('beachball'), 'sand'],
             'feather': [_('feather'), 'tile'],
