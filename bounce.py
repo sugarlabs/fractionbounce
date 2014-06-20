@@ -181,7 +181,10 @@ class Bounce():
                       'move the ball.'))
 
     def configure_cb(self, event):
-        # We need to resize the backgrounds and bars.
+        self.width = Gdk.Screen.width()
+        self.height = Gdk.Screen.height() - GRID_CELL_SIZE
+
+        # We need to resize the backgrounds
         if Gdk.Screen.height() > Gdk.Screen.width():
             height = Gdk.Screen.height()
             width = int(4 * height / 3)
@@ -203,7 +206,12 @@ class Bounce():
                 self.backgrounds[bg].set_layer(-100)
             self.backgrounds[bg].type = 'background'
 
+        # and resize and reposition the bars
         self.bar.resize_all()
+        self.bar.show_bar(2)
+        self.current_bar = self.bar.get_bar(2)
+
+        self._guess_orientation()
 
     def _create_sprites(self, path):
         ''' Create all of the sprites we'll need '''

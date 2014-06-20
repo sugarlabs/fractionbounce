@@ -108,9 +108,14 @@ class FractionBounceActivity(activity.Activity):
 
     def _configure_cb(self, event):
         if Gdk.Screen.width() < 1024:
-            self.challenge.hide()
+            self.challenge.set_size_request(275, -1)
+            self.challenge.set_label('')
         else:
-            self.challenge.show()
+            self.challenge.set_size_request(400, -1)
+        if Gdk.Screen.width() < 1024:
+            self.separator.set_expand(False)
+        else:
+            self.separator.set_expand(True)
         self.bounce_window.configure_cb(event)
 
     def toolbar_expanded(self):
@@ -151,7 +156,12 @@ class FractionBounceActivity(activity.Activity):
 
         self._load_standard_buttons(self.toolbar)
 
-        separator_factory(self.toolbar, expand=True, visible=False)
+        self.separator = Gtk.SeparatorToolItem()
+        self.separator.props.draw = False
+        self.separator.set_expand(True)
+        self.toolbar.insert(self.separator, -1)
+        self.separator.show()
+
         stop_button = StopButton(self)
         stop_button.props.accelerator = _('<Ctrl>Q')
         self.toolbar.insert(stop_button, -1)
@@ -179,10 +189,17 @@ class FractionBounceActivity(activity.Activity):
             svg_str_to_pixbuf(generate_xo_svg(scale=0.8,
                                           colors=['#282828', '#282828'])),
             toolbar, tooltip=self.nick)
-        self.challenge = label_factory(toolbar, _("Click the ball to start."),
-                                       width=400)
+        self.challenge = Gtk.Label(_("Click the ball to start."))
+        self.challenge.set_line_wrap(True)
         if Gdk.Screen.width() < 1024:
-            self.challenge.hide()
+            self.challenge.set_size_request(275, -1)
+        else:
+            self.challenge.set_size_request(400, -1)
+        self.toolitem = Gtk.ToolItem()
+        self.toolitem.add(self.challenge)
+        self.challenge.show()
+        toolbar.insert(self.toolitem, -1)
+        self.toolitem.show()
 
     def _load_custom_buttons(self, toolbar):
         ''' Entry fields and buttons for adding custom fractions '''
@@ -346,9 +363,13 @@ class FractionBounceActivity(activity.Activity):
 
     def reset_label(self, fraction):
         ''' update the challenge label '''
-        self.challenge.set_label(_('Bounce the ball to a position \
-%(fraction)s of the way from the left side of the bar.') \
+        if not Gdk.Screen.width() < 1024:
+            self.challenge.set_label(_('Bounce the ball to a position '
+                                       '%(fraction)s of the way from the left side of the bar.')
                                      % {'fraction': fraction})
+        else:
+            self.challenge.set_label(_('Bounce the ball to %(fraction)s')
+                                       % {'fraction': fraction})
 
     def __visibility_notify_cb(self, window, event):
         ''' Callback method for when the activity's visibility changes. '''

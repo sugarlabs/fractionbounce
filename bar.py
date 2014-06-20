@@ -10,6 +10,8 @@
 # along with this library; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
+from gi.repository import Gdk
+
 from sugar3.graphics import style
 
 from sprites import Sprite
@@ -41,6 +43,13 @@ class Bar():
         self.make_wedge_mark()
 
     def resize_all(self):
+        self.screen_width = Gdk.Screen.width()
+        self.screen_height = Gdk.Screen.height() - style.GRID_CELL_SIZE
+
+        for bar in self.bars.keys():
+            self.bars[bar].hide()
+        self.mark.hide()
+
         for bar in self.bars.keys():
             self.make_bar(bar)
         self.make_wedge_mark()
