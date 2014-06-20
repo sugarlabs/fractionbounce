@@ -96,8 +96,7 @@ class FractionBounceActivity(activity.Activity):
         # Initialize the canvas
         self.bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
 
-        # Gdk.Screen.get_default().connect('size-changed',
-        #                                  self.bounce_window.configure_cb)
+        Gdk.Screen.get_default().connect('size-changed', self._configure_cb)
 
         # Restore any custom fractions
         if custom is not None:
@@ -106,6 +105,13 @@ class FractionBounceActivity(activity.Activity):
                 self.bounce_window.add_fraction(f)
 
         self._setup_presence_service()
+
+    def _configure_cb(self, event):
+        if Gdk.Screen.width() < 1024:
+            self.challenge.hide()
+        else:
+            self.challenge.show()
+        self.bounce_window.configure_cb(event)
 
     def toolbar_expanded(self):
         if self.activity_button.is_expanded():

@@ -40,6 +40,11 @@ class Bar():
         self.make_bar(2)
         self.make_wedge_mark()
 
+    def resize_all(self):
+        for bar in self.bars.keys():
+            self.make_bar(bar)
+        self.make_wedge_mark()
+
     def make_wedge_mark(self):
         ''' Make a mark to show the fraction position on the bar. '''
         dx = self.ball_size / 2.

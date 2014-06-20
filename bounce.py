@@ -181,8 +181,29 @@ class Bounce():
                       'move the ball.'))
 
     def configure_cb(self, event):
-        # TODO: deal with rotation
-        logging.error('CONFIGURE CB')
+        # We need to resize the backgrounds and bars.
+        if Gdk.Screen.height() > Gdk.Screen.width():
+            height = Gdk.Screen.height()
+            width = int(4 * height / 3)
+        else:
+            width = Gdk.Screen.width()
+            height = int(3 * width / 4)
+        for bg in self.backgrounds.keys():
+            if bg == 'custom':
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                    self.custom_path, width, height)
+            else:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                    os.path.join(path, 'images', bg),
+                    width, height)
+            self.backgrounds[bg] = Sprite(self.sprites, 0, 0, pixbuf)
+            if self.current_bg == bg:
+                self.backgrounds[bg].set_layer(-99)
+            else:
+                self.backgrounds[bg].set_layer(-100)
+            self.backgrounds[bg].type = 'background'
+
+        self.bar.resize_all()
 
     def _create_sprites(self, path):
         ''' Create all of the sprites we'll need '''
@@ -226,6 +247,7 @@ class Bounce():
             self.sprites, 0, 0, pixbuf)
         self.backgrounds['grass_background.png'].set_layer(-99)
         self.backgrounds['grass_background.png'].type = 'background'
+        self.current_bg = 'grass_background.png'
 
     def new_background_from_image(self, path):
         if Gdk.Screen.height() > Gdk.Screen.width():
@@ -241,6 +263,8 @@ class Bounce():
         self.backgrounds['custom'].set_layer(-100)
         self.backgrounds['custom'].type = 'background'
         self.set_background('custom')
+        self.custom_path = path
+        self.current_bg = 'custom'
 
     def set_background(self, name):
         if not name in self.backgrounds:
@@ -256,6 +280,7 @@ class Bounce():
                 self.sprites, 0, 0, pixbuf)
             self.backgrounds[name].set_layer(-100)
             self.backgrounds[name].type = 'background'
+            self.current_bg = name
         for k in self.backgrounds.keys():
             if k == name:
                 self.backgrounds[k].set_layer(-99)
@@ -348,7 +373,7 @@ class Bounce():
                 closest = c[0]
         return closest
 
-    def _guess_orientaton(self):
+    def _guess_orientation(self):
         if self.accelerometer:
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
