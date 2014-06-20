@@ -131,6 +131,7 @@ def separator_factory(toolbar, expand=False, visible=True):
     else:  # or a secondary toolbar
         toolbar.props.page.insert(separator, -1)
     separator.show()
+    return separator
 
 
 def image_factory(image, toolbar, tooltip=None):
