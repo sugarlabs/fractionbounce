@@ -86,7 +86,7 @@ class Bar():
 
     def bar_y(self):
         if self.bars[2].get_xy()[1] < 0:
-            return self.bars[2].get_xy()[1] + 1000
+            return self.bars[2].get_xy()[1] + 3000
         else:
             return self.bars[2].get_xy()[1]
 
@@ -114,7 +114,7 @@ class Bar():
         ''' Hide all of the bars '''
         for bar in self.bars:
             if self.bars[bar].get_xy()[1] > 0:
-                self.bars[bar].move_relative([0, -1000])
+                self.bars[bar].move_relative([0, -3000])
 
     def get_bar(self, nsegments):
         ''' Return a bar with n segments '''
