@@ -111,7 +111,6 @@ class Bounce():
         else:                     # Starting from Sugar
             self.sugar = True
             self.canvas = canvas
-            parent.show_all()
 
         self.canvas.grab_focus()
 

@@ -144,10 +144,8 @@ class FractionBounceActivity(activity.Activity):
         self.custom_toolbar_button.show()
 
         self._load_standard_buttons(self.toolbar)
-        self.separator = separator_factory(
-            self.toolbar, expand=True, visible=False)
-        if Gdk.Screen.width() < 1024:
-            self.separator.hide()
+
+        separator_factory(self.toolbar, expand=True, visible=False)
         stop_button = StopButton(self)
         stop_button.props.accelerator = _('<Ctrl>Q')
         self.toolbar.insert(stop_button, -1)
@@ -175,10 +173,10 @@ class FractionBounceActivity(activity.Activity):
             svg_str_to_pixbuf(generate_xo_svg(scale=0.8,
                                           colors=['#282828', '#282828'])),
             toolbar, tooltip=self.nick)
-        if Gdk.Screen.width() < 1024:
-            self.player.hide()
         self.challenge = label_factory(toolbar, _("Click the ball to start."),
-                                       width=300)  # FIXME: default not working
+                                       width=400)
+        if Gdk.Screen.width() < 1024:
+            self.challenge.hide()
 
     def _load_custom_buttons(self, toolbar):
         ''' Entry fields and buttons for adding custom fractions '''
@@ -261,7 +259,6 @@ class FractionBounceActivity(activity.Activity):
                                 Gdk.Screen.height())
         self.set_canvas(canvas)
         canvas.show()
-        self.show_all()
         return canvas
 
     def _load_bg_cb(self, widget, event, bg):
@@ -421,7 +418,6 @@ class FractionBounceActivity(activity.Activity):
 
         # display your XO on the toolbar
         self.player.set_from_pixbuf(self._player_pixbuf[0])
-        self.toolbar.show_all()
 
     def _list_tubes_reply_cb(self, tubes):
         ''' Reply to a list request. '''
