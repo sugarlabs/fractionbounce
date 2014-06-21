@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#Copyright (c) 2011, Walter Bender, Paulina Clares, Chris Rowe
+# Copyright (c) 2011-14, Walter Bender
+# Copyright (c) 2011, Paulina Clares, Chris Rowe
 
 # Ported to GTK3 - 2012:
 # Ignacio Rodríguez <ignaciorodriguez@sugarlabs.org>
@@ -13,12 +14,13 @@
 # along with this library; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 
-from gi.repository import Gtk, Gdk, GObject, GdkPixbuf
 from math import pi
 
+from gi.repository import GdkPixbuf
+
 from sprites import Sprite
-from svg_utils import svg_header, svg_footer, svg_str_to_pixbuf, \
-    extract_svg_payload, svg_from_file, svg_sector, svg_rect
+from svg_utils import (svg_header, svg_footer, svg_str_to_pixbuf, svg_rect,
+                       extract_svg_payload, svg_from_file, svg_sector)
 
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
@@ -31,10 +33,12 @@ except:
 
 SIZE = [85, 120]
 BOX = [85, 32]
+
 ANIMATION = {10: (0, 1), 15: (1, 2), 20: (2, 1), 25: (1, 2), 30: (2, 1),
              35: (1, 2), 40: (2, 3), 45: (3, 4), 50: (4, 3), 55: (3, 4),
              60: (4, 3), 65: (3, 4), 70: (4, 5), 75: (5, 6), 80: (6, 5),
              85: (5, 6), 90: (6, 7)}
+
 # Easter Egg animation graphics
 TRANSFORMS = ['<g>',
               '<g transform="matrix(0.83251323,0.17764297,-0.48065174, \
@@ -50,6 +54,7 @@ TRANSFORMS = ['<g>',
               '<g transform="matrix(-0.39557109,-0.57943591,0.22838308, \
 0.86196565,49.404177,29.733447)">',
               '<g transform="matrix(1,0,0,0.08410415,0,73.873449)">']
+
 PUNCTURE = \
 '  <g \
      transform="translate(2.5316175, -8)">\
@@ -64,6 +69,7 @@ stroke-miterlimit:4" />\
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;\
 stroke-miterlimit:4" />\
   </g>'
+
 AIR = \
 '  <g \
      transform="matrix(0.63786322,0,0,0.64837179,17.379518,68.534252)"> \
@@ -90,23 +96,23 @@ class Ball():
     interaction. '''
 
     def __init__(self, sprites, filename):
-        self.current_frame = 0
-        self.frames = []  # Easter Egg animation
-        self.sprites = sprites
-        self.ball = Sprite(self.sprites, 0, 0, svg_str_to_pixbuf(
-                svg_from_file(filename)))
+        self._current_frame = 0
+        self._frames = []  # Easter Egg animation
+        self._sprites = sprites
+        self.ball = Sprite(self._sprites, 0, 0, svg_str_to_pixbuf(
+            svg_from_file(filename)))
 
         self.ball.set_layer(3)
         self.ball.set_label_attributes(24, vert_align='top')
 
         ball = extract_svg_payload(file(filename, 'r'))
         for i in range(8):
-            self.frames.append(Sprite(
-                    self.sprites, 0, 0, svg_str_to_pixbuf(
-                        svg_header(SIZE[0], SIZE[1], 1.0) + TRANSFORMS[i] + \
-                            ball + PUNCTURE + AIR + '</g>' + svg_footer())))
+            self._frames.append(Sprite(
+                self._sprites, 0, 0, svg_str_to_pixbuf(
+                    svg_header(SIZE[0], SIZE[1], 1.0) + TRANSFORMS[i] +
+                    ball + PUNCTURE + AIR + '</g>' + svg_footer())))
 
-        for frame in self.frames:
+        for frame in self._frames:
             frame.set_layer(3)
             frame.move((0, -SIZE[1]))  # move animation frames off screen
 
@@ -115,9 +121,9 @@ class Ball():
         self.ball.set_shape(svg_str_to_pixbuf(svg_from_file(filename)))
         ball = extract_svg_payload(file(filename, 'r'))
         for i in range(8):
-            self.frames[i].set_shape(svg_str_to_pixbuf(
-                        svg_header(SIZE[0], SIZE[1], 1.0) + TRANSFORMS[i] + \
-                            ball + PUNCTURE + AIR + '</g>' + svg_footer()))
+            self._frames[i].set_shape(svg_str_to_pixbuf(
+                svg_header(SIZE[0], SIZE[1], 1.0) + TRANSFORMS[i] +
+                ball + PUNCTURE + AIR + '</g>' + svg_footer()))
 
     def new_ball_from_image(self, filename):
         ''' Just create a ball object from an image file '''
@@ -132,15 +138,14 @@ class Ball():
 
     def new_ball_from_fraction(self, fraction):
         ''' Create a ball with a section of size fraction. '''
-        print COLORS
         r = SIZE[0] / 2.0
         self.ball.set_shape(svg_str_to_pixbuf(
-            svg_header(SIZE[0], SIZE[1], 1.0) + \
+            svg_header(SIZE[0], SIZE[1], 1.0) +
             svg_sector(r, r + BOX[1], r - 1, 1.999 * pi,
-                       COLORS[0], COLORS[1]) + \
+                       COLORS[0], COLORS[1]) +
             svg_sector(r, r + BOX[1], r - 1, fraction * 2 * pi,
-                       COLORS[1], COLORS[0]) + \
-            svg_rect(BOX[0], BOX[1], 4, 4, 0, 0, '#FFFFFF', 'none') + \
+                       COLORS[1], COLORS[0]) +
+            svg_rect(BOX[0], BOX[1], 4, 4, 0, 0, '#FFFFFF', 'none') +
             svg_footer()))
 
     def ball_x(self):
@@ -150,10 +155,10 @@ class Ball():
         return self.ball.get_xy()[1]
 
     def frame_x(self, i):
-        return self.frames[i].get_xy()[0]
+        return self._frames[i].get_xy()[0]
 
     def frame_y(self, i):
-        return self.frames[i].get_xy()[1]
+        return self._frames[i].get_xy()[1]
 
     def width(self):
         return self.ball.rect[2]
@@ -168,23 +173,23 @@ class Ball():
         self.ball.move_relative(pos)
 
     def move_frame(self, i, pos):
-        self.frames[i].move(pos)
+        self._frames[i].move(pos)
 
     def move_frame_relative(self, i, pos):
-        self.frames[i].move_relative(pos)
+        self._frames[i].move_relative(pos)
 
     def hide_frames(self):
-        for frame in self.frames:
+        for frame in self._frames:
             frame.move((0, -SIZE[1]))  # hide the animation frames
 
     def next_frame(self, frame_counter):
         if frame_counter in ANIMATION:
             self._switch_frames(ANIMATION[frame_counter])
-        return self.current_frame
+        return self._current_frame
 
     def _switch_frames(self, frames):
         ''' Switch between frames in the animation '''
         self.move_frame(frames[1], (self.frame_x(frames[0]),
-                                  self.frame_y(frames[0])))
+                                    self.frame_y(frames[0])))
         self.move_frame(frames[0], ((0, -SIZE[1])))  # hide the frame
-        self.current_frame = frames[1]
+        self._current_frame = frames[1]
