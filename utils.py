@@ -16,6 +16,10 @@
 from gi.repository import Gtk
 
 from sugar3.graphics.objectchooser import ObjectChooser
+try:
+    from sugar3.graphics.objectchooser import FILTER_TYPE_GENERIC_MIME
+except:
+    FILTER_TYPE_GENERIC_MIME = 'generic_mime'
 
 from StringIO import StringIO
 import json

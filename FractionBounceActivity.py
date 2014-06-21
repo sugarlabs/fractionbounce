@@ -110,7 +110,7 @@ class FractionBounceActivity(activity.Activity):
             self._label.set_label('')
             self._separator.set_expand(False)
         else:
-            self._label.set_size_request(400, -1)
+            self._label.set_size_request(500, -1)
             self._separator.set_expand(True)
 
         self._bounce_window.configure_cb(event)
@@ -210,7 +210,7 @@ class FractionBounceActivity(activity.Activity):
         if Gdk.Screen.width() < 1024:
             self._label.set_size_request(275, -1)
         else:
-            self._label.set_size_request(400, -1)
+            self._label.set_size_request(500, -1)
         self.toolitem = Gtk.ToolItem()
         self.toolitem.add(self._label)
         self._label.show()
@@ -363,7 +363,7 @@ class FractionBounceActivity(activity.Activity):
 
     def _new_background_from_journal(self, dsobject):
         ''' Load an image from the Journal. '''
-        self._bounce_window.new_background_from_image(dsobject.file_path)
+        self._bounce_window.new_background_from_image(None, dsobject=dsobject)
 
     def _fraction_cb(self, arg=None):
         ''' Set fraction mode '''

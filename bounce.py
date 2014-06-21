@@ -191,8 +191,9 @@ class Bounce():
         width, height = self._calc_background_size()
         for bg in self._backgrounds.keys():
             if bg == 'custom':
+                path = self._custom_dsobject.file_path
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                    self._custom_path, width, height)
+                    path, width, height)
             else:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
                     os.path.join(self._path, 'images', bg),
@@ -270,7 +271,9 @@ class Bounce():
             width = Gdk.Screen.width()
             return width, int(3 * width / 4)
 
-    def new_background_from_image(self, path):
+    def new_background_from_image(self, path, dsobject=None):
+        if path is None:
+            path = dsobject.file_path
         width, height = self._calc_background_size()
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             path, width, height)
@@ -283,7 +286,7 @@ class Bounce():
         self._backgrounds['custom'].set_layer(-100)
         self._backgrounds['custom'].type = 'background'
         self.set_background('custom')
-        self._custom_path = path
+        self._custom_dsobject = dsobject
         self._current_bg = 'custom'
 
     def set_background(self, name):
