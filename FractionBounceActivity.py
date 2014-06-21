@@ -22,6 +22,7 @@ from sugar3.graphics.toolbarbox import ToolbarButton
 from sugar3.activity.widgets import ActivityToolbarButton
 from sugar3.activity.widgets import StopButton
 from sugar3.graphics.toolbutton import ToolButton
+from sugar3.graphics.radiotoolbutton import RadioToolButton
 from sugar3.graphics.alert import NotifyAlert
 from sugar3.graphics import style
 
@@ -35,9 +36,6 @@ from gettext import gettext as _
 
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
-
-from toolbar_utils import (image_factory, separator_factory, label_factory,
-                           radio_factory, button_factory, entry_factory)
 
 from utils import json_load, json_dump, chooser
 from svg_utils import svg_str_to_pixbuf, generate_xo_svg
@@ -93,6 +91,8 @@ class FractionBounceActivity(activity.Activity):
 
         self.current_ball = 'soccerball'
 
+        self._toolbar_was_expanded = False
+
         # Initialize the canvas
         self.bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
 
@@ -126,14 +126,20 @@ class FractionBounceActivity(activity.Activity):
         return False
 
     def _update_graphics(self, widget):
+        # We need to catch opening and closing of toolbars and ignore
+        # switching between open toolbars.
         if self.toolbar_expanded():
-            self.bounce_window.bar.bump_bars('up')
-            self.bounce_window.ball.ball.move_relative(
-                (0, -style.GRID_CELL_SIZE))
+            if not self._toolbar_was_expanded:
+                self.bounce_window.bar.bump_bars('up')
+                self.bounce_window.ball.ball.move_relative(
+                    (0, -style.GRID_CELL_SIZE))
+                self._toolbar_was_expanded = True
         else:
-            self.bounce_window.bar.bump_bars('down')
-            self.bounce_window.ball.ball.move_relative(
-                (0, style.GRID_CELL_SIZE))
+            if self._toolbar_was_expanded:
+                self.bounce_window.bar.bump_bars('down')
+                self.bounce_window.ball.ball.move_relative(
+                    (0, style.GRID_CELL_SIZE))
+                self._toolbar_was_expanded = False
 
     def _setup_toolbars(self):
         ''' Add buttons to toolbars '''
@@ -173,22 +179,37 @@ class FractionBounceActivity(activity.Activity):
 
     def _load_standard_buttons(self, toolbar):
         ''' Load buttons onto whichever toolbar we are using '''
-        self.fraction_button = radio_factory('fraction', toolbar,
-                                             self._fraction_cb,
-                                             tooltip=_('fractions'),
-                                             group=None)
-        self.sector_button = radio_factory('sector', toolbar,
-                                           self._sector_cb,
-                                           tooltip=_('sectors'),
-                                           group=self.fraction_button)
-        self.percent_button = radio_factory('percent', toolbar,
-                                            self._percent_cb,
-                                            tooltip=_('percents'),
-                                            group=self.fraction_button)
-        self.player = image_factory(
-            svg_str_to_pixbuf(generate_xo_svg(scale=0.8,
-                                          colors=['#282828', '#282828'])),
-            toolbar, tooltip=self.nick)
+        fraction_button = RadioToolButton(group=None)
+        fraction_button.set_icon_name('fraction')
+        fraction_button.set_tooltip(_('fractions'))
+        fraction_button.connect('clicked', self._fraction_cb)
+        toolbar.insert(fraction_button, -1)
+        fraction_button.show()
+
+        sector_button = RadioToolButton(group=fraction_button)
+        sector_button.set_icon_name('sector')
+        sector_button.set_tooltip(_('sectors'))
+        sector_button.connect('clicked', self._sector_cb)
+        toolbar.insert(sector_button, -1)
+        sector_button.show()
+
+        percent_button = RadioToolButton(group=fraction_button)
+        percent_button.set_icon_name('percent')
+        percent_button.set_tooltip(_('percents'))
+        percent_button.connect('clicked', self._percent_cb)
+        toolbar.insert(percent_button, -1)
+        percent_button.show()
+
+        self.player = Gtk.Image()
+        self.player.set_from_pixbuf(svg_str_to_pixbuf(
+            generate_xo_svg(scale=0.8, colors=['#282828', '#282828'])))
+        self.player.set_tooltip_text(self.nick)
+        toolitem = Gtk.ToolItem()
+        toolitem.add(self.player)
+        self.player.show()
+        toolbar.insert(toolitem, -1)
+        toolitem.show()
+
         self.challenge = Gtk.Label(_("Click the ball to start."))
         self.challenge.set_line_wrap(True)
         if Gdk.Screen.width() < 1024:
@@ -203,22 +224,54 @@ class FractionBounceActivity(activity.Activity):
 
     def _load_custom_buttons(self, toolbar):
         ''' Entry fields and buttons for adding custom fractions '''
-        self.numerator = entry_factory('', toolbar, tooltip=_('numerator'))
-        label_factory(toolbar, '   /   ')
-        self.denominator = entry_factory('', toolbar,
-                                          tooltip=_('denominator'))
-        separator_factory(toolbar, expand=False, visible=False)
-        self.enter_button = button_factory('list-add', toolbar,
-                                           self._add_fraction_cb,
-                                           tooltip=_('add new fraction'),
+        self.numerator = Gtk.Entry()
+        self.numerator.set_text('')
+        self.numerator.set_tooltip_text(_('numerator'))
+        self.numerator.set_width_chars(3)
+        toolitem = Gtk.ToolItem()
+        toolitem.add(self.numerator)
+        self.numerator.show()
+        toolbar.insert(toolitem, -1)
+        toolitem.show()
 
-                                           accelerator='Return')
+        label = Gtk.Label('   /   ')
+        toolitem = Gtk.ToolItem()
+        toolitem.add(label)
+        label.show()
+        toolbar.insert(toolitem, -1)
+        toolitem.show()
 
-        separator_factory(toolbar, expand=False, visible=False)
-        self.ball_selector_button = button_factory('soccerball', toolbar,
-                                                   self._button_palette_cb,
-                                                   tooltip=_('choose a ball'))
-        self.ball_palette = self.ball_selector_button.get_palette()
+        self.denominator = Gtk.Entry()
+        self.denominator.set_text('')
+        self.denominator.set_tooltip_text(_('denominator'))
+        self.denominator.set_width_chars(3)
+        toolitem = Gtk.ToolItem()
+        toolitem.add(self.denominator)
+        self.denominator.show()
+        toolbar.insert(toolitem, -1)
+        toolitem.show()
+
+        button = ToolButton('list-add')
+        button.set_tooltip(_('add new fraction'))
+        button.props.sensitive = True
+        button.props.accelerator = 'Return'
+        button.connect('clicked', self._add_fraction_cb)
+        toolbar.insert(button, -1)
+        button.show()
+
+        separator = Gtk.SeparatorToolItem()
+        separator.props.draw = False
+        separator.set_expand(False)
+        toolbar.insert(separator, -1)
+        separator.show()
+
+        button = ToolButton('soccerball')
+        button.set_tooltip(_('choose a ball'))
+        button.props.sensitive = True
+        button.connect('clicked', self._button_palette_cb)
+        toolbar.insert(button, -1)
+        button.show()
+        self.ball_palette = button.get_palette()
         button_grid = Gtk.Grid()
         row = 0
         for ball in BALLDICT.keys():
@@ -241,11 +294,13 @@ class FractionBounceActivity(activity.Activity):
         self.ball_palette.set_content(button_grid)
         button_grid.show()
 
-        separator_factory(toolbar, expand=False, visible=False)
-        self.bg_selector_button = button_factory(
-            'insert-picture', toolbar, self._button_palette_cb,
-            tooltip=_('choose a background'))
-        self.bg_palette = self.bg_selector_button.get_palette()
+        button = ToolButton('insert-picture')
+        button.set_tooltip(_('choose a background'))
+        button.props.sensitive = True
+        button.connect('clicked', self._button_palette_cb)
+        toolbar.insert(button, -1)
+        button.show()
+        self.bg_palette = button.get_palette()
         button_grid = Gtk.Grid()
         row = 0
         for bg in BGDICT.keys():
