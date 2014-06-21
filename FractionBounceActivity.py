@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-#Copyright (c) 2011, Walter Bender, Paulina Clares, Chris Rowe
-
+# Copyright (c) 2011-14, Walter Bender
+# Copyright (c) 2011 Paulina Clares, Chris Rowe
 # Ported to GTK3 - 2012:
 # Ignacio Rodríguez <ignaciorodriguez@sugarlabs.org>
 
@@ -12,15 +12,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this library; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
-from gi.repository import Gdk, GdkPixbuf, GObject, Gtk
+
 import os
 
-from sugar3.activity import activity
+from gi.repository import Gtk
+from gi.repository import Gdk
+
 from sugar3 import profile
-from sugar3.graphics.toolbarbox import ToolbarBox
-from sugar3.graphics.toolbarbox import ToolbarButton
+from sugar3.activity import activity
 from sugar3.activity.widgets import ActivityToolbarButton
 from sugar3.activity.widgets import StopButton
+from sugar3.graphics.toolbarbox import ToolbarBox
+from sugar3.graphics.toolbarbox import ToolbarButton
 from sugar3.graphics.toolbutton import ToolButton
 from sugar3.graphics.radiotoolbutton import RadioToolButton
 from sugar3.graphics.alert import NotifyAlert
@@ -68,14 +71,9 @@ class FractionBounceActivity(activity.Activity):
 
         self.nick = profile.get_nick_name()
         if profile.get_color() is not None:
-            self.colors = profile.get_color().to_string().split(',')
+            self._colors = profile.get_color().to_string().split(',')
         else:
-            self.colors = ['#A0FFA0', '#FF8080']
-
-        '''
-        self.add_events(Gdk.EventMask.VISIBILITY_NOTIFY_MASK)
-        self.connect('visibility-notify-event', self.__visibility_notify_cb)
-        '''
+            self._colors = ['#A0FFA0', '#FF8080']
 
         self.max_participants = 2  # sharing
 
@@ -89,12 +87,12 @@ class FractionBounceActivity(activity.Activity):
         else:
             custom = None
 
-        self.current_ball = 'soccerball'
+        self._current_ball = 'soccerball'
 
         self._toolbar_was_expanded = False
 
         # Initialize the canvas
-        self.bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
+        self._bounce_window = Bounce(canvas, activity.get_bundle_path(), self)
 
         Gdk.Screen.get_default().connect('size-changed', self._configure_cb)
 
@@ -102,75 +100,73 @@ class FractionBounceActivity(activity.Activity):
         if custom is not None:
             fractions = custom.split(',')
             for f in fractions:
-                self.bounce_window.add_fraction(f)
+                self._bounce_window.add_fraction(f)
 
         self._setup_presence_service()
 
     def _configure_cb(self, event):
         if Gdk.Screen.width() < 1024:
-            self.challenge.set_size_request(275, -1)
-            self.challenge.set_label('')
+            self._label.set_size_request(275, -1)
+            self._label.set_label('')
+            self._separator.set_expand(False)
         else:
-            self.challenge.set_size_request(400, -1)
-        if Gdk.Screen.width() < 1024:
-            self.separator.set_expand(False)
-        else:
-            self.separator.set_expand(True)
-        self.bounce_window.configure_cb(event)
+            self._label.set_size_request(400, -1)
+            self._separator.set_expand(True)
+
+        self._bounce_window.configure_cb(event)
 
     def toolbar_expanded(self):
-        if self.activity_button.is_expanded():
+        if self._activity_button.is_expanded():
             return True
-        elif self.custom_toolbar_button.is_expanded():
+        elif self._custom_toolbar_button.is_expanded():
             return True
         return False
 
     def _update_graphics(self, widget):
         # We need to catch opening and closing of toolbars and ignore
         # switching between open toolbars.
-        if self.toolbar_expanded():
+        if self._toolbar_expanded():
             if not self._toolbar_was_expanded:
-                self.bounce_window.bar.bump_bars('up')
-                self.bounce_window.ball.ball.move_relative(
+                self._bounce_window.bar.bump_bars('up')
+                self._bounce_window.ball.ball.move_relative(
                     (0, -style.GRID_CELL_SIZE))
                 self._toolbar_was_expanded = True
         else:
             if self._toolbar_was_expanded:
-                self.bounce_window.bar.bump_bars('down')
-                self.bounce_window.ball.ball.move_relative(
+                self._bounce_window.bar.bump_bars('down')
+                self._bounce_window.ball.ball.move_relative(
                     (0, style.GRID_CELL_SIZE))
                 self._toolbar_was_expanded = False
 
     def _setup_toolbars(self):
-        ''' Add buttons to toolbars '''
         custom_toolbar = Gtk.Toolbar()
         toolbox = ToolbarBox()
-        self.toolbar = toolbox.toolbar
-        self.activity_button = ActivityToolbarButton(self)
-        self.activity_button.connect('clicked', self._update_graphics)
-        self.toolbar.insert(self.activity_button, 0)
-        self.activity_button.show()
+        self._toolbar = toolbox.toolbar
+        self._activity_button = ActivityToolbarButton(self)
+        self._activity_button.connect('clicked', self._update_graphics)
+        self._toolbar.insert(self._activity_button, 0)
+        self._activity_button.show()
 
-        self.custom_toolbar_button = ToolbarButton(
+        self._custom_toolbar_button = ToolbarButton(
             label=_('Custom'),
             page=custom_toolbar,
             icon_name='view-source')
-        self.custom_toolbar_button.connect('clicked', self._update_graphics)
+        self._custom_toolbar_button.connect('clicked', self._update_graphics)
         custom_toolbar.show()
-        self.toolbar.insert(self.custom_toolbar_button, -1)
-        self.custom_toolbar_button.show()
+        self._toolbar.insert(self._custom_toolbar_button, -1)
+        self._custom_toolbar_button.show()
 
-        self._load_standard_buttons(self.toolbar)
+        self._load_standard_buttons(self._toolbar)
 
-        self.separator = Gtk.SeparatorToolItem()
-        self.separator.props.draw = False
-        self.separator.set_expand(True)
-        self.toolbar.insert(self.separator, -1)
-        self.separator.show()
+        self._separator = Gtk.SeparatorToolItem()
+        self._separator.props.draw = False
+        self._separator.set_expand(True)
+        self._toolbar.insert(self._separator, -1)
+        self._separator.show()
 
         stop_button = StopButton(self)
         stop_button.props.accelerator = _('<Ctrl>Q')
-        self.toolbar.insert(stop_button, -1)
+        self._toolbar.insert(stop_button, -1)
         stop_button.show()
         self.set_toolbar_box(toolbox)
         toolbox.show()
@@ -178,7 +174,6 @@ class FractionBounceActivity(activity.Activity):
         self._load_custom_buttons(custom_toolbar)
 
     def _load_standard_buttons(self, toolbar):
-        ''' Load buttons onto whichever toolbar we are using '''
         fraction_button = RadioToolButton(group=None)
         fraction_button.set_icon_name('fraction')
         fraction_button.set_tooltip(_('fractions'))
@@ -200,30 +195,29 @@ class FractionBounceActivity(activity.Activity):
         toolbar.insert(percent_button, -1)
         percent_button.show()
 
-        self.player = Gtk.Image()
-        self.player.set_from_pixbuf(svg_str_to_pixbuf(
+        self._player = Gtk.Image()
+        self._player.set_from_pixbuf(svg_str_to_pixbuf(
             generate_xo_svg(scale=0.8, colors=['#282828', '#282828'])))
-        self.player.set_tooltip_text(self.nick)
+        self._player.set_tooltip_text(self.nick)
         toolitem = Gtk.ToolItem()
-        toolitem.add(self.player)
-        self.player.show()
+        toolitem.add(self._player)
+        self._player.show()
         toolbar.insert(toolitem, -1)
         toolitem.show()
 
-        self.challenge = Gtk.Label(_("Click the ball to start."))
-        self.challenge.set_line_wrap(True)
+        self._label = Gtk.Label(_("Click the ball to start."))
+        self._label.set_line_wrap(True)
         if Gdk.Screen.width() < 1024:
-            self.challenge.set_size_request(275, -1)
+            self._label.set_size_request(275, -1)
         else:
-            self.challenge.set_size_request(400, -1)
+            self._label.set_size_request(400, -1)
         self.toolitem = Gtk.ToolItem()
-        self.toolitem.add(self.challenge)
-        self.challenge.show()
+        self.toolitem.add(self._label)
+        self._label.show()
         toolbar.insert(self.toolitem, -1)
         self.toolitem.show()
 
     def _load_custom_buttons(self, toolbar):
-        ''' Entry fields and buttons for adding custom fractions '''
         self.numerator = Gtk.Entry()
         self.numerator.set_text('')
         self.numerator.set_tooltip_text(_('numerator'))
@@ -271,7 +265,7 @@ class FractionBounceActivity(activity.Activity):
         button.connect('clicked', self._button_palette_cb)
         toolbar.insert(button, -1)
         button.show()
-        self.ball_palette = button.get_palette()
+        self._ball_palette = button.get_palette()
         button_grid = Gtk.Grid()
         row = 0
         for ball in BALLDICT.keys():
@@ -291,7 +285,7 @@ class FractionBounceActivity(activity.Activity):
             button_grid.attach(eventbox, 1, row, 1, 1)
             eventbox.show()
             row += 1
-        self.ball_palette.set_content(button_grid)
+        self._ball_palette.set_content(button_grid)
         button_grid.show()
 
         button = ToolButton('insert-picture')
@@ -300,7 +294,7 @@ class FractionBounceActivity(activity.Activity):
         button.connect('clicked', self._button_palette_cb)
         toolbar.insert(button, -1)
         button.show()
-        self.bg_palette = button.get_palette()
+        self._bg_palette = button.get_palette()
         button_grid = Gtk.Grid()
         row = 0
         for bg in BGDICT.keys():
@@ -319,7 +313,7 @@ class FractionBounceActivity(activity.Activity):
             button_grid.attach(eventbox, 1, row, 1, 1)
             eventbox.show()
             row += 1
-        self.bg_palette.set_content(button_grid)
+        self._bg_palette.set_content(button_grid)
         button_grid.show()
 
     def _button_palette_cb(self, button):
@@ -331,7 +325,6 @@ class FractionBounceActivity(activity.Activity):
                 palette.popdown(immediate=True)
 
     def _setup_canvas(self):
-        ''' Create a canvas '''
         canvas = Gtk.DrawingArea()
         canvas.set_size_request(Gdk.Screen.width(),
                                 Gdk.Screen.height())
@@ -343,48 +336,48 @@ class FractionBounceActivity(activity.Activity):
         if bg == 'custom':
             chooser(self, 'Image', self._new_background_from_journal)
         else:
-            self.bounce_window.set_background(BGDICT[bg][1])
+            self._bounce_window.set_background(BGDICT[bg][1])
 
     def _load_ball_cb(self, widget, event, ball):
         if ball == 'custom':
             chooser(self, 'Image', self._new_ball_from_journal)
         else:
-            self.bounce_window.ball.new_ball(os.path.join(
+            self._bounce_window.ball.new_ball(os.path.join(
                 activity.get_bundle_path(), 'images', ball + '.svg'))
-            self.bounce_window.set_background(BGDICT[BALLDICT[ball][1]][1])
-        self.current_ball = ball
+            self._bounce_window.set_background(BGDICT[BALLDICT[ball][1]][1])
+        self._current_ball = ball
 
     def _reset_ball(self):
         ''' If we switch back from sector mode, we need to restore the ball '''
-        if self.bounce_window.mode != 'sectors':
+        if self._bounce_window.mode != 'sectors':
             return
 
-        if self.current_ball == 'custom':  # TODO: Reload custom ball
-            self.current_ball = 'soccerball'
-        self.bounce_window.ball.new_ball(os.path.join(
-            activity.get_bundle_path(), 'images', self.current_ball + '.svg'))
+        if self._current_ball == 'custom':  # TODO: Reload custom ball
+            self._current_ball = 'soccerball'
+        self._bounce_window.ball.new_ball(os.path.join(
+            activity.get_bundle_path(), 'images', self._current_ball + '.svg'))
 
     def _new_ball_from_journal(self, dsobject):
         ''' Load an image from the Journal. '''
-        self.bounce_window.ball.new_ball_from_image(dsobject.file_path)
+        self._bounce_window.ball.new_ball_from_image(dsobject.file_path)
 
     def _new_background_from_journal(self, dsobject):
         ''' Load an image from the Journal. '''
-        self.bounce_window.new_background_from_image(dsobject.file_path)
+        self._bounce_window.new_background_from_image(dsobject.file_path)
 
     def _fraction_cb(self, arg=None):
         ''' Set fraction mode '''
         self._reset_ball()
-        self.bounce_window.mode = 'fractions'
+        self._bounce_window.mode = 'fractions'
 
     def _percent_cb(self, arg=None):
         ''' Set percent mode '''
         self._reset_ball()
-        self.bounce_window.mode = 'percents'
+        self._bounce_window.mode = 'percents'
 
     def _sector_cb(self, arg=None):
         ''' Set sector mode '''
-        self.bounce_window.mode = 'sectors'
+        self._bounce_window.mode = 'sectors'
 
     def _add_fraction_cb(self, arg=None):
         ''' Read entries and add a fraction to the list '''
@@ -404,7 +397,7 @@ class FractionBounceActivity(activity.Activity):
             numerator = 0
         if numerator > 0 and denominator > 1:
             fraction = '%d/%d' % (numerator, denominator)
-            self.bounce_window.add_fraction(fraction)
+            self._bounce_window.add_fraction(fraction)
             if 'custom' in self.metadata:  # Save to Journal
                 self.metadata['custom'] = '%s,%s' % (
                     self.metadata['custom'], fraction)
@@ -419,17 +412,13 @@ class FractionBounceActivity(activity.Activity):
     def reset_label(self, fraction):
         ''' update the challenge label '''
         if not Gdk.Screen.width() < 1024:
-            self.challenge.set_label(_('Bounce the ball to a position '
-                                       '%(fraction)s of the way from the left side of the bar.')
-                                     % {'fraction': fraction})
+            self._label.set_label(
+                _('Bounce the ball to a position '
+                  '%(fraction)s of the way from the left side of the bar.')
+                % {'fraction': fraction})
         else:
-            self.challenge.set_label(_('Bounce the ball to %(fraction)s')
-                                       % {'fraction': fraction})
-
-    def __visibility_notify_cb(self, window, event):
-        ''' Callback method for when the activity's visibility changes. '''
-        # _logger.debug('%s', str(event.state))
-        return
+            self._label.set_label(_('Bounce the ball to %(fraction)s')
+                                     % {'fraction': fraction})
 
     def alert(self, title, text=None):
         alert = NotifyAlert(timeout=5)
@@ -446,15 +435,15 @@ class FractionBounceActivity(activity.Activity):
 
     def _setup_presence_service(self):
         ''' Setup the Presence Service. '''
-        self.pservice = presenceservice.get_instance()
-        self.initiating = None  # sharing (True) or joining (False)
+        self._pservice = presenceservice.get_instance()
+        self._initiating = None  # sharing (True) or joining (False)
 
-        owner = self.pservice.get_owner()
-        self.owner = owner
-        self.bounce_window.buddies.append(self.nick)
-        self._player_colors = [self.colors]
+        owner = self._pservice.get_owner()
+        self._owner = owner
+        self._bounce_window.buddies.append(self.nick)
+        self._player_colors = [self._colors]
         self._player_pixbuf = [svg_str_to_pixbuf(
-                generate_xo_svg(scale=0.8, colors=self.colors))]
+            generate_xo_svg(scale=0.8, colors=self._colors))]
         self._share = ''
         self.connect('shared', self._shared_cb)
         self.connect('joined', self._joined_cb)
@@ -474,32 +463,32 @@ class FractionBounceActivity(activity.Activity):
                 _shared_activity is null in _shared_cb()')
             return
 
-        self.initiating = sharer
-        self.waiting_for_fraction = not sharer
+        self._initiating = sharer
+        self._waiting_for_fraction = not sharer
+ 
+        self._conn = self._shared_activity.telepathy_conn
+        self._tubes_chan = self._shared_activity.telepathy_tubes_chan
+        self._text_chan = self._shared_activity.telepathy_text_chan
 
-        self.conn = self._shared_activity.telepathy_conn
-        self.tubes_chan = self._shared_activity.telepathy_tubes_chan
-        self.text_chan = self._shared_activity.telepathy_text_chan
-
-        self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].connect_to_signal(
+        self._tubes_chan[telepathy.CHANNEL_TYPE_TUBES].connect_to_signal(
             'NewTube', self._new_tube_cb)
 
         if sharer:
             _logger.debug('This is my activity: making a tube...')
-            id = self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].OfferDBusTube(
+            self._tubes_chan[telepathy.CHANNEL_TYPE_TUBES].OfferDBusTube(
                 SERVICE, {})
 
-            self.challenge.set_label(_('Wait for others to join.'))
+            self._label.set_label(_('Wait for others to join.'))
         else:
             _logger.debug('I am joining an activity: waiting for a tube...')
-            self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].ListTubes(
+            self._tubes_chan[telepathy.CHANNEL_TYPE_TUBES].ListTubes(
                 reply_handler=self._list_tubes_reply_cb,
                 error_handler=self._list_tubes_error_cb)
 
-            self.challenge.set_label(_('Wait for the sharer to start.'))
+            self._label.set_label(_('Wait for the sharer to start.'))
 
         # display your XO on the toolbar
-        self.player.set_from_pixbuf(self._player_pixbuf[0])
+        self._player.set_from_pixbuf(self._player_pixbuf[0])
 
     def _list_tubes_reply_cb(self, tubes):
         ''' Reply to a list request. '''
@@ -518,20 +507,20 @@ class FractionBounceActivity(activity.Activity):
 
         if (type == telepathy.TUBE_TYPE_DBUS and service == SERVICE):
             if state == telepathy.TUBE_STATE_LOCAL_PENDING:
-                self.tubes_chan[ \
-                              telepathy.CHANNEL_TYPE_TUBES].AcceptDBusTube(id)
+                self._tubes_chan[
+                    telepathy.CHANNEL_TYPE_TUBES].AcceptDBusTube(id)
 
-            tube_conn = TubeConnection(self.conn,
-                self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES], id, \
-                group_iface=self.text_chan[telepathy.CHANNEL_INTERFACE_GROUP])
+            tube_conn = TubeConnection(
+                self._conn, self._tubes_chan[telepathy.CHANNEL_TYPE_TUBES], id,
+                group_iface=self._text_chan[telepathy.CHANNEL_INTERFACE_GROUP])
 
-            self.chattube = ChatTube(tube_conn, self.initiating, \
-                self.event_received_cb)
+            self._chattube = ChatTube(tube_conn, self._initiating,
+                                     self.event_received_cb)
 
             # Let the sharer know a new joiner has arrived.
-            if self.waiting_for_fraction:
-                self.send_event('j|%s' % (json_dump([self.nick,
-                                                     self.colors])))
+            if self._waiting_for_fraction:
+                self.send_event('j|%s' %
+                                (json_dump([self.nick, self._colors])))
 
     def _setup_dispatch_table(self):
         self._processing_methods = {
@@ -556,20 +545,20 @@ class FractionBounceActivity(activity.Activity):
     def _new_joiner(self, payload):
         ''' Someone has joined; sharer adds them to the buddy list. '''
         [nick, colors] = json_load(payload)
-        self.challenge.set_label(nick + ' ' + _('has joined.'))
+        self._label.set_label(nick + ' ' + _('has joined.'))
         self._append_player(nick, colors)
-        if self.initiating:
-            payload = json_dump([self.bounce_window.buddies,
+        if self._initiating:
+            payload = json_dump([self._bounce_window.buddies,
                                  self._player_colors])
             self.send_event('b|%s' % (payload))
-            if self.bounce_window.count == 0:  # Haven't started yet...
-                self.bounce_window.its_my_turn()
+            if self._bounce_window.count == 0:  # Haven't started yet...
+                self._bounce_window.its_my_turn()
 
     def _append_player(self, nick, colors):
         ''' Keep a list of players, their colors, and an XO pixbuf '''
-        if not nick in self.bounce_window.buddies:
+        if not nick in self._bounce_window.buddies:
             # _logger.debug('appending %s to the buddy list', nick)
-            self.bounce_window.buddies.append(nick)
+            self._bounce_window.buddies.append(nick)
             self._player_colors.append(colors)
             self._player_pixbuf.append(svg_str_to_pixbuf(
                 generate_xo_svg(scale=0.8, colors=colors)))
@@ -588,26 +577,26 @@ class FractionBounceActivity(activity.Activity):
     def _receive_a_fraction(self, payload):
         ''' Receive a fraction from another player. '''
         fraction = json_load(payload)
-        self.bounce_window.play_a_fraction(fraction)
+        self._bounce_window.play_a_fraction(fraction)
 
     def _take_a_turn(self, nick):
         ''' If it is your turn, take it, otherwise, wait. '''
         if nick == self.nick:
-            self.bounce_window.its_my_turn()
+            self._bounce_window.its_my_turn()
         else:
-            self.bounce_window.its_their_turn(nick)
+            self._bounce_window.its_their_turn(nick)
 
     def send_event(self, entry):
         ''' Send event through the tube. '''
         # _logger.debug('sending event: %s', entry)
-        if hasattr(self, 'chattube') and self.chattube is not None:
-            self.chattube.SendText(entry)
+        if hasattr(self, 'chattube') and self._chattube is not None:
+            self._chattube.SendText(entry)
 
     def set_player_on_toolbar(self, nick):
         ''' Display the XO icon of the player whose turn it is. '''
-        self.player.set_from_pixbuf(self._player_pixbuf[
-                self.bounce_window.buddies.index(nick)])
-        self.player.set_tooltip_text(nick)
+        self._player.set_from_pixbuf(self._player_pixbuf[
+            self._bounce_window.buddies.index(nick)])
+        self._player.set_tooltip_text(nick)
 
 
 class ChatTube(ExportedGObject):
