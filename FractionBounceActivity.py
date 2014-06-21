@@ -114,6 +114,10 @@ class FractionBounceActivity(activity.Activity):
             self._separator.set_expand(True)
 
         self._bounce_window.configure_cb(event)
+        if self._toolbar_expanded():
+            self._bounce_window.bar.bump_bars('up')
+            self._bounce_window.ball.ball.move_relative(
+                (0, -style.GRID_CELL_SIZE))
 
     def _toolbar_expanded(self):
         if self._activity_button.is_expanded():
