@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#Copyright (c) 2011, Walter Bender, Paulina Clares, Chris Rowe
+# Copyright (c) 2011-14, Walter Bender
+# Copyright (c) 2011, Paulina Clares, Chris Rowe
 # Ported to GTK3 - 2012:
 # Ignacio Rodríguez <ignaciorodriguez@sugarlabs.org>
 
@@ -50,15 +51,14 @@ CRASH = 'crash.ogg'  # wrong answer sound
 LAUGH = 'bottle.ogg'  # correct answer sound
 BUBBLES = 'bubbles.ogg'  # Easter Egg sound
 
-from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
-
-from random import uniform
 import os
 import subprocess
+from random import uniform
 
+from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
 
 from svg_utils import (svg_header, svg_footer, svg_rect, svg_str_to_pixbuf,
-                       svg_from_file, genblank)
+                       svg_from_file)
 from play_audio import play_audio_from_file
 
 from ball import Ball
@@ -101,88 +101,91 @@ class Bounce():
 
     def __init__(self, canvas, path, parent=None):
         ''' Initialize the canvas and set up the callbacks. '''
-        self.activity = parent
-        self.fraction = None
-        self.path = path
+        self._activity = parent
+        self._fraction = None
+        self._path = path
 
         if parent is None:        # Starting from command line
-            self.sugar = False
-            self.canvas = canvas
+            self._sugar = False
         else:                     # Starting from Sugar
-            self.sugar = True
-            self.canvas = canvas
+            self._sugar = True
 
-        self.canvas.grab_focus()
+        self._canvas = canvas
+        self._canvas.grab_focus()
 
-        self.accelerometer = os.path.exists(ACCELEROMETER_DEVICE) and \
-                             _is_tablet_mode()
+        self._accelerometer = os.path.exists(ACCELEROMETER_DEVICE) and \
+                              _is_tablet_mode()
 
-        self.canvas.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        self.canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
-        self.canvas.add_events(Gdk.EventMask.POINTER_MOTION_MASK) 
-        self.canvas.add_events(Gdk.EventMask.KEY_PRESS_MASK)
-        self.canvas.add_events(Gdk.EventMask.KEY_RELEASE_MASK)
-        self.canvas.connect('draw', self.__draw_cb)
-        self.canvas.connect('button-press-event', self._button_press_cb)
-        self.canvas.connect('button-release-event', self._button_release_cb)
-        self.canvas.connect('key-press-event', self._keypress_cb)
-        self.canvas.connect('key-release-event', self._keyrelease_cb)
-        self.canvas.set_can_focus(True)
-        self.canvas.grab_focus()
-        self.width = Gdk.Screen.width()
-        self.height = Gdk.Screen.height() - GRID_CELL_SIZE
-        self.sprites = Sprites(self.canvas)
-        self.scale = Gdk.Screen.height() / 900.0
-        self.timeout = None
+        self._canvas.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self._canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
+        self._canvas.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
+        self._canvas.add_events(Gdk.EventMask.KEY_PRESS_MASK)
+        self._canvas.add_events(Gdk.EventMask.KEY_RELEASE_MASK)
+        self._canvas.connect('draw', self.__draw_cb)
+        self._canvas.connect('button-press-event', self._button_press_cb)
+        self._canvas.connect('button-release-event', self._button_release_cb)
+        self._canvas.connect('key-press-event', self._keypress_cb)
+        self._canvas.connect('key-release-event', self._keyrelease_cb)
+        self._canvas.set_can_focus(True)
+        self._canvas.grab_focus()
 
+        self._sprites = Sprites(self._canvas)
+
+        self._width = Gdk.Screen.width()
+        self._height = Gdk.Screen.height() - GRID_CELL_SIZE
+        self._scale = Gdk.Screen.height() / 900.0
+
+        self._timeout = None
         self.buddies = []  # used for sharing
-        self.my_turn = False
+        self._my_turn = False
         self.select_a_fraction = False
 
-        self.easter_egg = int(uniform(1, 100))
+        self._easter_egg = int(uniform(1, 100))
 
-	# Find paths to sound files
-        self.path_to_success = os.path.join(path, LAUGH)
-        self.path_to_failure = os.path.join(path, CRASH)
-        self.path_to_bubbles = os.path.join(path, BUBBLES)
+        # Find paths to sound files
+        self._path_to_success = os.path.join(path, LAUGH)
+        self._path_to_failure = os.path.join(path, CRASH)
+        self._path_to_bubbles = os.path.join(path, BUBBLES)
 
         self._create_sprites(path)
 
-        self.challenge = 0
-        self.expert = False
-        self.challenges = []
-        for challenge in CHALLENGES[self.challenge]:
-            self.challenges.append(challenge)
-        self.fraction = 0.5  # the target of the current challenge
-        self.label = '1/2'  # the label
-        self.count = 0  # number of bounces played
-        self.correct = 0  # number of correct answers
-        self.press = None  # sprite under mouse click
         self.mode = 'fractions'
-        self.new_bounce = False
-        self.n = 0
-        self.accel_index = 0
-        self.accel_flip = False
+
+        self._challenge = 0
+        self._expert = False
+        self._challenges = []
+        for challenge in CHALLENGES[self._challenge]:
+            self._challenges.append(challenge)
+        self._fraction = 0.5  # the target of the current challenge
+        self._label = '1/2'  # the label
+        self._count = 0  # number of bounces played
+        self._correct = 0  # number of correct answers
+        self._press = None  # sprite under mouse click
+        self._new_bounce = False
+        self._n = 0
+        self._accel_index = 0
+        self._accel_flip = False
         self._guess_orientation()
 
-        self.dx = 0.  # ball horizontal trajectory
-	# acceleration (with dampening)
-        self.ddy = (6.67 * self.height) / (STEPS * STEPS)
-        self.dy = self.ddy * (1 - STEPS) / 2.  # initial step size
+        self._dx = 0.  # ball horizontal trajectory
+        # acceleration (with dampening)
+        self._ddy = (6.67 * self._height) / (STEPS * STEPS)
+        self._dy = self._ddy * (1 - STEPS) / 2.  # initial step size
 
-        if self.sugar:
+        if self._sugar:
             if _is_tablet_mode():
-                self.activity.challenge.set_label(
+                self._activity.reset_label(
                     _('Click the ball to start. The rock the computer left '
                       'and right to move the ball.'))
             else:
-                self.activity.challenge.set_label(
+                self._activity.reset_label(
                     _('Click the ball to start. Then use the arrow keys to '
                       'move the ball.'))
 
     def configure_cb(self, event):
-        self.width = Gdk.Screen.width()
-        self.height = Gdk.Screen.height() - GRID_CELL_SIZE
+        self._width = Gdk.Screen.width()
+        self._height = Gdk.Screen.height() - GRID_CELL_SIZE
+        self._scale = Gdk.Screen.height() / 900.0
 
         # We need to resize the backgrounds
         if Gdk.Screen.height() > Gdk.Screen.width():
@@ -191,54 +194,53 @@ class Bounce():
         else:
             width = Gdk.Screen.width()
             height = int(3 * width / 4)
-        for bg in self.backgrounds.keys():
+        for bg in self._backgrounds.keys():
             if bg == 'custom':
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                    self.custom_path, width, height)
+                    self._custom_path, width, height)
             else:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                    os.path.join(self.path, 'images', bg),
+                    os.path.join(self._path, 'images', bg),
                     width, height)
-            self.backgrounds[bg] = Sprite(self.sprites, 0, 0, pixbuf)
-            if self.current_bg == bg:
-                self.backgrounds[bg].set_layer(-99)
+            self._backgrounds[bg] = Sprite(self._sprites, 0, 0, pixbuf)
+            if self._current_bg == bg:
+                self._backgrounds[bg].set_layer(-99)
             else:
-                self.backgrounds[bg].set_layer(-100)
-            self.backgrounds[bg].type = 'background'
+                self._backgrounds[bg].set_layer(-100)
+            self._backgrounds[bg].type = 'background'
 
         # and resize and reposition the bars
         self.bar.resize_all()
         self.bar.show_bar(2)
-        self.current_bar = self.bar.get_bar(2)
+        self._current_bar = self.bar.get_bar(2)
 
         self._guess_orientation()
 
     def _create_sprites(self, path):
         ''' Create all of the sprites we'll need '''
         self.smiley_graphic = svg_str_to_pixbuf(svg_from_file(
-                os.path.join(path, 'images', 'smiley.svg')))
+            os.path.join(path, 'images', 'smiley.svg')))
 
         self.frown_graphic = svg_str_to_pixbuf(svg_from_file(
-                os.path.join(path, 'images', 'frown.svg')))
+            os.path.join(path, 'images', 'frown.svg')))
 
         self.blank_graphic = svg_str_to_pixbuf(
-            svg_header(REWARD_HEIGHT, REWARD_HEIGHT, 1.0) + \
+            svg_header(REWARD_HEIGHT, REWARD_HEIGHT, 1.0) +
             svg_rect(REWARD_HEIGHT, REWARD_HEIGHT, 5, 5, 0, 0,
-                     'none', 'none') + \
+                     'none', 'none') +
             svg_footer())
 
-        self.ball = Ball(self.sprites,
+        self.ball = Ball(self._sprites,
                          os.path.join(path, 'images', 'soccerball.svg'))
-        self.current_frame = 0
+        self._current_frame = 0
 
-        self.bar = Bar(self.sprites, self.width, self.height, self.scale,
-                       self.ball.width(), COLORS)
-        self.current_bar = self.bar.get_bar(2)
+        self.bar = Bar(self._sprites, self.ball.width(), COLORS)
+        self._current_bar = self.bar.get_bar(2)
 
         self.ball_y_max = self.bar.bar_y() - self.ball.height() + \
                           int(BAR_HEIGHT / 2.)
-        self.ball.move_ball((int((self.width - self.ball.width()) / 2),
-                        self.ball_y_max))
+        self.ball.move_ball((int((self._width - self.ball.width()) / 2),
+                             self.ball_y_max))
 
         if Gdk.Screen.height() > Gdk.Screen.width():
             height = Gdk.Screen.height()
@@ -246,16 +248,16 @@ class Bounce():
         else:
             width = Gdk.Screen.width()
             height = int(3 * width / 4)
-        
-        self.backgrounds = {}
+
+        self._backgrounds = {}
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(path, 'images', 'grass_background.png'),
             width, height)
-        self.backgrounds['grass_background.png'] = Sprite(
-            self.sprites, 0, 0, pixbuf)
-        self.backgrounds['grass_background.png'].set_layer(-99)
-        self.backgrounds['grass_background.png'].type = 'background'
-        self.current_bg = 'grass_background.png'
+        self._backgrounds['grass_background.png'] = Sprite(
+            self._sprites, 0, 0, pixbuf)
+        self._backgrounds['grass_background.png'].set_layer(-99)
+        self._backgrounds['grass_background.png'].type = 'background'
+        self._current_bg = 'grass_background.png'
 
     def new_background_from_image(self, path):
         if Gdk.Screen.height() > Gdk.Screen.width():
@@ -266,16 +268,16 @@ class Bounce():
             height = int(3 * width / 4)
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             path, width, height)
-        self.backgrounds['custom'] = Sprite(
-            self.sprites, 0, 0, pixbuf)
-        self.backgrounds['custom'].set_layer(-100)
-        self.backgrounds['custom'].type = 'background'
+        self._backgrounds['custom'] = Sprite(
+            self._sprites, 0, 0, pixbuf)
+        self._backgrounds['custom'].set_layer(-100)
+        self._backgrounds['custom'].type = 'background'
         self.set_background('custom')
-        self.custom_path = path
-        self.current_bg = 'custom'
+        self._custom_path = path
+        self._current_bg = 'custom'
 
     def set_background(self, name):
-        if not name in self.backgrounds:
+        if not name in self._backgrounds:
             if Gdk.Screen.height() > Gdk.Screen.width():
                 height = Gdk.Screen.height()
                 width = int(4 * height / 3)
@@ -283,23 +285,23 @@ class Bounce():
                 width = Gdk.Screen.width()
                 height = int(3 * width / 4)
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                os.path.join(self.path, 'images', name), width, height)
-            self.backgrounds[name] = Sprite(
-                self.sprites, 0, 0, pixbuf)
-            self.backgrounds[name].set_layer(-100)
-            self.backgrounds[name].type = 'background'
-            self.current_bg = name
-        for k in self.backgrounds.keys():
+                os.path.join(self._path, 'images', name), width, height)
+            self._backgrounds[name] = Sprite(
+                self._sprites, 0, 0, pixbuf)
+            self._backgrounds[name].set_layer(-100)
+            self._backgrounds[name].type = 'background'
+            self._current_bg = name
+        for k in self._backgrounds.keys():
             if k == name:
-                self.backgrounds[k].set_layer(-99)
+                self._backgrounds[k].set_layer(-99)
             else:
-                self.backgrounds[k].set_layer(-100)
+                self._backgrounds[k].set_layer(-100)
 
     def pause(self):
         ''' Pause play when visibility changes '''
-        if self.timeout is not None:
-            GObject.source_remove(self.timeout)
-            self.timeout = None
+        if self._timeout is not None:
+            GObject.source_remove(self._timeout)
+            self._timeout = None
 
     def we_are_sharing(self):
         ''' If there is more than one buddy, we are sharing. '''
@@ -312,10 +314,10 @@ class Bounce():
 
     def _take_a_turn(self):
         ''' On your turn, choose a fraction. '''
-        self.my_turn = True
+        self._my_turn = True
         self.select_a_fraction = True
-        self.activity.set_player_on_toolbar(self.activity.nick)
-        self.activity.challenge.set_label(
+        self._activity.set_player_on_toolbar(self._activity.nick)
+        self._activity.reset_label(
             _("Click on the bar to choose a fraction."))
 
     def its_their_turn(self, nick):
@@ -324,22 +326,22 @@ class Bounce():
 
     def _wait_your_turn(self, nick):
         ''' Wait for nick to choose a fraction. '''
-        self.my_turn = False
-        self.activity.set_player_on_toolbar(nick)
-        self.activity.challenge.set_label(
+        self._my_turn = False
+        self._activity.set_player_on_toolbar(nick)
+        self._activity.reset_label(
             _('Waiting for %(buddy)s') % {'buddy': nick})
 
     def play_a_fraction(self, fraction):
         ''' Play this fraction '''
         fraction_is_new = True
-        for i, c in enumerate(self.challenges):
+        for i, c in enumerate(self._challenges):
             if c[0] == fraction:
                 fraction_is_new = False
-                self.n = i
+                self._n = i
                 break
         if fraction_is_new:
             self.add_fraction(fraction)
-            self.n = len(self.challenges)
+            self._n = len(self._challenges)
         self._choose_a_fraction()
         self._move_ball()
 
@@ -347,24 +349,24 @@ class Bounce():
         ''' Callback to handle the button presses '''
         win.grab_focus()
         x, y = map(int, event.get_coords())
-        self.press = self.sprites.find_sprite((x, y))
+        self._press = self._sprites.find_sprite((x, y))
         return True
 
     def _button_release_cb(self, win, event):
         ''' Callback to handle the button releases '''
         win.grab_focus()
         x, y = map(int, event.get_coords())
-        if self.press is not None:
+        if self._press is not None:
             if self.we_are_sharing():
-                if self.select_a_fraction and self.press == self.current_bar:
+                if self.select_a_fraction and self._press == self._current_bar:
                     # Find the fraction closest to the click
                     fraction = self._search_challenges(
                         (x - self.bar.bar_x()) / float(self.bar.width()))
                     self.select_a_fraction = False
-                    self.activity.send_a_fraction(fraction)
+                    self._activity.send_a_fraction(fraction)
                     self.play_a_fraction(fraction)
             else:
-                if self.timeout is None and self.press == self.ball.ball:
+                if self._timeout is None and self._press == self.ball.ball:
                     self._choose_a_fraction()
                     self._move_ball()
         return True
@@ -373,7 +375,7 @@ class Bounce():
         ''' Find the fraction which is closest to f in the list. '''
         dist = 1.
         closest = '1/2'
-        for c in self.challenges:
+        for c in self._challenges:
             numden = c[0].split('/')
             delta = abs((float(numden[0]) / float(numden[1])) - f)
             if delta <= dist:
@@ -382,7 +384,7 @@ class Bounce():
         return closest
 
     def _guess_orientation(self):
-        if self.accelerometer:
+        if self._accelerometer:
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             fh.close()
@@ -390,42 +392,42 @@ class Bounce():
             x = int(xyz[0])
             y = int(xyz[1])
             if abs(x) > abs(y):
-                self.accel_index = 1  # Portrait mode
-                self.accel_flip = x > 0
+                self._accel_index = 1  # Portrait mode
+                self._accel_flip = x > 0
             else:
-                self.accel_index = 0  # Landscape mode
-                self.accel_flip = y < 0
+                self._accel_index = 0  # Landscape mode
+                self._accel_flip = y < 0
 
     def _move_ball(self):
         ''' Move the ball and test boundary conditions '''
-        if self.new_bounce:
-            self.bar.mark.move((0, self.height))  # hide the mark
+        if self._new_bounce:
+            self.bar.mark.move((0, self._height))  # hide the mark
             if not self.we_are_sharing():
                 self._choose_a_fraction()
-            self.new_bounce = False
-            self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
+            self._new_bounce = False
+            self._dy = self._ddy * (1 - STEPS) / 2  # initial step size
             self._guess_orientation()
 
-        if self.accelerometer:
+        if self._accelerometer:
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             fh.close()
             xyz = string[1:-2].split(',')
-            self.dx = float(xyz[self.accel_index]) / 18.
-            if self.accel_flip:
-                self.dx *= -1
+            self._dx = float(xyz[self._accel_index]) / 18.
+            if self._accel_flip:
+                self._dx *= -1
 
-        if self.ball.ball_x() + self.dx > 0 and \
-           self.ball.ball_x() + self.dx < self.width - self.ball.width():
-            self.ball.move_ball_relative((int(self.dx), int(self.dy)))
+        if self.ball.ball_x() + self._dx > 0 and \
+           self.ball.ball_x() + self._dx < self._width - self.ball.width():
+            self.ball.move_ball_relative((int(self._dx), int(self._dy)))
         else:
-            self.ball.move_ball_relative((0, int(self.dy)))
+            self.ball.move_ball_relative((0, int(self._dy)))
 
         # speed up ball in x while key is pressed
-        self.dx *= DDX
+        self._dx *= DDX
 
         # accelerate in y
-        self.dy += self.ddy
+        self._dy += self._ddy
 
         # Calculate a new ball_y_max depending on the x position
         self.ball_y_max = self.bar.bar_y() - self.ball.height() + \
@@ -435,25 +437,25 @@ class Bounce():
             # hit the bottom
             self.ball.move_ball((self.ball.ball_x(), self.ball_y_max))
             self._test()
-            self.new_bounce = True
+            self._new_bounce = True
 
             if self.we_are_sharing():
-                if self.my_turn:
+                if self._my_turn:
                     # Let the next player know it is their turn.
-                    i = (self.buddies.index(self.activity.nick) + 1) % \
+                    i = (self.buddies.index(self._activity.nick) + 1) % \
                         len(self.buddies)
                     self.its_their_turn(self.buddies[i])
-                    self.activity.send_event('t|%s' % (self.buddies[i]))
+                    self._activity.send_event('t|%s' % (self.buddies[i]))
             else:
                 if self._easter_egg_test():
                     self._animate()
                 else:
-                    self.timeout = GObject.timeout_add(
+                    self._timeout = GObject.timeout_add(
                         max(STEP_PAUSE,
-                            BOUNCE_PAUSE - self.count * STEP_PAUSE),
+                            BOUNCE_PAUSE - self._count * STEP_PAUSE),
                         self._move_ball)
         else:
-            self.timeout = GObject.timeout_add(STEP_PAUSE, self._move_ball)
+            self._timeout = GObject.timeout_add(STEP_PAUSE, self._move_ball)
 
     def _wedge_offset(self):
         return int(BAR_HEIGHT * (1 - (self.ball.ball_x() /
@@ -464,51 +466,51 @@ class Bounce():
 
     def _animate(self):
         ''' A little Easter Egg just for fun. '''
-        if self.new_bounce:
-            self.dy = self.ddy * (1 - STEPS) / 2  # initial step size
-            self.new_bounce = False
-            self.current_frame = 0
-            self.frame_counter = 0
-            self.ball.move_frame(self.current_frame,
+        if self._new_bounce:
+            self._dy = self._ddy * (1 - STEPS) / 2  # initial step size
+            self._new_bounce = False
+            self._current_frame = 0
+            self._frame_counter = 0
+            self.ball.move_frame(self._current_frame,
                                 (self.ball.ball_x(), self.ball.ball_y()))
-            self.ball.move_ball((self.ball.ball_x(), self.height))
-            GObject.idle_add(play_audio_from_file, self, self.path_to_bubbles)
+            self.ball.move_ball((self.ball.ball_x(), self._height))
+            GObject.idle_add(play_audio_from_file, self, self._path_to_bubbles)
 
-        if self.accelerometer:
+        if self._accelerometer:
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             xyz = string[1:-2].split(',')
-            self.dx = float(xyz[0]) / 18.
+            self._dx = float(xyz[0]) / 18.
             fh.close()
         else:
-            self.dx = uniform(-int(DX * self.scale), int(DX * self.scale))
-        self.ball.move_frame_relative(self.current_frame, (int(self.dx),
-                                                           int(self.dy)))
-        self.dy += self.ddy
+            self._dx = uniform(-int(DX * self._scale), int(DX * self._scale))
+        self.ball.move_frame_relative(
+            self._current_frame, (int(self._dx), int(self._dy)))
+        self._dy += self._ddy
 
-        self.frame_counter += 1
-        self.current_frame = self.ball.next_frame(self.frame_counter)
+        self._frame_counter += 1
+        self._current_frame = self.ball.next_frame(self._frame_counter)
 
-        if self.ball.frame_y(self.current_frame) >= self.ball_y_max:
+        if self.ball.frame_y(self._current_frame) >= self.ball_y_max:
             # hit the bottom
             self.ball.move_ball((self.ball.ball_x(), self.ball_y_max))
             self.ball.hide_frames()
             self._test(easter_egg=True)
-            self.new_bounce = True
-            self.timeout = GObject.timeout_add(BOUNCE_PAUSE, self._move_ball)
+            self._new_bounce = True
+            self._timeout = GObject.timeout_add(BOUNCE_PAUSE, self._move_ball)
         else:
             GObject.timeout_add(STEP_PAUSE, self._animate)
 
     def add_fraction(self, string):
         ''' Add a new challenge; set bar to 2x demominator '''
         numden = string.split('/', 2)
-        self.challenges.append([string, int(numden[1]), 0])
+        self._challenges.append([string, int(numden[1]), 0])
 
     def _get_new_fraction(self):
         ''' Select a new fraction challenge from the table '''
         if not self.we_are_sharing():
-            n = int(uniform(0, len(self.challenges)))
-        fstr = self.challenges[n][0]
+            n = int(uniform(0, len(self._challenges)))
+        fstr = self._challenges[n][0]
         if '/' in fstr:  # fraction
             numden = fstr.split('/', 2)
             fraction = float(numden[0].strip()) / float(numden[1].strip())
@@ -524,38 +526,38 @@ class Bounce():
         ''' choose a new fraction and set the corresponding bar '''
         # Don't repeat the same fraction twice in a row
         fraction, fstr, n = self._get_new_fraction()
-        while fraction == self.fraction:
+        while fraction == self._fraction:
             fraction, fstr, n = self._get_new_fraction()
 
-        self.fraction = fraction
-        self.n = n
+        self._fraction = fraction
+        self._n = n
         if self.mode == 'percents':
-            self.label = str(int(self.fraction * 100 + 0.5)) + '%'
+            self._label = str(int(self._fraction * 100 + 0.5)) + '%'
         else:  # percentage
-            self.label = fstr
+            self._label = fstr
         if self.mode == 'sectors':
-            self.ball.new_ball_from_fraction(self.fraction)
+            self.ball.new_ball_from_fraction(self._fraction)
 
-        self.activity.reset_label(self.label)
-        self.ball.ball.set_label(self.label)
+        self._activity.reset_label(self._label)
+        self.ball.ball.set_label(self._label)
 
         self.bar.hide_bars()
-        if self.expert:  # Show two-segment bar in expert mode
+        if self._expert:  # Show two-segment bar in expert mode
             nseg = 2
         else:
             if self.mode == 'percents':
                 nseg = 10
             else:
-                nseg = self.challenges[self.n][1]
+                nseg = self._challenges[self._n][1]
         # generate new bar on demand
-        self.current_bar = self.bar.get_bar(nseg)
+        self._current_bar = self.bar.get_bar(nseg)
         self.bar.show_bar(nseg)
 
     def _easter_egg_test(self):
         ''' Test to see if we show the Easter Egg '''
         delta = self.ball.width() / 8
         x = self.ball.ball_x() + self.ball.width() / 2
-        f = self.bar.width() * self.easter_egg / 100.
+        f = self.bar.width() * self._easter_egg / 100.
         if x > f - delta and x < f + delta:
             return True
         else:
@@ -563,76 +565,76 @@ class Bounce():
 
     def _test(self, easter_egg=False):
         ''' Test to see if we estimated correctly '''
-        self.timeout = None
+        self._timeout = None
 
-        if self.expert:
+        if self._expert:
             delta = self.ball.width() / 6
         else:
             delta = self.ball.width() / 3
 
         x = self.ball.ball_x() + self.ball.width() / 2
-        f = self.ball.width() / 2 + int(self.fraction * self.bar.width())
+        f = self.ball.width() / 2 + int(self._fraction * self.bar.width())
         self.bar.mark.move((int(f - self.bar.mark_width() / 2),
                             int(self.bar.bar_y() + self._mark_offset(f))))
-        if self.challenges[self.n][2] == 0:  # label the column
-            spr = Sprite(self.sprites, 0, 0, self.blank_graphic)
-            spr.set_label(self.label)
-            spr.move((int(self.n * 27), 0))
+        if self._challenges[self._n][2] == 0:  # label the column
+            spr = Sprite(self._sprites, 0, 0, self.blank_graphic)
+            spr.set_label(self._label)
+            spr.move((int(self._n * 27), 0))
             spr.set_layer(-1)
-        self.challenges[self.n][2] += 1
+        self._challenges[self._n][2] += 1
         if x > f - delta and x < f + delta:
-            spr = Sprite(self.sprites, 0, 0, self.smiley_graphic)
-            self.correct += 1
-            GObject.idle_add(play_audio_from_file, self, self.path_to_success)
+            spr = Sprite(self._sprites, 0, 0, self.smiley_graphic)
+            self._correct += 1
+            GObject.idle_add(play_audio_from_file, self, self._path_to_success)
         else:
-            spr = Sprite(self.sprites, 0, 0, self.frown_graphic)
-            GObject.idle_add(play_audio_from_file, self, self.path_to_failure)
+            spr = Sprite(self._sprites, 0, 0, self.frown_graphic)
+            GObject.idle_add(play_audio_from_file, self, self._path_to_failure)
 
-        spr.move((int(self.n * 27), int(self.challenges[self.n][2] * 27)))
+        spr.move((int(self._n * 27), int(self._challenges[self._n][2] * 27)))
         spr.set_layer(-1)
 
         # after enough correct answers, up the difficulty
-        if self.correct == len(self.challenges) * 2:
-            self.challenge += 1
-            if self.challenge < len(CHALLENGES):
-                for challenge in CHALLENGES[self.challenge]:
-                    self.challenges.append(challenge)
+        if self._correct == len(self._challenges) * 2:
+            self._challenge += 1
+            if self._challenge < len(CHALLENGES):
+                for challenge in CHALLENGES[self._challenge]:
+                    self._challenges.append(challenge)
             else:
-                self.expert = True
+                self._expert = True
 
-        self.count += 1
-        self.dx = 0.  # stop horizontal movement between bounces
+        self._count += 1
+        self._dx = 0.  # stop horizontal movement between bounces
 
     def _keypress_cb(self, area, event):
         ''' Keypress: moving the slides with the arrow keys '''
         k = Gdk.keyval_name(event.keyval)
         if k in ['h', 'Left', 'KP_Left']:
-            self.dx = -DX * self.scale
+            self._dx = -DX * self._scale
         elif k in ['l', 'Right', 'KP_Right']:
-            self.dx = DX * self.scale
+            self._dx = DX * self._scale
         elif k in ['KP_Page_Up', 'Return']:
             self._choose_a_fraction()
             self._move_ball()
         else:
-            self.dx = 0.
+            self._dx = 0.
         return True
 
     def _keyrelease_cb(self, area, event):
         ''' Keyrelease: stop horizontal movement '''
-        self.dx = 0.
+        self._dx = 0.
         return True
 
     def __draw_cb(self, canvas, cr):
-        self.sprites.redraw_sprites(cr=cr)
+        self._sprites.redraw_sprites(cr=cr)
 
     def do_expose_event(self, event):
         ''' Handle the expose-event by drawing '''
         # Restrict Cairo to the exposed area
-        cr = self.canvas.window.cairo_create()
+        cr = self._canvas.window.cairo_create()
         cr.rectangle(event.area.x, event.area.y,
-                event.area.width, event.area.height)
+                     event.area.width, event.area.height)
         cr.clip()
-        self.sprites.redraw_sprites(cr=cr)
+        self._sprites.redraw_sprites(cr=cr)
 
     def _destroy_cb(self, win, event):
         ''' Callback to handle quit '''
