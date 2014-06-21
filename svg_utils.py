@@ -14,6 +14,36 @@ from gi.repository import GdkPixbuf
 from math import sin, cos, pi
 
 
+def generate_ball_svg(path):
+    ''' Returns an SVG string of a ball + label with image from path '''
+    return \
+        '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + \
+        '<svg\n' + \
+        'xmlns:dc="http://purl.org/dc/elements/1.1/"\n' + \
+        'xmlns:cc="http://creativecommons.org/ns#"\n' + \
+        'xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"\n' + \
+        'xmlns:svg="http://www.w3.org/2000/svg"\n' + \
+        'xmlns="http://www.w3.org/2000/svg"\n' + \
+        'xmlns:xlink="http://www.w3.org/1999/xlink"\n' + \
+        'version="1.1"\n' + \
+        'width="85"\n' + \
+        'height="120">\n' + \
+        '<image\n' + \
+        'xlink:href="file://%s"\n' % path + \
+        'x="0"\n' + \
+        'y="35"\n' + \
+        'width="85"\n' + \
+        'height="85" />\n' + \
+        '<rect\n' + \
+        'width="85"\n' + \
+        'height="35"\n' + \
+        'ry="7.75"\n' + \
+        'x="0"\n' + \
+        'y="0"\n' + \
+        'style="fill:#ffffff;fill-opacity:1;stroke:none" />\n' + \
+        '</svg>'
+
+
 def generate_xo_svg(scale=1.0, colors=["#C0C0C0", "#282828"]):
     ''' Returns an SVG string representing an XO image '''
     return svg_header(55, 55, scale) + \

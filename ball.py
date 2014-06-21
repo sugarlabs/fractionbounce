@@ -20,7 +20,8 @@ from gi.repository import GdkPixbuf
 
 from sprites import Sprite
 from svg_utils import (svg_header, svg_footer, svg_str_to_pixbuf, svg_rect,
-                       extract_svg_payload, svg_from_file, svg_sector)
+                       extract_svg_payload, svg_from_file, svg_sector,
+                       generate_ball_svg)
 
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
@@ -125,14 +126,25 @@ class Ball():
                 svg_header(SIZE[0], SIZE[1], 1.0) + TRANSFORMS[i] +
                 ball + PUNCTURE + AIR + '</g>' + svg_footer()))
 
-    def new_ball_from_image(self, filename):
+    def new_ball_from_image(self, filename, save_path):
         ''' Just create a ball object from an image file '''
         if filename == '':
             _logger.debug('Image file not found.')
             return
         try:
-            self.ball.set_shape(GdkPixbuf.Pixbuf.new_from_file_at_size(
-                filename, SIZE[0], SIZE[1]))
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file(filename)
+            if pixbuf.get_width() > pixbuf.get_height():
+                size = pixbuf.get_height()
+                x = int((pixbuf.get_width() - size) / 2)
+            else:
+                size = pixbuf.get_width()
+                x = int((pixbuf.get_height() - size) / 2)
+            crop = GdkPixbuf.Pixbuf.new(0, True, 8, size, size)
+            pixbuf.copy_area(x, 0, size, size, crop, 0, 0)
+            scale = crop.scale_simple(85, 85, GdkPixbuf.InterpType.BILINEAR)
+            scale.savev(save_path, 'png', [], [])
+            self.ball.set_shape(
+                svg_str_to_pixbuf(generate_ball_svg(save_path)))
         except Exception as e:
             _logger.error('Could not load image from %s: %s' % (filename, e))
 
