@@ -115,7 +115,7 @@ class FractionBounceActivity(activity.Activity):
 
         self._bounce_window.configure_cb(event)
 
-    def toolbar_expanded(self):
+    def _toolbar_expanded(self):
         if self._activity_button.is_expanded():
             return True
         elif self._custom_toolbar_button.is_expanded():

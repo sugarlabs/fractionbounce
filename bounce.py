@@ -188,12 +188,7 @@ class Bounce():
         self._scale = Gdk.Screen.height() / 900.0
 
         # We need to resize the backgrounds
-        if Gdk.Screen.height() > Gdk.Screen.width():
-            height = Gdk.Screen.height()
-            width = int(4 * height / 3)
-        else:
-            width = Gdk.Screen.width()
-            height = int(3 * width / 4)
+        width, height = self._calc_background_size()
         for bg in self._backgrounds.keys():
             if bg == 'custom':
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
@@ -202,6 +197,9 @@ class Bounce():
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
                     os.path.join(self._path, 'images', bg),
                     width, height)
+            if Gdk.Screen.height() > Gdk.Screen.width():
+                pixbuf = self._crop_to_portrait(pixbuf)
+
             self._backgrounds[bg] = Sprite(self._sprites, 0, 0, pixbuf)
             if self._current_bg == bg:
                 self._backgrounds[bg].set_layer(-99)
@@ -242,32 +240,44 @@ class Bounce():
         self.ball.move_ball((int((self._width - self.ball.width()) / 2),
                              self.ball_y_max))
 
-        if Gdk.Screen.height() > Gdk.Screen.width():
-            height = Gdk.Screen.height()
-            width = int(4 * height / 3)
-        else:
-            width = Gdk.Screen.width()
-            height = int(3 * width / 4)
-
         self._backgrounds = {}
+        width, height = self._calc_background_size()
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             os.path.join(path, 'images', 'grass_background.png'),
             width, height)
+        if Gdk.Screen.height() > Gdk.Screen.width():
+            pixbuf = self._crop_to_portrait(pixbuf)
+
         self._backgrounds['grass_background.png'] = Sprite(
             self._sprites, 0, 0, pixbuf)
         self._backgrounds['grass_background.png'].set_layer(-99)
         self._backgrounds['grass_background.png'].type = 'background'
         self._current_bg = 'grass_background.png'
 
-    def new_background_from_image(self, path):
+    def _crop_to_portrait(self, pixbuf):
+        tmp = GdkPixbuf.Pixbuf.new(0, True, 8, Gdk.Screen.width(),
+                                   Gdk.Screen.height())
+        x = int(Gdk.Screen.height() / 3)
+        pixbuf.copy_area(x, 0, Gdk.Screen.width(), Gdk.Screen.height(),
+                         tmp, 0, 0)
+        return tmp
+
+    def _calc_background_size(self):
         if Gdk.Screen.height() > Gdk.Screen.width():
             height = Gdk.Screen.height()
-            width = int(4 * height / 3)
+            return int(4 * height / 3), height
         else:
             width = Gdk.Screen.width()
-            height = int(3 * width / 4)
+            return width, int(3 * width / 4)
+
+    def new_background_from_image(self, path):
+        width, height = self._calc_background_size()
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
             path, width, height)
+
+        if Gdk.Screen.height() > Gdk.Screen.width():
+            pixbuf = self._crop_to_portrait(pixbuf)
+
         self._backgrounds['custom'] = Sprite(
             self._sprites, 0, 0, pixbuf)
         self._backgrounds['custom'].set_layer(-100)
@@ -278,16 +288,13 @@ class Bounce():
 
     def set_background(self, name):
         if not name in self._backgrounds:
-            if Gdk.Screen.height() > Gdk.Screen.width():
-                height = Gdk.Screen.height()
-                width = int(4 * height / 3)
-            else:
-                width = Gdk.Screen.width()
-                height = int(3 * width / 4)
+            width, height = self._calc_background_size()
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
                 os.path.join(self._path, 'images', name), width, height)
-            self._backgrounds[name] = Sprite(
-                self._sprites, 0, 0, pixbuf)
+            if Gdk.Screen.height() > Gdk.Screen.width():
+                pixbuf = self._crop_to_portrait(pixbuf)
+
+            self._backgrounds[name] = Sprite(self._sprites, 0, 0, pixbuf)
             self._backgrounds[name].set_layer(-100)
             self._backgrounds[name].type = 'background'
             self._current_bg = name
