@@ -77,7 +77,11 @@ msgstr "agregar una nueva fraccion"
 
 #: FractionBounceActivity.py:166
 msgid "choose a ball"
-msgstr "escoger una pelota"
+msgstr "elgeir una pelota"
+
+#: FractionBounceActivity.py:296
+msgid "choose a background"
+msgstr "elegir una imagen de fondo"
 
 #: FractionBounceActivity.py:246
 #, python-format
@@ -143,7 +147,7 @@ msgstr "Su nueva fracción, %s, ha sido añadido al juego"
 
 #: bounce.py:172
 msgid ""
-"Click the ball to start. The rock the computer left and right to move the "
+"Click the ball to start. Rock the computer left and right to move the "
 "ball."
 msgstr ""
 "Haga clic en la bola para comenzar. La roca del equipo dejó "
@@ -154,3 +158,23 @@ msgid "Click the ball to start. Then use the arrow keys to move the ball."
 msgstr ""
 "Haga clic en la bola para comenzar. A continuación, utilice las teclas "
 "de flecha para mover el balón."
+
+#: FractionBounceActivity.py:50
+msgid "rugby ball"
+msgstr "pelota de rugby"
+
+#: FractionBounceActivity.py:55
+msgid "grass"
+msgstr "pasto"
+
+#: FractionBounceActivity.py:56
+msgid "wood"
+msgstr "madera"
+
+#: FractionBounceActivity.py:57
+msgid "tile"
+msgstr "baldosa"
+
+#: FractionBounceActivity.py:58
+msgid "sand"
+msgstr "arena"

@@ -175,7 +175,7 @@ class Bounce():
         if self._sugar:
             if _is_tablet_mode():
                 self._activity.reset_label(
-                    _('Click the ball to start. The rock the computer left '
+                    _('Click the ball to start. Rock the computer left '
                       'and right to move the ball.'))
             else:
                 self._activity.reset_label(
