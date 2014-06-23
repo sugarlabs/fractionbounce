@@ -201,12 +201,10 @@ class Bounce():
             if Gdk.Screen.height() > Gdk.Screen.width():
                 pixbuf = self._crop_to_portrait(pixbuf)
 
-            self._backgrounds[bg] = Sprite(self._sprites, 0, 0, pixbuf)
             if self._current_bg == bg:
-                self._backgrounds[bg].set_layer(-99)
-            else:
-                self._backgrounds[bg].set_layer(-100)
-            self._backgrounds[bg].type = 'background'
+                self._background = Sprite(self._sprites, 0, 0, pixbuf)
+                self._background.set_layer(-100)
+                self._background.type = 'background'
 
         # and resize and reposition the bars
         self.bar.resize_all()
@@ -252,10 +250,11 @@ class Bounce():
         if Gdk.Screen.height() > Gdk.Screen.width():
             pixbuf = self._crop_to_portrait(pixbuf)
 
-        self._backgrounds['grass_background.png'] = Sprite(
-            self._sprites, 0, 0, pixbuf)
-        self._backgrounds['grass_background.png'].set_layer(-99)
-        self._backgrounds['grass_background.png'].type = 'background'
+        self._backgrounds['grass_background.png'] = pixbuf
+
+        self._background = Sprite(self._sprites, 0, 0, pixbuf)
+        self._background.set_layer(-100)
+        self._background.type = 'background'
         self._current_bg = 'grass_background.png'
 
     def _crop_to_portrait(self, pixbuf):
@@ -284,10 +283,7 @@ class Bounce():
         if Gdk.Screen.height() > Gdk.Screen.width():
             pixbuf = self._crop_to_portrait(pixbuf)
 
-        self._backgrounds['custom'] = Sprite(
-            self._sprites, 0, 0, pixbuf)
-        self._backgrounds['custom'].set_layer(-100)
-        self._backgrounds['custom'].type = 'background'
+        self._backgrounds['custom'] = pixbuf
         self.set_background('custom')
         self._custom_dsobject = dsobject
         self._current_bg = 'custom'
@@ -299,16 +295,16 @@ class Bounce():
                 os.path.join(self._path, 'images', name), width, height)
             if Gdk.Screen.height() > Gdk.Screen.width():
                 pixbuf = self._crop_to_portrait(pixbuf)
-
-            self._backgrounds[name] = Sprite(self._sprites, 0, 0, pixbuf)
-            self._backgrounds[name].set_layer(-100)
-            self._backgrounds[name].type = 'background'
-            self._current_bg = name
-        for k in self._backgrounds.keys():
-            if k == name:
-                self._backgrounds[k].set_layer(-99)
-            else:
-                self._backgrounds[k].set_layer(-100)
+            self._backgrounds[name] = pixbuf
+        self._background.set_image(self._backgrounds[name])
+        self.bar.mark.hide()
+        self._current_bar.hide()
+        self.ball.ball.hide()
+        self.do_expose_event()
+        self.ball.ball.set_layer(3)
+        self._current_bar.set_layer(2)
+        self.bar.mark.set_layer(1)
+        self._current_bg = name
 
     def pause(self):
         ''' Pause play when visibility changes '''
@@ -652,12 +648,15 @@ class Bounce():
     def __draw_cb(self, canvas, cr):
         self._sprites.redraw_sprites(cr=cr)
 
-    def do_expose_event(self, event):
+    def do_expose_event(self, event=None):
         ''' Handle the expose-event by drawing '''
         # Restrict Cairo to the exposed area
-        cr = self._canvas.window.cairo_create()
-        cr.rectangle(event.area.x, event.area.y,
-                     event.area.width, event.area.height)
+        cr = self._activity.get_window().cairo_create()
+        if event is None:
+            cr.rectangle(0, 0, Gdk.Screen.width(), Gdk.Screen.height())
+        else:
+            cr.rectangle(event.area.x, event.area.y,
+                         event.area.width, event.area.height)
         cr.clip()
         self._sprites.redraw_sprites(cr=cr)
 
