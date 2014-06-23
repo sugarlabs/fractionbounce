@@ -155,7 +155,7 @@ class Bounce():
             self._challenges.append(challenge)
         self._fraction = 0.5  # the target of the current challenge
         self._label = '1/2'  # the label
-        self._count = 0  # number of bounces played
+        self.count = 0  # number of bounces played
         self._correct = 0  # number of correct answers
         self._press = None  # sprite under mouse click
         self._new_bounce = False
@@ -465,7 +465,7 @@ class Bounce():
                 else:
                     self._timeout = GObject.timeout_add(
                         max(STEP_PAUSE,
-                            BOUNCE_PAUSE - self._count * STEP_PAUSE),
+                            BOUNCE_PAUSE - self.count * STEP_PAUSE),
                         self._move_ball)
         else:
             self._timeout = GObject.timeout_add(STEP_PAUSE, self._move_ball)
@@ -523,6 +523,8 @@ class Bounce():
         ''' Select a new fraction challenge from the table '''
         if not self.we_are_sharing():
             n = int(uniform(0, len(self._challenges)))
+        else:
+            n = self._n
         fstr = self._challenges[n][0]
         if '/' in fstr:  # fraction
             numden = fstr.split('/', 2)
@@ -615,7 +617,7 @@ class Bounce():
             else:
                 self._expert = True
 
-        self._count += 1
+        self.count += 1
         self._dx = 0.  # stop horizontal movement between bounces
 
     def _keypress_cb(self, area, event):

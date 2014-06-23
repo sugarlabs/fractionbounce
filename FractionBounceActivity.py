@@ -28,6 +28,8 @@ from sugar3.graphics.toolbutton import ToolButton
 from sugar3.graphics.radiotoolbutton import RadioToolButton
 from sugar3.graphics.alert import NotifyAlert
 from sugar3.graphics import style
+from sugar3.graphics.xocolor import XoColor
+from sugar3.graphics.icon import Icon
 
 import telepathy
 from dbus.service import signal
@@ -102,7 +104,23 @@ class FractionBounceActivity(activity.Activity):
             for f in fractions:
                 self._bounce_window.add_fraction(f)
 
-        self._setup_presence_service()
+        if self.shared_activity:
+            # We're joining
+            if not self.get_shared():
+                xocolors = XoColor(profile.get_color().to_string())
+                share_icon = Icon(icon_name='zoom-neighborhood',
+                                  xo_color=xocolors)
+                self._joined_alert = NotifyAlert()
+                self._joined_alert.props.icon = share_icon
+                self._joined_alert.props.title = _('Please wait')
+                self._joined_alert.props.msg = _('Starting connection...')
+                self._joined_alert.connect('response', self._alert_cancel_cb)
+                self.add_alert(self._joined_alert)
+
+                # Wait for joined signal
+                self.connect("joined", self._joined_cb)
+
+        self._setup_sharing()
 
     def _configure_cb(self, event):
         if Gdk.Screen.width() < 1024:
@@ -439,17 +457,17 @@ class FractionBounceActivity(activity.Activity):
 
     # Collaboration-related methods
 
-    def _setup_presence_service(self):
+    def _setup_sharing(self):
         ''' Setup the Presence Service. '''
-        self._pservice = presenceservice.get_instance()
-        self._initiating = None  # sharing (True) or joining (False)
+        self.pservice = presenceservice.get_instance()
+        self.initiating = None  # sharing (True) or joining (False)
 
-        owner = self._pservice.get_owner()
-        self._owner = owner
+        owner = self.pservice.get_owner()
+        self.owner = owner
         self._bounce_window.buddies.append(self.nick)
         self._player_colors = [self._colors]
         self._player_pixbuf = [svg_str_to_pixbuf(
-            generate_xo_svg(scale=0.8, colors=self._colors))]
+                generate_xo_svg(scale=0.8, colors=self._colors))]
         self._share = ''
         self.connect('shared', self._shared_cb)
         self.connect('joined', self._joined_cb)
@@ -464,30 +482,30 @@ class FractionBounceActivity(activity.Activity):
 
     def _new_tube_common(self, sharer):
         ''' Joining and sharing are mostly the same... '''
-        if self._shared_activity is None:
+        if self.shared_activity is None:
             _logger.debug('Error: Failed to share or join activity ... \
-                _shared_activity is null in _shared_cb()')
+                shared_activity is null in _shared_cb()')
             return
 
-        self._initiating = sharer
-        self._waiting_for_fraction = not sharer
- 
-        self._conn = self._shared_activity.telepathy_conn
-        self._tubes_chan = self._shared_activity.telepathy_tubes_chan
-        self._text_chan = self._shared_activity.telepathy_text_chan
+        self.initiating = sharer
+        self.waiting_for_fraction = not sharer
 
-        self._tubes_chan[telepathy.CHANNEL_TYPE_TUBES].connect_to_signal(
+        self.conn = self.shared_activity.telepathy_conn
+        self.tubes_chan = self.shared_activity.telepathy_tubes_chan
+        self.text_chan = self.shared_activity.telepathy_text_chan
+
+        self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].connect_to_signal(
             'NewTube', self._new_tube_cb)
 
         if sharer:
             _logger.debug('This is my activity: making a tube...')
-            self._tubes_chan[telepathy.CHANNEL_TYPE_TUBES].OfferDBusTube(
+            id = self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].OfferDBusTube(
                 SERVICE, {})
 
             self._label.set_label(_('Wait for others to join.'))
         else:
             _logger.debug('I am joining an activity: waiting for a tube...')
-            self._tubes_chan[telepathy.CHANNEL_TYPE_TUBES].ListTubes(
+            self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].ListTubes(
                 reply_handler=self._list_tubes_reply_cb,
                 error_handler=self._list_tubes_error_cb)
 
@@ -513,20 +531,20 @@ class FractionBounceActivity(activity.Activity):
 
         if (type == telepathy.TUBE_TYPE_DBUS and service == SERVICE):
             if state == telepathy.TUBE_STATE_LOCAL_PENDING:
-                self._tubes_chan[
-                    telepathy.CHANNEL_TYPE_TUBES].AcceptDBusTube(id)
+                self.tubes_chan[ \
+                              telepathy.CHANNEL_TYPE_TUBES].AcceptDBusTube(id)
 
-            tube_conn = TubeConnection(
-                self._conn, self._tubes_chan[telepathy.CHANNEL_TYPE_TUBES], id,
-                group_iface=self._text_chan[telepathy.CHANNEL_INTERFACE_GROUP])
+            tube_conn = TubeConnection(self.conn,
+                self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES], id, \
+                group_iface=self.text_chan[telepathy.CHANNEL_INTERFACE_GROUP])
 
-            self._chattube = ChatTube(tube_conn, self._initiating,
-                                     self.event_received_cb)
+            self.chattube = ChatTube(tube_conn, self.initiating, \
+                self.event_received_cb)
 
             # Let the sharer know a new joiner has arrived.
-            if self._waiting_for_fraction:
-                self.send_event('j|%s' %
-                                (json_dump([self.nick, self._colors])))
+            if self.waiting_for_fraction:
+                self.send_event('j|%s' % (json_dump([self.nick,
+                                                     self._colors])))
 
     def _setup_dispatch_table(self):
         self._processing_methods = {
@@ -545,7 +563,7 @@ class FractionBounceActivity(activity.Activity):
         except ValueError:
             _logger.debug('Could not split event message %s', event_message)
             return
-        # _logger.debug('received an event %s|%s', command, payload)
+        _logger.debug('received an event %s|%s', command, payload)
         self._processing_methods[command][0](payload)
 
     def _new_joiner(self, payload):
@@ -553,7 +571,7 @@ class FractionBounceActivity(activity.Activity):
         [nick, colors] = json_load(payload)
         self._label.set_label(nick + ' ' + _('has joined.'))
         self._append_player(nick, colors)
-        if self._initiating:
+        if self.initiating:
             payload = json_dump([self._bounce_window.buddies,
                                  self._player_colors])
             self.send_event('b|%s' % (payload))
@@ -563,11 +581,12 @@ class FractionBounceActivity(activity.Activity):
     def _append_player(self, nick, colors):
         ''' Keep a list of players, their colors, and an XO pixbuf '''
         if not nick in self._bounce_window.buddies:
-            # _logger.debug('appending %s to the buddy list', nick)
+            _logger.debug('appending %s to the buddy list', nick)
             self._bounce_window.buddies.append(nick)
             self._player_colors.append(colors)
             self._player_pixbuf.append(svg_str_to_pixbuf(
-                generate_xo_svg(scale=0.8, colors=colors)))
+                generate_xo_svg(scale=0.8, colors=self._colors)))
+                # generate_xo_svg(scale=0.8, colors=colors)))
 
     def _buddy_list(self, payload):
         ''' Sharer sent the updated buddy list. '''
@@ -594,14 +613,14 @@ class FractionBounceActivity(activity.Activity):
 
     def send_event(self, entry):
         ''' Send event through the tube. '''
-        # _logger.debug('sending event: %s', entry)
-        if hasattr(self, 'chattube') and self._chattube is not None:
-            self._chattube.SendText(entry)
+        _logger.debug('sending event: %s', entry)
+        if hasattr(self, 'chattube') and self.chattube is not None:
+            self.chattube.SendText(entry)
 
     def set_player_on_toolbar(self, nick):
         ''' Display the XO icon of the player whose turn it is. '''
         self._player.set_from_pixbuf(self._player_pixbuf[
-            self._bounce_window.buddies.index(nick)])
+                self._bounce_window.buddies.index(nick)])
         self._player.set_tooltip_text(nick)
 
 
