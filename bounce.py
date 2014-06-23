@@ -417,9 +417,10 @@ class Bounce():
                 self._choose_a_fraction()
             self._new_bounce = False
             self._dy = self._ddy * (1 - STEPS) / 2  # initial step size
-            self._guess_orientation()
 
         if self._accelerometer():
+            self._guess_orientation()
+
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             fh.close()
