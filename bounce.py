@@ -113,9 +113,6 @@ class Bounce():
         self._canvas = canvas
         self._canvas.grab_focus()
 
-        self._accelerometer = os.path.exists(ACCELEROMETER_DEVICE) and \
-                              _is_tablet_mode()
-
         self._canvas.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self._canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
         self._canvas.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
@@ -181,6 +178,9 @@ class Bounce():
                 self._activity.reset_label(
                     _('Click the ball to start. Then use the arrow keys to '
                       'move the ball.'))
+
+    def _accelerometer(self):
+        return os.path.exists(ACCELEROMETER_DEVICE) and _is_tablet_mode()
 
     def configure_cb(self, event):
         self._width = Gdk.Screen.width()
@@ -394,7 +394,7 @@ class Bounce():
         return closest
 
     def _guess_orientation(self):
-        if self._accelerometer:
+        if self._accelerometer():
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             fh.close()
@@ -418,7 +418,7 @@ class Bounce():
             self._dy = self._ddy * (1 - STEPS) / 2  # initial step size
             self._guess_orientation()
 
-        if self._accelerometer:
+        if self._accelerometer():
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             fh.close()
@@ -486,7 +486,7 @@ class Bounce():
             self.ball.move_ball((self.ball.ball_x(), self._height))
             GObject.idle_add(play_audio_from_file, self, self._path_to_bubbles)
 
-        if self._accelerometer:
+        if self._accelerometer():
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             xyz = string[1:-2].split(',')
