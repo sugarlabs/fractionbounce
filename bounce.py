@@ -618,9 +618,9 @@ class Bounce():
     def _keypress_cb(self, area, event):
         ''' Keypress: moving the slides with the arrow keys '''
         k = Gdk.keyval_name(event.keyval)
-        if k in ['KP_Page_Down', 'h', 'Left', 'KP_Left']:
+        if k in ['KP_Page_Down', 'KP_Home', 'h', 'Left', 'KP_Left']:
             self._dx = -DX * self._scale
-        elif k in ['KP_Page_Up', 'l', 'Right', 'KP_Right']:
+        elif k in ['KP_Page_Up', 'KP_End', 'l', 'Right', 'KP_Right']:
             self._dx = DX * self._scale
         elif k in ['Return']:
             self._choose_a_fraction()
