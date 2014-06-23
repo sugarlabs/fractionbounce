@@ -553,7 +553,15 @@ class Bounce():
         if self.mode == 'sectors':
             self.ball.new_ball_from_fraction(self._fraction)
 
-        self._activity.reset_label(self._label)
+        if not Gdk.Screen.width() < 1024:
+            self._activity.reset_label(
+                _('Bounce the ball to a position '
+                  '%(fraction)s of the way from the left side of the bar.')
+                % {'fraction': self._label})
+        else:
+            self._activity.reset_label(_('Bounce the ball to %(fraction)s')
+                                       % {'fraction': self._label})
+
         self.ball.ball.set_label(self._label)
 
         self.bar.hide_bars()

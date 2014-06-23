@@ -433,16 +433,9 @@ class FractionBounceActivity(activity.Activity):
                 _('Your fraction, %s, has been added to the program' %
                   (fraction)))
 
-    def reset_label(self, fraction):
+    def reset_label(self, label):
         ''' update the challenge label '''
-        if not Gdk.Screen.width() < 1024:
-            self._label.set_label(
-                _('Bounce the ball to a position '
-                  '%(fraction)s of the way from the left side of the bar.')
-                % {'fraction': fraction})
-        else:
-            self._label.set_label(_('Bounce the ball to %(fraction)s')
-                                     % {'fraction': fraction})
+        self._label.set_label(label)
 
     def alert(self, title, text=None):
         alert = NotifyAlert(timeout=5)
