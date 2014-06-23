@@ -201,10 +201,12 @@ class Bounce():
             if Gdk.Screen.height() > Gdk.Screen.width():
                 pixbuf = self._crop_to_portrait(pixbuf)
 
-            if self._current_bg == bg:
-                self._background = Sprite(self._sprites, 0, 0, pixbuf)
-                self._background.set_layer(-100)
-                self._background.type = 'background'
+            self._backgrounds[bg] = pixbuf
+
+        self._background = Sprite(self._sprites, 0, 0,
+                                  self.backgrounds[self._current_bg])
+        self._background.set_layer(-100)
+        self._background.type = 'background'
 
         # and resize and reposition the bars
         self.bar.resize_all()
