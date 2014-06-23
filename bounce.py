@@ -162,6 +162,7 @@ class Bounce():
         self._n = 0
         self._accel_index = 0
         self._accel_flip = False
+        self._accel_xy = [0, 0]
         self._guess_orientation()
 
         self._dx = 0.  # ball horizontal trajectory
@@ -204,7 +205,7 @@ class Bounce():
             self._backgrounds[bg] = pixbuf
 
         self._background = Sprite(self._sprites, 0, 0,
-                                  self.backgrounds[self._current_bg])
+                                  self._backgrounds[self._current_bg])
         self._background.set_layer(-100)
         self._background.type = 'background'
 
@@ -402,6 +403,7 @@ class Bounce():
             xyz = string[1:-2].split(',')
             x = int(xyz[0])
             y = int(xyz[1])
+            self._accel_xy = [x, y]
             if abs(x) > abs(y):
                 self._accel_index = 1  # Portrait mode
                 self._accel_flip = x > 0
@@ -420,12 +422,7 @@ class Bounce():
 
         if self._accelerometer():
             self._guess_orientation()
-
-            fh = open(ACCELEROMETER_DEVICE)
-            string = fh.read()
-            fh.close()
-            xyz = string[1:-2].split(',')
-            self._dx = float(xyz[self._accel_index]) / 18.
+            self._dx = float(self._accel_xy[self._accel_index]) / 18.
             if self._accel_flip:
                 self._dx *= -1
 
