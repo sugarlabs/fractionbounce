@@ -213,6 +213,9 @@ class Bounce():
         self.bar.show_bar(2)
         self._current_bar = self.bar.get_bar(2)
 
+        # Calculate a new accerlation based on screen height.
+        self._ddy = (6.67 * self._height) / (STEPS * STEPS)
+
         self._guess_orientation()
 
     def _create_sprites(self, path):
