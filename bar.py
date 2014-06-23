@@ -142,7 +142,7 @@ class Bar():
         ''' Create a bar with n segments '''
         svg = svg_header(self._width - self._ball_size,
                          BAR_HEIGHT * self._scale, 1.0)
-        dx = (self._width - self._ball_size) / float(nsegments)
+        dx = self._width / float(nsegments)
         for i in range(int(nsegments) / 2):
             svg += svg_rect(dx, BAR_HEIGHT * self._scale, 0, 0,
                             i * 2 * dx, 0, self._colors[0], self._colors[0])
@@ -158,15 +158,14 @@ class Bar():
         self.bars[nsegments] = Sprite(self._sprites, 0, 0,
                                       svg_str_to_pixbuf(svg))
         self.bars[nsegments].move(
-            (int(self._ball_size / 2), self._height -
+            (0, self._height -
              int((self._ball_size + self._height()) / 2)))
 
     def _make_wedge_bar(self, nsegments):
         ''' Create a wedged-shaped bar with n segments '''
         s = 3.5  # add provision for stroke width
-        svg = svg_header(self._width - self._ball_size,
-                         BAR_HEIGHT * self._scale + s, 1.0)
-        dx = (self._width - self._ball_size) / float(nsegments)
+        svg = svg_header(self._width, BAR_HEIGHT * self._scale + s, 1.0)
+        dx = self._width / float(nsegments)
         dy = (BAR_HEIGHT * self._scale) / float(nsegments)
         for i in range(int(nsegments) / 2):
             svg += svg_wedge(dx, BAR_HEIGHT * self._scale + s,
@@ -195,5 +194,4 @@ class Bar():
         self.bars[nsegments].set_label(' 0', i=0)
         self.bars[nsegments].set_label('1 ', i=1)
         self.bars[nsegments].move(
-            (int(self._ball_size / 2),
-             self._height - BAR_HEIGHT * self._scale))
+            (0, self._height - BAR_HEIGHT * self._scale))

@@ -583,7 +583,7 @@ class Bounce():
             delta = self.ball.width() / 3
 
         x = self.ball.ball_x() + self.ball.width() / 2
-        f = self.ball.width() / 2 + int(self._fraction * self.bar.width())
+        f = int(self._fraction * self.bar.width())
         self.bar.mark.move((int(f - self.bar.mark_width() / 2),
                             int(self.bar.bar_y() + self._mark_offset(f))))
         if self._challenges[self._n][2] == 0:  # label the column
