@@ -456,7 +456,7 @@ class Bounce():
                     self.its_their_turn(self.buddies[i])
                     self._activity.send_event('t|%s' % (self.buddies[i]))
             else:
-                if self._easter_egg_test():
+                if not self.we_are_shring() and self._easter_egg_test():
                     self._animate()
                 else:
                     self._timeout = GObject.timeout_add(
@@ -537,8 +537,9 @@ class Bounce():
         ''' choose a new fraction and set the corresponding bar '''
         # Don't repeat the same fraction twice in a row
         fraction, fstr, n = self._get_new_fraction()
-        while fraction == self._fraction:
-            fraction, fstr, n = self._get_new_fraction()
+        if not self.we_are_sharing():
+            while fraction == self._fraction:
+                fraction, fstr, n = self._get_new_fraction()
 
         self._fraction = fraction
         self._n = n
