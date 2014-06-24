@@ -172,8 +172,8 @@ msgid "wood"
 msgstr "madera"
 
 #: FractionBounceActivity.py:57
-msgid "tile"
-msgstr "baldosa"
+msgid "clouds"
+msgstr "nubes"
 
 #: FractionBounceActivity.py:58
 msgid "sand"

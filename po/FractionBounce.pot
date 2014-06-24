@@ -62,7 +62,7 @@ msgid "wood"
 msgstr ""
 
 #: FractionBounceActivity.py:57
-msgid "tile"
+msgid "clouds"
 msgstr ""
 
 #: FractionBounceActivity.py:58

@@ -52,11 +52,11 @@ BALLDICT = {'basketball': [_('basketball'), 'wood'],
             'rugbyball': [_('rugby ball'), 'grass'],
             'bowlingball': [_('bowling ball'), 'wood'],
             'beachball': [_('beachball'), 'sand'],
-            'feather': [_('feather'), 'tile'],
+            'feather': [_('feather'), 'clouds'],
             'custom': [_('user defined'), None]}
 BGDICT = {'grass': [_('grass'), 'grass_background.png'],
           'wood': [_('wood'), 'parquet_background.png'],
-          'tile': [_('tile'), 'feather_background.png'],
+          'clouds': [_('clouds'), 'feather_background.png'],
           'sand': [_('sand'), 'beach_background.png'],
           'custom': [_('user defined'), None]}
 
