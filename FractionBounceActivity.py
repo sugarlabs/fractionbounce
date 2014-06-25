@@ -77,7 +77,8 @@ class FractionBounceActivity(activity.Activity):
         else:
             self._colors = ['#A0FFA0', '#FF8080']
 
-        self.max_participants = 2  # sharing
+        self.max_participants = 4  # sharing
+        self._playing = True
 
         self._setup_toolbars()
         self._setup_dispatch_table()
@@ -116,6 +117,8 @@ class FractionBounceActivity(activity.Activity):
                 self._joined_alert.props.msg = _('Starting connection...')
                 self._joined_alert.connect('response', self._alert_cancel_cb)
                 self.add_alert(self._joined_alert)
+
+                self._label.set_label(_('Wait for the sharer to start.'))
 
                 # Wait for joined signal
                 self.connect("joined", self._joined_cb)
@@ -350,6 +353,7 @@ class FractionBounceActivity(activity.Activity):
         # Let everyone know we are leaving...
         if hasattr(self, '_bounce_window') and \
            self._bounce_window.we_are_sharing():
+            self._playing = False
             self.send_event('l|%s' % (json_dump([self.nick])))
         return True
 
@@ -466,8 +470,9 @@ class FractionBounceActivity(activity.Activity):
         self.owner = owner
         self._bounce_window.buddies.append(self.nick)
         self._player_colors = [self._colors]
-        self._player_pixbuf = [svg_str_to_pixbuf(
-                generate_xo_svg(scale=0.8, colors=self._colors))]
+        self._player_pixbufs = [
+            svg_str_to_pixbuf(generate_xo_svg(scale=0.8, colors=self._colors))
+        ]
         self._share = ''
         self.connect('shared', self._shared_cb)
         self.connect('joined', self._joined_cb)
@@ -509,10 +514,8 @@ class FractionBounceActivity(activity.Activity):
                 reply_handler=self._list_tubes_reply_cb,
                 error_handler=self._list_tubes_error_cb)
 
-            self._label.set_label(_('Wait for the sharer to start.'))
-
         # display your XO on the toolbar
-        self._player.set_from_pixbuf(self._player_pixbuf[0])
+        self._player.set_from_pixbuf(self._player_pixbufs[0])
 
     def _list_tubes_reply_cb(self, tubes):
         ''' Reply to a list request. '''
@@ -565,7 +568,8 @@ class FractionBounceActivity(activity.Activity):
             _logger.debug('Could not split event message %s', event_message)
             return
         _logger.debug('received an event %s|%s', command, payload)
-        self._processing_methods[command][0](payload)
+        if self._playing:
+            self._processing_methods[command][0](payload)
 
     def _buddy_left(self, payload):
         [nick] = json_load(payload)
@@ -595,17 +599,17 @@ class FractionBounceActivity(activity.Activity):
             i = self._bounce_window.buddies.index(nick)
             self._bounce_window.buddies.remove(nick)
             self._player_colors.remove(self._player_colors[i])
-            self._player_pixbuf.remove(self._player_pixbuf[i])
+            self._player_pixbufs.remove(self._player_pixbufs[i])
 
     def _append_player(self, nick, colors):
         ''' Keep a list of players, their colors, and an XO pixbuf '''
         if not nick in self._bounce_window.buddies:
             _logger.debug('appending %s to the buddy list', nick)
-            colors = [str(colors[0]), str(colors[1])]
             self._bounce_window.buddies.append(nick)
-            self._player_colors.append(colors)
-            self._player_pixbuf.append(svg_str_to_pixbuf(
-                generate_xo_svg(scale=0.8, colors=colors)))
+            self._player_colors.append([str(colors[0]), str(colors[1])])
+            self._player_pixbufs.append(svg_str_to_pixbuf(
+                generate_xo_svg(scale=0.8,
+                                colors=self._player_colors[-1])))
 
     def _buddy_list(self, payload):
         '''Sharer sent the updated buddy list, so regenerate internal lists'''
@@ -613,9 +617,9 @@ class FractionBounceActivity(activity.Activity):
             [buddies, colors] = json_load(payload)
             self._bounce_window.buddies = buddies[:]
             self._player_colors = colors[:]
-            self._player_pixbuf = []
-            for color in colors:
-                self._player_pixbuf.append(svg_str_to_pixbuf(
+            self._player_pixbufs = []
+            for colors in self._player_colors:
+                self._player_pixbufs.append(svg_str_to_pixbuf(
                     generate_xo_svg(scale=0.8,
                                     colors=[str(colors[0]), str(colors[1])])))
 
@@ -644,7 +648,7 @@ class FractionBounceActivity(activity.Activity):
 
     def set_player_on_toolbar(self, nick):
         ''' Display the XO icon of the player whose turn it is. '''
-        self._player.set_from_pixbuf(self._player_pixbuf[
+        self._player.set_from_pixbuf(self._player_pixbufs[
                 self._bounce_window.buddies.index(nick)])
         self._player.set_tooltip_text(nick)
 
