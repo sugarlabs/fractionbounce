@@ -346,6 +346,13 @@ class FractionBounceActivity(activity.Activity):
             else:
                 palette.popdown(immediate=True)
 
+    def can_close(self):
+        # Let everyone know we are leaving...
+        if hasattr(self, '_bounce_window') and \
+           self._bounce_window.we_are_sharing():
+            self.send_event('l|%s' % (json_dump([self.nick])))
+        return True
+
     def _setup_canvas(self):
         canvas = Gtk.DrawingArea()
         canvas.set_size_request(Gdk.Screen.width(),
@@ -545,6 +552,7 @@ class FractionBounceActivity(activity.Activity):
             'b': [self._buddy_list, 'buddy list'],
             'f': [self._receive_a_fraction, 'receive a fraction'],
             't': [self._take_a_turn, 'take a turn'],
+            'l': [self._buddy_left, 'buddy left']
             }
 
     def event_received_cb(self, event_message):
@@ -559,33 +567,57 @@ class FractionBounceActivity(activity.Activity):
         _logger.debug('received an event %s|%s', command, payload)
         self._processing_methods[command][0](payload)
 
+    def _buddy_left(self, payload):
+        [nick] = json_load(payload)
+        self._label.set_label(nick + ' ' + _('has left.'))
+        if self.initiating:
+            self._remove_player(nick)
+            payload = json_dump([self._bounce_window.buddies,
+                                 self._player_colors])
+            self.send_event('b|%s' % (payload))
+            # Restart from sharer's turn
+            self._bounce_window.its_my_turn()
+
     def _new_joiner(self, payload):
         ''' Someone has joined; sharer adds them to the buddy list. '''
         [nick, colors] = json_load(payload)
         self._label.set_label(nick + ' ' + _('has joined.'))
-        self._append_player(nick, colors)
         if self.initiating:
+            self._append_player(nick, colors)
             payload = json_dump([self._bounce_window.buddies,
                                  self._player_colors])
             self.send_event('b|%s' % (payload))
             if self._bounce_window.count == 0:  # Haven't started yet...
                 self._bounce_window.its_my_turn()
 
+    def _remove_player(self, nick):
+        if nick in self._bounce_window.buddies:
+            i = self._bounce_window.buddies.index(nick)
+            self._bounce_window.buddies.remove(nick)
+            self._player_colors.remove(self._player_colors[i])
+            self._player_pixbuf.remove(self._player_pixbuf[i])
+
     def _append_player(self, nick, colors):
         ''' Keep a list of players, their colors, and an XO pixbuf '''
         if not nick in self._bounce_window.buddies:
             _logger.debug('appending %s to the buddy list', nick)
+            colors = [str(colors[0]), str(colors[1])]
             self._bounce_window.buddies.append(nick)
             self._player_colors.append(colors)
             self._player_pixbuf.append(svg_str_to_pixbuf(
-                generate_xo_svg(scale=0.8, colors=self._colors)))
-                # generate_xo_svg(scale=0.8, colors=colors)))
+                generate_xo_svg(scale=0.8, colors=colors)))
 
     def _buddy_list(self, payload):
-        ''' Sharer sent the updated buddy list. '''
-        [buddies, colors] = json_load(payload)
-        for i, nick in enumerate(buddies):
-            self._append_player(nick, colors[i])
+        '''Sharer sent the updated buddy list, so regenerate internal lists'''
+        if not self.initiating:
+            [buddies, colors] = json_load(payload)
+            self._bounce_window.buddies = buddies[:]
+            self._player_colors = colors[:]
+            self._player_pixbuf = []
+            for color in colors:
+                self._player_pixbuf.append(svg_str_to_pixbuf(
+                    generate_xo_svg(scale=0.8,
+                                    colors=[str(colors[0]), str(colors[1])])))
 
     def send_a_fraction(self, fraction):
         ''' Send a fraction to other players. '''
