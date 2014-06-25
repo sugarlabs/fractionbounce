@@ -456,7 +456,7 @@ class Bounce():
                     self.its_their_turn(self.buddies[i])
                     self._activity.send_event('t|%s' % (self.buddies[i]))
             else:
-                if not self.we_are_shring() and self._easter_egg_test():
+                if not self.we_are_sharing() and self._easter_egg_test():
                     self._animate()
                 else:
                     self._timeout = GObject.timeout_add(
