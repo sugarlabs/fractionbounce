@@ -7,3 +7,4 @@ exec = sugar-activity FractionBounceActivity.FractionBounceActivity
 icon = activity-fractionbounce
 show_launcher = yes
 summary = interactive fraction game
+categories = maths game
