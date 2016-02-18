@@ -35,7 +35,11 @@ import telepathy
 from dbus.service import signal
 from dbus.gobject_service import ExportedGObject
 from sugar3.presence import presenceservice
-from sugar3.presence.tubeconn import TubeConnection
+
+try:
+    from sugar3.presence.wrapper import CollabWrapper
+except ImportError:
+    from collabwrapper import CollabWrapper
 
 from gettext import gettext as _
 
@@ -354,7 +358,7 @@ class FractionBounceActivity(activity.Activity):
         if hasattr(self, '_bounce_window') and \
            self._bounce_window.we_are_sharing():
             self._playing = False
-            self.send_event('l|%s' % (json_dump([self.nick])))
+            self.send_event('l', {"data": (json_dump([self.nick]))})
         return True
 
     def _setup_canvas(self):
@@ -537,17 +541,14 @@ class FractionBounceActivity(activity.Activity):
                 self.tubes_chan[ \
                               telepathy.CHANNEL_TYPE_TUBES].AcceptDBusTube(id)
 
-            tube_conn = TubeConnection(self.conn,
-                self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES], id, \
-                group_iface=self.text_chan[telepathy.CHANNEL_INTERFACE_GROUP])
-
-            self.chattube = ChatTube(tube_conn, self.initiating, \
-                self.event_received_cb)
+            self.collab = CollabWrapper(self)
+            self.collab.message.connect(self.event_received_cb)
+            self.collab.setup()
 
             # Let the sharer know a new joiner has arrived.
             if self.waiting_for_fraction:
-                self.send_event('j|%s' % (json_dump([self.nick,
-                                                     self._colors])))
+                self.send_event('j', {"data": (json_dump([self.nick,
+                                                     self._colors]))})
 
     def _setup_dispatch_table(self):
         self._processing_methods = {
@@ -578,7 +579,7 @@ class FractionBounceActivity(activity.Activity):
             self._remove_player(nick)
             payload = json_dump([self._bounce_window.buddies,
                                  self._player_colors])
-            self.send_event('b|%s' % (payload))
+            self.send_event('b', {"data": payload})
             # Restart from sharer's turn
             self._bounce_window.its_my_turn()
 
@@ -590,7 +591,7 @@ class FractionBounceActivity(activity.Activity):
             self._append_player(nick, colors)
             payload = json_dump([self._bounce_window.buddies,
                                  self._player_colors])
-            self.send_event('b|%s' % (payload))
+            self.send_event('b', {"data": payload})
             if self._bounce_window.count == 0:  # Haven't started yet...
                 self._bounce_window.its_my_turn()
 
@@ -626,7 +627,7 @@ class FractionBounceActivity(activity.Activity):
     def send_a_fraction(self, fraction):
         ''' Send a fraction to other players. '''
         payload = json_dump(fraction)
-        self.send_event('f|%s' % (payload))
+        self.send_event('f', {"data": payload})
 
     def _receive_a_fraction(self, payload):
         ''' Receive a fraction from another player. '''
@@ -640,11 +641,12 @@ class FractionBounceActivity(activity.Activity):
         else:
             self._bounce_window.its_their_turn(nick)
 
-    def send_event(self, entry):
+    def send_event(self, command, data):
         ''' Send event through the tube. '''
-        _logger.debug('sending event: %s', entry)
-        if hasattr(self, 'chattube') and self.chattube is not None:
-            self.chattube.SendText(entry)
+        _logger.debug('sending event: %s', command)
+        if hasattr(self, 'collab') and self.collab is not None:
+            data["command"] = command
+            self.collab.post(data)
 
     def set_player_on_toolbar(self, nick):
         ''' Display the XO icon of the player whose turn it is. '''
