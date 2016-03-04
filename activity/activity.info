@@ -1,6 +1,6 @@
 [Activity]
 name = FractionBounce
-activity_version = 23
+activity_version = 24
 license = GPLv3
 bundle_id = org.sugarlabs.FractionBounceActivity
 exec = sugar-activity FractionBounceActivity.FractionBounceActivity
@@ -8,4 +8,4 @@ icon = activity-fractionbounce
 show_launcher = yes
 summary = interactive fraction game
 category = maths game
-
+repository = https://github.com/walterbender/fractionbounce
