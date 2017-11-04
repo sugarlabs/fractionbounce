@@ -7,165 +7,162 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-06-22 10:19-0400\n"
-"PO-Revision-Date: 2017-10-28 04:22+0000\n"
+"PO-Revision-Date: 2017-10-28 04:28+0000\n"
 "Last-Translator: Chris <cjl@sugarlabs.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: ru\n"
+"Language: ach\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Pootle 2.5.1.1\n"
-"X-POOTLE-MTIME: 1509164556.000000\n"
+"X-POOTLE-MTIME: 1509164913.000000\n"
 
 #: activity/activity.info:2
 msgid "FractionBounce"
-msgstr "FractionBounce"
+msgstr "TuroieOduogocen"
 
 #: activity/activity.info:3
 msgid "interactive fraction game"
-msgstr "интерактивная игра про дроби"
+msgstr "Tuku me turo ie maleye i kingi"
 
 #: FractionBounceActivity.py:48
 msgid "basketball"
-msgstr "баскетбол"
+msgstr "opira me dita"
 
 #: FractionBounceActivity.py:49
 msgid "soccer ball"
-msgstr "футбольный мяч"
+msgstr "opira me ngut cong"
 
 #: FractionBounceActivity.py:50
 msgid "rugby ball"
-msgstr "регби мяч"
+msgstr "tuku opira me aret"
 
 #: FractionBounceActivity.py:51
 msgid "bowling ball"
-msgstr "шар для боулинга"
+msgstr "opira ma gikule kwede"
 
 #: FractionBounceActivity.py:52
 msgid "beachball"
-msgstr "пляжный мяч"
+msgstr "tuku opira me dan kulu"
 
 #: FractionBounceActivity.py:53
 msgid "feather"
-msgstr "что-то легкое"
+msgstr "yer winyo"
 
 #: FractionBounceActivity.py:54 FractionBounceActivity.py:59
 msgid "user defined"
-msgstr "пользовательский"
+msgstr "kityeko nongo ngat matiyo kwede"
 
 #: FractionBounceActivity.py:55
 msgid "grass"
-msgstr "трава"
+msgstr "lum"
 
 #: FractionBounceActivity.py:56
 msgid "wood"
-msgstr "дерево"
+msgstr "bao"
 
 #: FractionBounceActivity.py:57
 msgid "clouds"
-msgstr "облака"
+msgstr "pol mapol"
 
 #: FractionBounceActivity.py:58
 msgid "sand"
-msgstr "песок"
+msgstr "kwoyo"
 
 #: FractionBounceActivity.py:155
 msgid "Custom"
-msgstr "Пользовательский"
+msgstr "Mamegi"
 
 #: FractionBounceActivity.py:172
 msgid "<Ctrl>Q"
-msgstr "Ctrl+Q"
+msgstr "<Ctrl>Q"
 
 #: FractionBounceActivity.py:183
 msgid "fractions"
-msgstr "дроби"
+msgstr "ture mapol"
 
 #: FractionBounceActivity.py:190
 msgid "sectors"
-msgstr "секторы"
+msgstr "dul mapol"
 
 #: FractionBounceActivity.py:197
 msgid "percents"
-msgstr "проценты"
+msgstr "pacenti mapol"
 
 #: FractionBounceActivity.py:212
 msgid "Click the ball to start."
-msgstr "Нажмите на мяч, чтобы начать."
+msgstr "Dii kom opira wek i cak."
 
 #: FractionBounceActivity.py:227
 msgid "numerator"
-msgstr "числитель"
+msgstr "lakwan"
 
 #: FractionBounceActivity.py:244
 msgid "denominator"
-msgstr "знаменатель"
+msgstr "ma gipoko kwede"
 
 #: FractionBounceActivity.py:253
 msgid "add new fraction"
-msgstr "добавить новую дробь"
+msgstr "med fraction manyen"
 
 #: FractionBounceActivity.py:267
 msgid "choose a ball"
-msgstr "выбрать мяч"
+msgstr "yer odilo"
 
 #: FractionBounceActivity.py:296
 msgid "choose a background"
-msgstr "выбрать фон"
+msgstr "yer kite me yonge"
 
 #: FractionBounceActivity.py:414
 msgid "New fraction"
-msgstr "Новая дробь"
+msgstr "Fraction manyen"
 
 #: FractionBounceActivity.py:415
 #, python-format
 msgid "Your fraction, %s, has been added to the program"
-msgstr "Ваша дробь, %s , была добавлена в программу"
+msgstr "Fraction meri, %s, otyeko medo oko ipurugram"
 
 #: FractionBounceActivity.py:422
 #, python-format
 msgid ""
 "Bounce the ball to a position %(fraction)s of the way from the left side of "
 "the bar."
-msgstr "Прыжок мяча на позицию %(fraction)s от левого края панели."
+msgstr "Tan odilo owot tutung %(fraction)s madok tucam me baa."
 
 #: FractionBounceActivity.py:426
 #, python-format
 msgid "Bounce the ball to %(fraction)s"
-msgstr "Прыжок мяча на %(fraction)s"
+msgstr "Tan odilo oceti %(fraction)s"
 
 #: FractionBounceActivity.py:487
 msgid "Wait for others to join."
-msgstr "Ждите пока присоединяются другие."
+msgstr "Kur jo mukene wek odonyi."
 
 #: FractionBounceActivity.py:494
 msgid "Wait for the sharer to start."
-msgstr "Ждите участника для старта."
+msgstr "Kur dano ame inywako kwede wek ocaki."
 
 #: FractionBounceActivity.py:554
 msgid "has joined."
-msgstr "присоединился."
+msgstr "odonyo oko."
 
 #: bounce.py:178
 msgid ""
 "Click the ball to start. Rock the computer left and right to move the "
 "ball."
 msgstr ""
-"Нажмите на шар, чтобы начать. Наклоняйте компьютер влево и вправо, чтобы "
-"двигать мяч."
+"Di odilo wek icaki. Didio komputa tung cam dok kede tung cam wek odilo woti."
 
 #: bounce.py:182
 msgid "Click the ball to start. Then use the arrow keys to move the ball."
-msgstr ""
-"Нажмите на шар, чтобы начать. Затем используйте стрелки, чтобы двигать мяч."
+msgstr "Di odilo wek icaki. Eka ti kwede cal wi atero wek imi odilo woti."
 
 #: bounce.py:331
 msgid "Click on the bar to choose a fraction."
-msgstr "Нажмите на панель, чтобы выбрать дробь."
+msgstr "Di kom odilo wek iyer fraction."
 
 #: bounce.py:342
 #, python-format
 msgid "Waiting for %(buddy)s"
-msgstr "Ожидание %(buddy)s"
+msgstr "Tye akuru %(buddy)s"

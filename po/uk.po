@@ -2,115 +2,172 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-22 11:31-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-06-22 10:19-0400\n"
+"PO-Revision-Date: 2017-04-25 18:04+0000\n"
+"Last-Translator: yurchor <yurchor@ukr.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Translate Toolkit 1.7.0\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Pootle 2.5.1.1\n"
+"X-POOTLE-MTIME: 1493143454.000000\n"
 
 #: activity/activity.info:2
 msgid "FractionBounce"
-msgstr ""
+msgstr "Дробостриб"
 
-#: FractionBounceActivity.py:48 FractionBounceActivity.py:165
-#: FractionBounceActivity.py:182
-msgid "basketball"
-msgstr ""
-
-#: FractionBounceActivity.py:48 FractionBounceActivity.py:185
-#: FractionBounceActivity.py:195
-msgid "soccer ball"
-msgstr ""
+#: activity/activity.info:3
+msgid "interactive fraction game"
+msgstr "інтерактивна гра з дробами"
 
 #: FractionBounceActivity.py:48
+msgid "basketball"
+msgstr "баскетбольний м’яч"
+
+#: FractionBounceActivity.py:49
+msgid "soccer ball"
+msgstr "футбольний м’яч"
+
+#: FractionBounceActivity.py:50
+msgid "rugby ball"
+msgstr "м’яч для регбі"
+
+#: FractionBounceActivity.py:51
+msgid "bowling ball"
+msgstr "куля для боулінгу"
+
+#: FractionBounceActivity.py:52
+msgid "beachball"
+msgstr "волейбольний м’яч"
+
+#: FractionBounceActivity.py:53
+msgid "feather"
+msgstr "перо"
+
+#: FractionBounceActivity.py:54 FractionBounceActivity.py:59
 msgid "user defined"
-msgstr ""
+msgstr "визначене користувачем"
 
-#: FractionBounceActivity.py:103 FractionBounceActivity.py:125
+#: FractionBounceActivity.py:55
+msgid "grass"
+msgstr "трава"
+
+#: FractionBounceActivity.py:56
+msgid "wood"
+msgstr "дерева"
+
+#: FractionBounceActivity.py:57
+msgid "clouds"
+msgstr "хмари"
+
+#: FractionBounceActivity.py:58
+msgid "sand"
+msgstr "пісок"
+
+#: FractionBounceActivity.py:155
 msgid "Custom"
-msgstr ""
+msgstr "Нетиповий"
 
-#: FractionBounceActivity.py:114
+#: FractionBounceActivity.py:172
 msgid "<Ctrl>Q"
-msgstr ""
+msgstr "<Ctrl>Q"
 
-#: FractionBounceActivity.py:124
-msgid "Project"
-msgstr ""
-
-#: FractionBounceActivity.py:134
+#: FractionBounceActivity.py:183
 msgid "fractions"
-msgstr ""
+msgstr "дроби"
 
-#: FractionBounceActivity.py:138
+#: FractionBounceActivity.py:190
 msgid "sectors"
-msgstr ""
+msgstr "сектори"
 
-#: FractionBounceActivity.py:142
+#: FractionBounceActivity.py:197
 msgid "percents"
-msgstr ""
+msgstr "відсотки"
 
-#: FractionBounceActivity.py:149
+#: FractionBounceActivity.py:212
 msgid "Click the ball to start."
-msgstr ""
+msgstr "Натисніть на кульці, щоб почати."
 
-#: FractionBounceActivity.py:153
+#: FractionBounceActivity.py:227
 msgid "numerator"
-msgstr ""
+msgstr "чисельник"
 
-#: FractionBounceActivity.py:156
+#: FractionBounceActivity.py:244
 msgid "denominator"
-msgstr ""
+msgstr "знаменник"
 
-#: FractionBounceActivity.py:160
+#: FractionBounceActivity.py:253
 msgid "add new fraction"
-msgstr ""
+msgstr "додати новий дріб"
 
-#: FractionBounceActivity.py:166
+#: FractionBounceActivity.py:267
 msgid "choose a ball"
-msgstr ""
+msgstr "вибрати кульку"
 
-#: FractionBounceActivity.py:246
+#: FractionBounceActivity.py:296
+msgid "choose a background"
+msgstr "вибрати тло"
+
+#: FractionBounceActivity.py:414
+msgid "New fraction"
+msgstr "Новий дріб"
+
+#: FractionBounceActivity.py:415
+#, python-format
+msgid "Your fraction, %s, has been added to the program"
+msgstr "Ваш дріб, %s, було додано до програми"
+
+#: FractionBounceActivity.py:422
 #, python-format
 msgid ""
 "Bounce the ball to a position %(fraction)s of the way from the left side of "
 "the bar."
 msgstr ""
+"Спрямуйте кульку у позицію на %(fraction)s шляху від лівого краю панелі."
 
-#: FractionBounceActivity.py:314
+#: FractionBounceActivity.py:426
+#, python-format
+msgid "Bounce the ball to %(fraction)s"
+msgstr "Спрямуйте кульку у %(fraction)s"
+
+#: FractionBounceActivity.py:487
 msgid "Wait for others to join."
-msgstr ""
+msgstr "Очікуємо на долучення інших гравців."
 
-#: FractionBounceActivity.py:321
+#: FractionBounceActivity.py:494
 msgid "Wait for the sharer to start."
-msgstr ""
+msgstr "Очікуємо на запуск гри її господарем."
 
-#: FractionBounceActivity.py:382
+#: FractionBounceActivity.py:554
 msgid "has joined."
-msgstr ""
+msgstr "долучився."
 
-#: bar.py:84
-msgid "0"
+#: bounce.py:178
+msgid ""
+"Click the ball to start. Rock the computer left and right to move the "
+"ball."
 msgstr ""
+"Натисніть на кульці, щоб почати. Нахиляйте комп’ютер ліворуч та праворуч, "
+"щоб перемістити кульку."
 
-#: bar.py:88
-msgid "1"
+#: bounce.py:182
+msgid "Click the ball to start. Then use the arrow keys to move the ball."
 msgstr ""
+"Натисніть на кульці, щоб почати. Далі, скористайтеся клавішами зі стрілками "
+"для пересування кульки."
 
-#: bounce.py:198
+#: bounce.py:331
 msgid "Click on the bar to choose a fraction."
-msgstr ""
+msgstr "Натисніть на панелі, щоб вибрати дріб."
 
-#: bounce.py:209
+#: bounce.py:342
 #, python-format
 msgid "Waiting for %(buddy)s"
-msgstr ""
+msgstr "Очікуємо на %(buddy)s"
