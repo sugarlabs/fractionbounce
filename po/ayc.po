@@ -6,111 +6,171 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-22 11:31-0400\n"
-"PO-Revision-Date: 2013-04-25 03:55+0200\n"
-"Last-Translator: EdgarQuispeChambi <quispedgar@yahoo.es>\n"
+"POT-Creation-Date: 2014-06-22 10:19-0400\n"
+"PO-Revision-Date: 2017-10-28 04:42+0000\n"
+"Last-Translator: Chris <cjl@sugarlabs.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: ayc\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 2.0.5\n"
+"X-Generator: Pootle 2.5.1.1\n"
+"X-POOTLE-MTIME: 1509165746.000000\n"
 
 #: activity/activity.info:2
 msgid "FractionBounce"
 msgstr "Jaljatanaka kutiqtayiri"
 
-#: FractionBounceActivity.py:48 FractionBounceActivity.py:165
-#: FractionBounceActivity.py:182
+#: activity/activity.info:3
+msgid "interactive fraction game"
+msgstr ""
+
+#: FractionBounceActivity.py:48
 msgid "basketball"
 msgstr "basqueta piluta"
 
-#: FractionBounceActivity.py:48 FractionBounceActivity.py:185
-#: FractionBounceActivity.py:195
+#: FractionBounceActivity.py:49
 msgid "soccer ball"
 msgstr "fútbol piluta"
 
-#: FractionBounceActivity.py:48
+#: FractionBounceActivity.py:50
+msgid "rugby ball"
+msgstr ""
+
+#: FractionBounceActivity.py:51
+msgid "bowling ball"
+msgstr ""
+
+#: FractionBounceActivity.py:52
+msgid "beachball"
+msgstr ""
+
+#: FractionBounceActivity.py:53
+msgid "feather"
+msgstr ""
+
+#: FractionBounceActivity.py:54 FractionBounceActivity.py:59
 msgid "user defined"
 msgstr "apnaqirina wakichata"
 
-#: FractionBounceActivity.py:103 FractionBounceActivity.py:125
+#: FractionBounceActivity.py:55
+msgid "grass"
+msgstr ""
+
+#: FractionBounceActivity.py:56
+msgid "wood"
+msgstr ""
+
+#: FractionBounceActivity.py:57
+msgid "clouds"
+msgstr ""
+
+#: FractionBounceActivity.py:58
+msgid "sand"
+msgstr ""
+
+#: FractionBounceActivity.py:155
 msgid "Custom"
 msgstr "Jaqichjata"
 
-#: FractionBounceActivity.py:114
+#: FractionBounceActivity.py:172
 msgid "<Ctrl>Q"
 msgstr "<Ctrl>Q wakichata"
 
-#: FractionBounceActivity.py:124
-msgid "Project"
-msgstr "Amtäwi"
-
-#: FractionBounceActivity.py:134
+#: FractionBounceActivity.py:183
 msgid "fractions"
 msgstr "jaljatanaka"
 
-#: FractionBounceActivity.py:138
+#: FractionBounceActivity.py:190
 msgid "sectors"
 msgstr "suyunaka"
 
-#: FractionBounceActivity.py:142
+#: FractionBounceActivity.py:197
 msgid "percents"
 msgstr "patakata jaljatanaka"
 
-#: FractionBounceActivity.py:149
+#: FractionBounceActivity.py:212
 msgid "Click the ball to start."
-msgstr "qalltañataki piluta limt'aña"
+msgstr "Qalltañataki piluta limt'aña."
 
-#: FractionBounceActivity.py:153
+#: FractionBounceActivity.py:227
 msgid "numerator"
-msgstr "Jakhjata"
+msgstr "jakhjata"
 
-#: FractionBounceActivity.py:156
+#: FractionBounceActivity.py:244
 msgid "denominator"
-msgstr "Jakhjaña"
+msgstr "jakhjaña"
 
-#: FractionBounceActivity.py:160
+#: FractionBounceActivity.py:253
 msgid "add new fraction"
 msgstr "yaqha jaljayaña yapxataña"
 
-#: FractionBounceActivity.py:166
+#: FractionBounceActivity.py:267
 msgid "choose a ball"
 msgstr "maya piluta jajlliña"
 
-#: FractionBounceActivity.py:246
+#: FractionBounceActivity.py:296
+msgid "choose a background"
+msgstr ""
+
+#: FractionBounceActivity.py:414
+msgid "New fraction"
+msgstr ""
+
+#: FractionBounceActivity.py:415
+#, python-format
+msgid "Your fraction, %s, has been added to the program"
+msgstr ""
+
+#: FractionBounceActivity.py:422
 #, python-format
 msgid ""
 "Bounce the ball to a position %(fraction)s of the way from the left side of "
 "the bar."
 msgstr "Piluta maya chiqaruwa thuqxati %(fraction)s siqi ch'iqäxata jak'aru."
 
-#: FractionBounceActivity.py:314
+#: FractionBounceActivity.py:426
+#, python-format
+msgid "Bounce the ball to %(fraction)s"
+msgstr ""
+
+#: FractionBounceActivity.py:487
 msgid "Wait for others to join."
 msgstr "Yaqhanaka mayachasiñapa suyaña."
 
-#: FractionBounceActivity.py:321
+#: FractionBounceActivity.py:494
 msgid "Wait for the sharer to start."
 msgstr "Anatiri qalltañapa suyaña."
 
-#: FractionBounceActivity.py:382
+#: FractionBounceActivity.py:554
 msgid "has joined."
 msgstr "mayachasiwa."
 
-#: bar.py:84
-msgid "0"
-msgstr "0 chimpu"
+#: bounce.py:178
+msgid ""
+"Click the ball to start. Rock the computer left and right to move the "
+"ball."
+msgstr ""
 
-#: bar.py:88
-msgid "1"
-msgstr "1 chimpu"
+#: bounce.py:182
+msgid "Click the ball to start. Then use the arrow keys to move the ball."
+msgstr ""
 
-#: bounce.py:198
+#: bounce.py:331
 msgid "Click on the bar to choose a fraction."
-msgstr "clic limt'ma jaljayañanaka jajlliña wakichataru."
+msgstr "Clic limt'ma jaljayañanaka jajlliña wakichataru."
 
-#: bounce.py:209
+#: bounce.py:342
 #, python-format
 msgid "Waiting for %(buddy)s"
 msgstr "Suyt'ataskiwa %(buddy)s"
+
+#~ msgid "Project"
+#~ msgstr "Amtäwi"
+
+#~ msgid "0"
+#~ msgstr "0 chimpu"
+
+#~ msgid "1"
+#~ msgstr "1 chimpu"
