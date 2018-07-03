@@ -180,6 +180,8 @@ class Bounce():
                     _('Click the ball to start. Then use the arrow keys to '
                       'move the ball.'))
 
+        self._keyrelease_id = None
+
     def _accelerometer(self):
         return os.path.exists(ACCELEROMETER_DEVICE) and _is_tablet_mode()
 
@@ -643,7 +645,16 @@ class Bounce():
 
     def _keyrelease_cb(self, area, event):
         ''' Keyrelease: stop horizontal movement '''
-        self._dx = 0.
+
+        def timer_cb():
+            self._dx = 0.
+            self._keyrelease_id = None
+            return False
+
+        if self._keyrelease_id is not None:
+            GObject.source_remove(self._keyrelease_id)
+        self._keyrelease_id = GObject.timeout_add(100, timer_cb)
+
         return True
 
     def __draw_cb(self, canvas, cr):
