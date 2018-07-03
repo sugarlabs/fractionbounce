@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-22 10:19-0400\n"
+"POT-Creation-Date: 2017-11-06 08:06+1100\n"
 "PO-Revision-Date: 2017-10-28 04:28+0000\n"
 "Last-Translator: Chris <cjl@sugarlabs.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,143 +26,166 @@ msgstr "TuroieOduogocen"
 msgid "interactive fraction game"
 msgstr "Tuku me turo ie maleye i kingi"
 
-#: FractionBounceActivity.py:48
+#: FractionBounceActivity.py:56
 msgid "basketball"
 msgstr "opira me dita"
 
-#: FractionBounceActivity.py:49
+#: FractionBounceActivity.py:57
 msgid "soccer ball"
 msgstr "opira me ngut cong"
 
-#: FractionBounceActivity.py:50
+#: FractionBounceActivity.py:58
 msgid "rugby ball"
 msgstr "tuku opira me aret"
 
-#: FractionBounceActivity.py:51
+#: FractionBounceActivity.py:59
 msgid "bowling ball"
 msgstr "opira ma gikule kwede"
 
-#: FractionBounceActivity.py:52
+#: FractionBounceActivity.py:60
 msgid "beachball"
 msgstr "tuku opira me dan kulu"
 
-#: FractionBounceActivity.py:53
+#: FractionBounceActivity.py:61
 msgid "feather"
 msgstr "yer winyo"
 
-#: FractionBounceActivity.py:54 FractionBounceActivity.py:59
+#: FractionBounceActivity.py:62 FractionBounceActivity.py:67
 msgid "user defined"
 msgstr "kityeko nongo ngat matiyo kwede"
 
-#: FractionBounceActivity.py:55
+#: FractionBounceActivity.py:63
 msgid "grass"
 msgstr "lum"
 
-#: FractionBounceActivity.py:56
+#: FractionBounceActivity.py:64
 msgid "wood"
 msgstr "bao"
 
-#: FractionBounceActivity.py:57
+#: FractionBounceActivity.py:65
 msgid "clouds"
 msgstr "pol mapol"
 
-#: FractionBounceActivity.py:58
+#: FractionBounceActivity.py:66
 msgid "sand"
 msgstr "kwoyo"
 
-#: FractionBounceActivity.py:155
+#: FractionBounceActivity.py:122
+msgid "Please wait"
+msgstr ""
+
+#: FractionBounceActivity.py:123
+msgid "Starting connection..."
+msgstr ""
+
+#: FractionBounceActivity.py:127
+msgid "Wait for the sharer to start."
+msgstr "Kur dano ame inywako kwede wek ocaki."
+
+#: FractionBounceActivity.py:182
 msgid "Custom"
 msgstr "Mamegi"
 
-#: FractionBounceActivity.py:172
+#: FractionBounceActivity.py:199
 msgid "<Ctrl>Q"
 msgstr "<Ctrl>Q"
 
-#: FractionBounceActivity.py:183
+#: FractionBounceActivity.py:210
 msgid "fractions"
 msgstr "ture mapol"
 
-#: FractionBounceActivity.py:190
+#: FractionBounceActivity.py:217
 msgid "sectors"
 msgstr "dul mapol"
 
-#: FractionBounceActivity.py:197
+#: FractionBounceActivity.py:224
 msgid "percents"
 msgstr "pacenti mapol"
 
-#: FractionBounceActivity.py:212
+#: FractionBounceActivity.py:239
 msgid "Click the ball to start."
 msgstr "Dii kom opira wek i cak."
 
-#: FractionBounceActivity.py:227
+#: FractionBounceActivity.py:254
 msgid "numerator"
 msgstr "lakwan"
 
-#: FractionBounceActivity.py:244
+#: FractionBounceActivity.py:271
 msgid "denominator"
 msgstr "ma gipoko kwede"
 
-#: FractionBounceActivity.py:253
+#: FractionBounceActivity.py:280
 msgid "add new fraction"
 msgstr "med fraction manyen"
 
-#: FractionBounceActivity.py:267
+#: FractionBounceActivity.py:294
 msgid "choose a ball"
 msgstr "yer odilo"
 
-#: FractionBounceActivity.py:296
+#: FractionBounceActivity.py:323
 msgid "choose a background"
 msgstr "yer kite me yonge"
 
-#: FractionBounceActivity.py:414
+#: FractionBounceActivity.py:449
 msgid "New fraction"
 msgstr "Fraction manyen"
 
-#: FractionBounceActivity.py:415
+#: FractionBounceActivity.py:450
 #, python-format
 msgid "Your fraction, %s, has been added to the program"
 msgstr "Fraction meri, %s, otyeko medo oko ipurugram"
 
-#: FractionBounceActivity.py:422
+#: FractionBounceActivity.py:516
+msgid "Wait for others to join."
+msgstr "Kur jo mukene wek odonyi."
+
+#: FractionBounceActivity.py:579
+msgid "has left."
+msgstr ""
+
+#: FractionBounceActivity.py:591
+msgid "has joined."
+msgstr "odonyo oko."
+
+#: bounce.py:176
+msgid ""
+"Click the ball to start. Rock the computer left and right to move the ball."
+msgstr ""
+"Di odilo wek icaki. Didio komputa tung cam dok kede tung cam wek odilo woti."
+
+#: bounce.py:180
+msgid "Click the ball to start. Then use the arrow keys to move the ball."
+msgstr "Di odilo wek icaki. Eka ti kwede cal wi atero wek imi odilo woti."
+
+#: bounce.py:333
+msgid "Click on the bar to choose a fraction."
+msgstr "Di kom odilo wek iyer fraction."
+
+#: bounce.py:344
+#, python-format
+msgid "Waiting for %(buddy)s"
+msgstr "Tye akuru %(buddy)s"
+
+#: bounce.py:555
 #, python-format
 msgid ""
 "Bounce the ball to a position %(fraction)s of the way from the left side of "
 "the bar."
 msgstr "Tan odilo owot tutung %(fraction)s madok tucam me baa."
 
-#: FractionBounceActivity.py:426
+#: bounce.py:559
 #, python-format
 msgid "Bounce the ball to %(fraction)s"
 msgstr "Tan odilo oceti %(fraction)s"
 
-#: FractionBounceActivity.py:487
-msgid "Wait for others to join."
-msgstr "Kur jo mukene wek odonyi."
-
-#: FractionBounceActivity.py:494
-msgid "Wait for the sharer to start."
-msgstr "Kur dano ame inywako kwede wek ocaki."
-
-#: FractionBounceActivity.py:554
-msgid "has joined."
-msgstr "odonyo oko."
-
-#: bounce.py:178
-msgid ""
-"Click the ball to start. Rock the computer left and right to move the "
-"ball."
+#: collabwrapper.py:178
+msgid "Joining activity..."
 msgstr ""
-"Di odilo wek icaki. Didio komputa tung cam dok kede tung cam wek odilo woti."
 
-#: bounce.py:182
-msgid "Click the ball to start. Then use the arrow keys to move the ball."
-msgstr "Di odilo wek icaki. Eka ti kwede cal wi atero wek imi odilo woti."
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
+msgstr ""
 
-#: bounce.py:331
-msgid "Click on the bar to choose a fraction."
-msgstr "Di kom odilo wek iyer fraction."
-
-#: bounce.py:342
-#, python-format
-msgid "Waiting for %(buddy)s"
-msgstr "Tye akuru %(buddy)s"
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr ""

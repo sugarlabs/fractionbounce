@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-22 10:19-0400\n"
-"PO-Revision-Date: 2012-02-17 14:27+0200\n"
-"Last-Translator: Iron <maciek_ksa@interia.pl>\n"
+"POT-Creation-Date: 2017-11-06 08:06+1100\n"
+"PO-Revision-Date: 2017-12-18 14:03+0000\n"
+"Last-Translator: jszu <jszu@protonmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Pootle 2.0.5\n"
+"X-Generator: Pootle 2.5.1.1\n"
+"X-POOTLE-MTIME: 1513605826.000000\n"
 
 #: activity/activity.info:2
 msgid "FractionBounce"
@@ -24,106 +25,153 @@ msgstr "Odbijanie ułamkami"
 
 #: activity/activity.info:3
 msgid "interactive fraction game"
-msgstr ""
+msgstr "interaktywna gra oparta na podziale"
 
-#: FractionBounceActivity.py:48
+#: FractionBounceActivity.py:56
 msgid "basketball"
 msgstr "koszykówka"
 
-#: FractionBounceActivity.py:49
+#: FractionBounceActivity.py:57
 msgid "soccer ball"
 msgstr "piłka nożna"
 
-#: FractionBounceActivity.py:50
+#: FractionBounceActivity.py:58
 msgid "rugby ball"
-msgstr ""
+msgstr "piłka do futbolu amerykańskiego"
 
-#: FractionBounceActivity.py:51
+#: FractionBounceActivity.py:59
 msgid "bowling ball"
-msgstr ""
+msgstr "kula do kręgli"
 
-#: FractionBounceActivity.py:52
+#: FractionBounceActivity.py:60
 msgid "beachball"
-msgstr ""
+msgstr "piłka plażowa"
 
-#: FractionBounceActivity.py:53
+#: FractionBounceActivity.py:61
 msgid "feather"
-msgstr ""
+msgstr "pióro"
 
-#: FractionBounceActivity.py:54 FractionBounceActivity.py:59
+#: FractionBounceActivity.py:62 FractionBounceActivity.py:67
 msgid "user defined"
 msgstr "zdefiniowany przez użytkownika"
 
-#: FractionBounceActivity.py:55
+#: FractionBounceActivity.py:63
 msgid "grass"
-msgstr ""
+msgstr "trawa"
 
-#: FractionBounceActivity.py:56
+#: FractionBounceActivity.py:64
 msgid "wood"
-msgstr ""
+msgstr "drewno"
 
-#: FractionBounceActivity.py:57
+#: FractionBounceActivity.py:65
 msgid "clouds"
-msgstr ""
+msgstr "chmury"
 
-#: FractionBounceActivity.py:58
+#: FractionBounceActivity.py:66
 msgid "sand"
-msgstr ""
+msgstr "piasek"
 
-#: FractionBounceActivity.py:155
+#: FractionBounceActivity.py:122
+msgid "Please wait"
+msgstr "Proszę czekać"
+
+#: FractionBounceActivity.py:123
+msgid "Starting connection..."
+msgstr "Rozpoczynanie połączenia..."
+
+#: FractionBounceActivity.py:127
+msgid "Wait for the sharer to start."
+msgstr "Zaczekaj na współuczestnika, aby rozpocząć."
+
+#: FractionBounceActivity.py:182
 msgid "Custom"
 msgstr "Własny"
 
-#: FractionBounceActivity.py:172
+#: FractionBounceActivity.py:199
 msgid "<Ctrl>Q"
 msgstr "<Ctrl>Q"
 
-#: FractionBounceActivity.py:183
+#: FractionBounceActivity.py:210
 msgid "fractions"
 msgstr "ułamki"
 
-#: FractionBounceActivity.py:190
+#: FractionBounceActivity.py:217
 msgid "sectors"
 msgstr "sektory"
 
-#: FractionBounceActivity.py:197
+#: FractionBounceActivity.py:224
 msgid "percents"
 msgstr "procenty"
 
-#: FractionBounceActivity.py:212
+#: FractionBounceActivity.py:239
 msgid "Click the ball to start."
 msgstr "Naciśnij na piłkę, aby rozpocząć."
 
-#: FractionBounceActivity.py:227
+#: FractionBounceActivity.py:254
 msgid "numerator"
 msgstr "licznik"
 
-#: FractionBounceActivity.py:244
+#: FractionBounceActivity.py:271
 msgid "denominator"
 msgstr "mianownik"
 
-#: FractionBounceActivity.py:253
+#: FractionBounceActivity.py:280
 msgid "add new fraction"
 msgstr "dodaj nowy ułamek"
 
-#: FractionBounceActivity.py:267
+#: FractionBounceActivity.py:294
 msgid "choose a ball"
 msgstr "wybierz piłkę"
 
-#: FractionBounceActivity.py:296
+#: FractionBounceActivity.py:323
 msgid "choose a background"
-msgstr ""
+msgstr "wybierz tło"
 
-#: FractionBounceActivity.py:414
+#: FractionBounceActivity.py:449
 msgid "New fraction"
-msgstr ""
+msgstr "Nowa część"
 
-#: FractionBounceActivity.py:415
+#: FractionBounceActivity.py:450
 #, python-format
 msgid "Your fraction, %s, has been added to the program"
-msgstr ""
+msgstr "Twoja część, %s, została dodana do programu"
 
-#: FractionBounceActivity.py:422
+#: FractionBounceActivity.py:516
+msgid "Wait for others to join."
+msgstr "Zaczekaj aż dołączą inni."
+
+#: FractionBounceActivity.py:579
+msgid "has left."
+msgstr "wyszedł."
+
+#: FractionBounceActivity.py:591
+msgid "has joined."
+msgstr "dołączył(a)."
+
+#: bounce.py:176
+msgid ""
+"Click the ball to start. Rock the computer left and right to move the ball."
+msgstr ""
+"Kliknij na piłkę by rozpocząć. Ruszaj komputerem w lewo i prawo by ruszać "
+"piłką."
+
+#: bounce.py:180
+msgid "Click the ball to start. Then use the arrow keys to move the ball."
+msgstr ""
+"Kliknij na piłkę by zacząć. Następnie używaj strzałek na klawiaturze by "
+"ruszać piłką."
+
+#: bounce.py:333
+msgid "Click on the bar to choose a fraction."
+msgstr "Kliknij na pasek, aby wybrać ułamek."
+
+#: bounce.py:344
+#, python-format
+#, python-format,
+msgid "Waiting for %(buddy)s"
+msgstr "Czekam na %(buddy)s"
+
+#: bounce.py:555
 #, python-format
 #, python-format,
 msgid ""
@@ -131,42 +179,22 @@ msgid ""
 "the bar."
 msgstr "Odbij piłkę do pozycji %(fraction)s na drodze od lewej strony paska."
 
-#: FractionBounceActivity.py:426
+#: bounce.py:559
 #, python-format
 msgid "Bounce the ball to %(fraction)s"
-msgstr ""
+msgstr "Odbij piłkę do %(fraction)s"
 
-#: FractionBounceActivity.py:487
-msgid "Wait for others to join."
-msgstr "Zaczekaj aż dołączą inni."
+#: collabwrapper.py:178
+msgid "Joining activity..."
+msgstr "Dołączanie do aktywności..."
 
-#: FractionBounceActivity.py:494
-msgid "Wait for the sharer to start."
-msgstr "Zaczekaj na współuczestnika, aby rozpocząć."
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
+msgstr "Proszę czekać na połączenie..."
 
-#: FractionBounceActivity.py:554
-msgid "has joined."
-msgstr "dołączył(a)."
-
-#: bounce.py:178
-msgid ""
-"Click the ball to start. Rock the computer left and right to move the "
-"ball."
-msgstr ""
-
-#: bounce.py:182
-msgid "Click the ball to start. Then use the arrow keys to move the ball."
-msgstr ""
-
-#: bounce.py:331
-msgid "Click on the bar to choose a fraction."
-msgstr "Kliknij na pasek, aby wybrać ułamek."
-
-#: bounce.py:342
-#, python-format
-#, python-format,
-msgid "Waiting for %(buddy)s"
-msgstr "Czekam na %(buddy)s"
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr "Przywracam współdzieloną aktywność..."
 
 #~ msgid "Project"
 #~ msgstr "Projekt"

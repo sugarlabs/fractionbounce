@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-22 10:19-0400\n"
+"POT-Creation-Date: 2017-11-06 08:06+1100\n"
 "PO-Revision-Date: 2017-05-30 10:47+0000\n"
 "Last-Translator: François <francois.jarriges@gmail.com>\n"
 "Language-Team: OLPC France <contact@olpc-france.org>\n"
@@ -26,104 +26,150 @@ msgstr "FractionBounce"
 msgid "interactive fraction game"
 msgstr "jeu de fractions interactif"
 
-#: FractionBounceActivity.py:48
+#: FractionBounceActivity.py:56
 msgid "basketball"
 msgstr "basket"
 
-#: FractionBounceActivity.py:49
+#: FractionBounceActivity.py:57
 msgid "soccer ball"
 msgstr "football"
 
-#: FractionBounceActivity.py:50
+#: FractionBounceActivity.py:58
 msgid "rugby ball"
 msgstr "ballon de rugby"
 
-#: FractionBounceActivity.py:51
+#: FractionBounceActivity.py:59
 msgid "bowling ball"
 msgstr "boule de bowling"
 
-#: FractionBounceActivity.py:52
+#: FractionBounceActivity.py:60
 msgid "beachball"
 msgstr "ballon de plage"
 
-#: FractionBounceActivity.py:53
+#: FractionBounceActivity.py:61
 msgid "feather"
 msgstr "plume"
 
-#: FractionBounceActivity.py:54 FractionBounceActivity.py:59
+#: FractionBounceActivity.py:62 FractionBounceActivity.py:67
 msgid "user defined"
 msgstr "défini par l'utilisateur"
 
-#: FractionBounceActivity.py:55
+#: FractionBounceActivity.py:63
 msgid "grass"
 msgstr "herbe"
 
-#: FractionBounceActivity.py:56
+#: FractionBounceActivity.py:64
 msgid "wood"
 msgstr "bois"
 
-#: FractionBounceActivity.py:57
+#: FractionBounceActivity.py:65
 msgid "clouds"
 msgstr "nuages"
 
-#: FractionBounceActivity.py:58
+#: FractionBounceActivity.py:66
 msgid "sand"
 msgstr "sable"
 
-#: FractionBounceActivity.py:155
+#: FractionBounceActivity.py:122
+msgid "Please wait"
+msgstr ""
+
+#: FractionBounceActivity.py:123
+msgid "Starting connection..."
+msgstr ""
+
+#: FractionBounceActivity.py:127
+msgid "Wait for the sharer to start."
+msgstr "Attends que celui qui partage démarre."
+
+#: FractionBounceActivity.py:182
 msgid "Custom"
 msgstr "Personnalisé"
 
-#: FractionBounceActivity.py:172
+#: FractionBounceActivity.py:199
 msgid "<Ctrl>Q"
 msgstr "<Ctrl>Q"
 
-#: FractionBounceActivity.py:183
+#: FractionBounceActivity.py:210
 msgid "fractions"
 msgstr "fractions"
 
-#: FractionBounceActivity.py:190
+#: FractionBounceActivity.py:217
 msgid "sectors"
 msgstr "secteurs"
 
-#: FractionBounceActivity.py:197
+#: FractionBounceActivity.py:224
 msgid "percents"
 msgstr "pourcents"
 
-#: FractionBounceActivity.py:212
+#: FractionBounceActivity.py:239
 msgid "Click the ball to start."
 msgstr "Clique sur la balle pour démarrer."
 
-#: FractionBounceActivity.py:227
+#: FractionBounceActivity.py:254
 msgid "numerator"
 msgstr "numérateur"
 
-#: FractionBounceActivity.py:244
+#: FractionBounceActivity.py:271
 msgid "denominator"
 msgstr "dénominateur"
 
-#: FractionBounceActivity.py:253
+#: FractionBounceActivity.py:280
 msgid "add new fraction"
 msgstr "ajoute une nouvelle fraction"
 
-#: FractionBounceActivity.py:267
+#: FractionBounceActivity.py:294
 msgid "choose a ball"
 msgstr "choisis une balle"
 
-#: FractionBounceActivity.py:296
+#: FractionBounceActivity.py:323
 msgid "choose a background"
 msgstr "choisis un arrière plan"
 
-#: FractionBounceActivity.py:414
+#: FractionBounceActivity.py:449
 msgid "New fraction"
 msgstr "Nouvelle fraction"
 
-#: FractionBounceActivity.py:415
+#: FractionBounceActivity.py:450
 #, python-format
 msgid "Your fraction, %s, has been added to the program"
 msgstr "Ta fraction, %s, a été ajoutée au programme"
 
-#: FractionBounceActivity.py:422
+#: FractionBounceActivity.py:516
+msgid "Wait for others to join."
+msgstr "Attends que les autres te rejoignent."
+
+#: FractionBounceActivity.py:579
+msgid "has left."
+msgstr ""
+
+#: FractionBounceActivity.py:591
+msgid "has joined."
+msgstr "a rejoint."
+
+#: bounce.py:176
+msgid ""
+"Click the ball to start. Rock the computer left and right to move the ball."
+msgstr ""
+"Clique sur la balle pour démarrer. Dirige la à gauche ou à droite, en "
+"basculant ton ordinateur."
+
+#: bounce.py:180
+msgid "Click the ball to start. Then use the arrow keys to move the ball."
+msgstr ""
+"Clique sur la balle pour démarrer. Dirige la à gauche ou à droite, avec les "
+"touches flèches."
+
+#: bounce.py:333
+msgid "Click on the bar to choose a fraction."
+msgstr "Clique sur la barre pour choisir une fraction."
+
+#: bounce.py:344
+#, python-format
+msgid "Waiting for %(buddy)s"
+msgstr "En attente de %(buddy)s"
+
+#: bounce.py:555
 #, python-format
 msgid ""
 "Bounce the ball to a position %(fraction)s of the way from the left side of "
@@ -132,45 +178,22 @@ msgstr ""
 "Fais rebondir la balle à %(fraction)s de distance du côté gauche de \n"
 "la barre."
 
-#: FractionBounceActivity.py:426
+#: bounce.py:559
 #, python-format
 msgid "Bounce the ball to %(fraction)s"
 msgstr "Fait rebondir la balle jusqu'à %(fraction)s"
 
-#: FractionBounceActivity.py:487
-msgid "Wait for others to join."
-msgstr "Attends que les autres te rejoignent."
-
-#: FractionBounceActivity.py:494
-msgid "Wait for the sharer to start."
-msgstr "Attends que celui qui partage démarre."
-
-#: FractionBounceActivity.py:554
-msgid "has joined."
-msgstr "a rejoint."
-
-#: bounce.py:178
-msgid ""
-"Click the ball to start. Rock the computer left and right to move the "
-"ball."
+#: collabwrapper.py:178
+msgid "Joining activity..."
 msgstr ""
-"Clique sur la balle pour démarrer. Dirige la à gauche ou à droite, en "
-"basculant ton ordinateur."
 
-#: bounce.py:182
-msgid "Click the ball to start. Then use the arrow keys to move the ball."
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
 msgstr ""
-"Clique sur la balle pour démarrer. Dirige la à gauche ou à droite, avec les "
-"touches flèches."
 
-#: bounce.py:331
-msgid "Click on the bar to choose a fraction."
-msgstr "Clique sur la barre pour choisir une fraction."
-
-#: bounce.py:342
-#, python-format
-msgid "Waiting for %(buddy)s"
-msgstr "En attente de %(buddy)s"
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr ""
 
 #~ msgid "Project"
 #~ msgstr "Projet"

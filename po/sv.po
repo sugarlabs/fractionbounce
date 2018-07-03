@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-22 10:19-0400\n"
+"POT-Creation-Date: 2017-11-06 08:06+1100\n"
 "PO-Revision-Date: 2017-03-30 20:23+0000\n"
 "Last-Translator: Anders <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,104 +26,150 @@ msgstr "Bråkstuds"
 msgid "interactive fraction game"
 msgstr "interaktivt bråkspel"
 
-#: FractionBounceActivity.py:48
+#: FractionBounceActivity.py:56
 msgid "basketball"
 msgstr "basketboll"
 
-#: FractionBounceActivity.py:49
+#: FractionBounceActivity.py:57
 msgid "soccer ball"
 msgstr "fotboll"
 
-#: FractionBounceActivity.py:50
+#: FractionBounceActivity.py:58
 msgid "rugby ball"
 msgstr "rugbyboll"
 
-#: FractionBounceActivity.py:51
+#: FractionBounceActivity.py:59
 msgid "bowling ball"
 msgstr "bowlingklot"
 
-#: FractionBounceActivity.py:52
+#: FractionBounceActivity.py:60
 msgid "beachball"
 msgstr "badboll"
 
-#: FractionBounceActivity.py:53
+#: FractionBounceActivity.py:61
 msgid "feather"
 msgstr "fjäder"
 
-#: FractionBounceActivity.py:54 FractionBounceActivity.py:59
+#: FractionBounceActivity.py:62 FractionBounceActivity.py:67
 msgid "user defined"
 msgstr "användardefinierad"
 
-#: FractionBounceActivity.py:55
+#: FractionBounceActivity.py:63
 msgid "grass"
 msgstr "gräs"
 
-#: FractionBounceActivity.py:56
+#: FractionBounceActivity.py:64
 msgid "wood"
 msgstr "trä"
 
-#: FractionBounceActivity.py:57
+#: FractionBounceActivity.py:65
 msgid "clouds"
 msgstr "moln"
 
-#: FractionBounceActivity.py:58
+#: FractionBounceActivity.py:66
 msgid "sand"
 msgstr "sand"
 
-#: FractionBounceActivity.py:155
+#: FractionBounceActivity.py:122
+msgid "Please wait"
+msgstr ""
+
+#: FractionBounceActivity.py:123
+msgid "Starting connection..."
+msgstr ""
+
+#: FractionBounceActivity.py:127
+msgid "Wait for the sharer to start."
+msgstr "Vänta på att delaren ska börja."
+
+#: FractionBounceActivity.py:182
 msgid "Custom"
 msgstr "Anpassad"
 
-#: FractionBounceActivity.py:172
+#: FractionBounceActivity.py:199
 msgid "<Ctrl>Q"
 msgstr "<Ctrl>Q"
 
-#: FractionBounceActivity.py:183
+#: FractionBounceActivity.py:210
 msgid "fractions"
 msgstr "bråk"
 
-#: FractionBounceActivity.py:190
+#: FractionBounceActivity.py:217
 msgid "sectors"
 msgstr "cirkelsektorer"
 
-#: FractionBounceActivity.py:197
+#: FractionBounceActivity.py:224
 msgid "percents"
 msgstr "procent"
 
-#: FractionBounceActivity.py:212
+#: FractionBounceActivity.py:239
 msgid "Click the ball to start."
 msgstr "Klicka på bollen för att starta."
 
-#: FractionBounceActivity.py:227
+#: FractionBounceActivity.py:254
 msgid "numerator"
 msgstr "täljare"
 
-#: FractionBounceActivity.py:244
+#: FractionBounceActivity.py:271
 msgid "denominator"
 msgstr "nämnare"
 
-#: FractionBounceActivity.py:253
+#: FractionBounceActivity.py:280
 msgid "add new fraction"
 msgstr "lägg till ett nytt bråk"
 
-#: FractionBounceActivity.py:267
+#: FractionBounceActivity.py:294
 msgid "choose a ball"
 msgstr "välj en boll"
 
-#: FractionBounceActivity.py:296
+#: FractionBounceActivity.py:323
 msgid "choose a background"
 msgstr "välj en bakgrund"
 
-#: FractionBounceActivity.py:414
+#: FractionBounceActivity.py:449
 msgid "New fraction"
 msgstr "Nytt bråk"
 
-#: FractionBounceActivity.py:415
+#: FractionBounceActivity.py:450
 #, python-format
 msgid "Your fraction, %s, has been added to the program"
 msgstr "Ditt bråk, %s, har lagts till i programmet"
 
-#: FractionBounceActivity.py:422
+#: FractionBounceActivity.py:516
+msgid "Wait for others to join."
+msgstr "Vänta på att andra går med."
+
+#: FractionBounceActivity.py:579
+msgid "has left."
+msgstr ""
+
+#: FractionBounceActivity.py:591
+msgid "has joined."
+msgstr "har gått med."
+
+#: bounce.py:176
+msgid ""
+"Click the ball to start. Rock the computer left and right to move the ball."
+msgstr ""
+"Klicka på bollen för att starta. Gunga datorn vänster och höger för att "
+"förflytta bollen."
+
+#: bounce.py:180
+msgid "Click the ball to start. Then use the arrow keys to move the ball."
+msgstr ""
+"Klicka på bollen för att starta. Använd sedan piltangenterna för att "
+"förflytta bollen."
+
+#: bounce.py:333
+msgid "Click on the bar to choose a fraction."
+msgstr "Klicka på linjen för att välja ett bråk."
+
+#: bounce.py:344
+#, python-format
+msgid "Waiting for %(buddy)s"
+msgstr "Väntar på %(buddy)s"
+
+#: bounce.py:555
 #, python-format
 msgid ""
 "Bounce the ball to a position %(fraction)s of the way from the left side of "
@@ -132,42 +178,19 @@ msgstr ""
 "Studsa bollen till en position %(fraction)s av vägen från den vänstra sidan "
 "av linjen."
 
-#: FractionBounceActivity.py:426
+#: bounce.py:559
 #, python-format
 msgid "Bounce the ball to %(fraction)s"
 msgstr "Studsa bollen till %(fraction)s"
 
-#: FractionBounceActivity.py:487
-msgid "Wait for others to join."
-msgstr "Vänta på att andra går med."
-
-#: FractionBounceActivity.py:494
-msgid "Wait for the sharer to start."
-msgstr "Vänta på att delaren ska börja."
-
-#: FractionBounceActivity.py:554
-msgid "has joined."
-msgstr "har gått med."
-
-#: bounce.py:178
-msgid ""
-"Click the ball to start. Rock the computer left and right to move the "
-"ball."
+#: collabwrapper.py:178
+msgid "Joining activity..."
 msgstr ""
-"Klicka på bollen för att starta. Gunga datorn vänster och höger för att "
-"förflytta bollen."
 
-#: bounce.py:182
-msgid "Click the ball to start. Then use the arrow keys to move the ball."
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
 msgstr ""
-"Klicka på bollen för att starta. Använd sedan piltangenterna för att "
-"förflytta bollen."
 
-#: bounce.py:331
-msgid "Click on the bar to choose a fraction."
-msgstr "Klicka på linjen för att välja ett bråk."
-
-#: bounce.py:342
-#, python-format
-msgid "Waiting for %(buddy)s"
-msgstr "Väntar på %(buddy)s"
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr ""

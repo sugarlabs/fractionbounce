@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-22 10:19-0400\n"
+"POT-Creation-Date: 2017-11-06 08:06+1100\n"
 "PO-Revision-Date: 2017-02-14 16:53+0000\n"
 "Last-Translator: Chris <cjl@sugarlabs.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,105 +26,149 @@ msgstr "کسر (بخش) پرتاب"
 msgid "interactive fraction game"
 msgstr "بازی کسری تعاملی (متقابل)"
 
-#: FractionBounceActivity.py:48
+#: FractionBounceActivity.py:56
 msgid "basketball"
 msgstr "بسکتبال"
 
-#: FractionBounceActivity.py:49
+#: FractionBounceActivity.py:57
 msgid "soccer ball"
 msgstr "توپ فوتبال"
 
-#: FractionBounceActivity.py:50
+#: FractionBounceActivity.py:58
 msgid "rugby ball"
 msgstr "توپ راگبی"
 
-#: FractionBounceActivity.py:51
+#: FractionBounceActivity.py:59
 msgid "bowling ball"
 msgstr "توپ بولینگ"
 
-#: FractionBounceActivity.py:52
+#: FractionBounceActivity.py:60
 msgid "beachball"
 msgstr "توپ ساحلی"
 
-#: FractionBounceActivity.py:53
+#: FractionBounceActivity.py:61
 msgid "feather"
 msgstr "پر"
 
-#: FractionBounceActivity.py:54 FractionBounceActivity.py:59
+#: FractionBounceActivity.py:62 FractionBounceActivity.py:67
 msgid "user defined"
 msgstr "تعریف شده توسط کاربر"
 
-#: FractionBounceActivity.py:55
+#: FractionBounceActivity.py:63
 msgid "grass"
 msgstr "چمن، علف"
 
-#: FractionBounceActivity.py:56
+#: FractionBounceActivity.py:64
 msgid "wood"
 msgstr "چوب"
 
-#: FractionBounceActivity.py:57
+#: FractionBounceActivity.py:65
 msgid "clouds"
 msgstr "ابرها"
 
-#: FractionBounceActivity.py:58
+#: FractionBounceActivity.py:66
 msgid "sand"
 msgstr "ماسه"
 
-#: FractionBounceActivity.py:155
+#: FractionBounceActivity.py:122
+msgid "Please wait"
+msgstr ""
+
+#: FractionBounceActivity.py:123
+msgid "Starting connection..."
+msgstr ""
+
+#: FractionBounceActivity.py:127
+msgid "Wait for the sharer to start."
+msgstr "منتظر شرکا باش تا شروع کنند"
+
+#: FractionBounceActivity.py:182
 msgid "Custom"
 msgstr "رسم، سنت، عرف"
 
-#: FractionBounceActivity.py:172
+#: FractionBounceActivity.py:199
 msgid "<Ctrl>Q"
 msgstr "کنترل کیو (Ctrl Q)"
 
-#: FractionBounceActivity.py:183
+#: FractionBounceActivity.py:210
 msgid "fractions"
 msgstr "کسر، بخشی از"
 
-#: FractionBounceActivity.py:190
+#: FractionBounceActivity.py:217
 msgid "sectors"
 msgstr "بخش، ناحیه، جزء"
 
-#: FractionBounceActivity.py:197
+#: FractionBounceActivity.py:224
 msgid "percents"
 msgstr "درصد"
 
-#: FractionBounceActivity.py:212
+#: FractionBounceActivity.py:239
 msgid "Click the ball to start."
 msgstr "برای شروع بر روی توپ کلیک کنید"
 
-#: FractionBounceActivity.py:227
+#: FractionBounceActivity.py:254
 msgid "numerator"
 msgstr "صورت کسر"
 
-#: FractionBounceActivity.py:244
+#: FractionBounceActivity.py:271
 msgid "denominator"
 msgstr "مخرج کسر"
 
-#: FractionBounceActivity.py:253
+#: FractionBounceActivity.py:280
 msgid "add new fraction"
 msgstr "یک کسر جدید اضافه کنید"
 
-#: FractionBounceActivity.py:267
+#: FractionBounceActivity.py:294
 msgid "choose a ball"
 msgstr "توپ را انتخاب کنید"
 
-#: FractionBounceActivity.py:296
+#: FractionBounceActivity.py:323
 msgid "choose a background"
 msgstr "پس زمینه را انتخاب کنید"
 
-#: FractionBounceActivity.py:414
+#: FractionBounceActivity.py:449
 msgid "New fraction"
 msgstr "کسر جدید"
 
-#: FractionBounceActivity.py:415
+#: FractionBounceActivity.py:450
 #, python-format
 #, fuzzy, python-format
 msgid "Your fraction, %s, has been added to the program"
 msgstr "بخش شما به برنامه اضافه شده است"
 
-#: FractionBounceActivity.py:422
+#: FractionBounceActivity.py:516
+msgid "Wait for others to join."
+msgstr "منتظر دیگران بودن"
+
+#: FractionBounceActivity.py:579
+msgid "has left."
+msgstr ""
+
+#: FractionBounceActivity.py:591
+msgid "has joined."
+msgstr "پیوسته است"
+
+#: bounce.py:176
+msgid ""
+"Click the ball to start. Rock the computer left and right to move the ball."
+msgstr ""
+"بر روی توپ کلیک کنید تا شروع شود. کامپیوتر را به راست و چپ بچرخانید تا توپ "
+"حرکت کند"
+
+#: bounce.py:180
+msgid "Click the ball to start. Then use the arrow keys to move the ball."
+msgstr "بر روی توپ کلیک کنید. سپس از کلیدهای جهت نما برای حرکت توپ استفاده کنید"
+
+#: bounce.py:333
+msgid "Click on the bar to choose a fraction."
+msgstr "برای انتخاب بخش بر روی بار(نوار) کلیک کنید"
+
+#: bounce.py:344
+#, python-format
+msgid "Waiting for %(buddy)s"
+msgstr "در انتظار دوستان %(buddy)s"
+
+#: bounce.py:555
 #, python-format
 #, fuzzy, python-format
 msgid ""
@@ -132,41 +176,20 @@ msgid ""
 "the bar."
 msgstr "پرتاب کردن توپ به مکان یا بخشی از مسیر در سمت چپ میله"
 
-#: FractionBounceActivity.py:426
+#: bounce.py:559
 #, python-format
 #, fuzzy, python-format
 msgid "Bounce the ball to %(fraction)s"
 msgstr "پرتاب توپ به بخشی از"
 
-#: FractionBounceActivity.py:487
-msgid "Wait for others to join."
-msgstr "منتظر دیگران بودن"
-
-#: FractionBounceActivity.py:494
-msgid "Wait for the sharer to start."
-msgstr "منتظر شرکا باش تا شروع کنند"
-
-#: FractionBounceActivity.py:554
-msgid "has joined."
-msgstr "پیوسته است"
-
-#: bounce.py:178
-msgid ""
-"Click the ball to start. Rock the computer left and right to move the "
-"ball."
+#: collabwrapper.py:178
+msgid "Joining activity..."
 msgstr ""
-"بر روی توپ کلیک کنید تا شروع شود. کامپیوتر را به راست و چپ بچرخانید تا توپ "
-"حرکت کند"
 
-#: bounce.py:182
-msgid "Click the ball to start. Then use the arrow keys to move the ball."
-msgstr "بر روی توپ کلیک کنید. سپس از کلیدهای جهت نما برای حرکت توپ استفاده کنید"
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
+msgstr ""
 
-#: bounce.py:331
-msgid "Click on the bar to choose a fraction."
-msgstr "برای انتخاب بخش بر روی بار(نوار) کلیک کنید"
-
-#: bounce.py:342
-#, python-format
-msgid "Waiting for %(buddy)s"
-msgstr "در انتظار دوستان %(buddy)s"
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr ""

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-22 10:19-0400\n"
-"PO-Revision-Date: 2016-04-25 14:50+0000\n"
+"POT-Creation-Date: 2017-11-06 08:06+1100\n"
+"PO-Revision-Date: 2017-12-06 17:13+0000\n"
 "Last-Translator: whe <heppew@yahoo.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: nl\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.5.1.1\n"
-"X-POOTLE-MTIME: 1461595842.000000\n"
+"X-POOTLE-MTIME: 1512580404.000000\n"
 
 #: activity/activity.info:2
 msgid "FractionBounce"
@@ -26,104 +26,148 @@ msgstr "FractieStuiter"
 msgid "interactive fraction game"
 msgstr "interactief fractiespel"
 
-#: FractionBounceActivity.py:48
+#: FractionBounceActivity.py:56
 msgid "basketball"
 msgstr "basketbal"
 
-#: FractionBounceActivity.py:49
+#: FractionBounceActivity.py:57
 msgid "soccer ball"
 msgstr "voetbal"
 
-#: FractionBounceActivity.py:50
+#: FractionBounceActivity.py:58
 msgid "rugby ball"
 msgstr "rugbybal"
 
-#: FractionBounceActivity.py:51
+#: FractionBounceActivity.py:59
 msgid "bowling ball"
 msgstr "bowlingbal"
 
-#: FractionBounceActivity.py:52
+#: FractionBounceActivity.py:60
 msgid "beachball"
 msgstr "beachbal"
 
-#: FractionBounceActivity.py:53
+#: FractionBounceActivity.py:61
 msgid "feather"
 msgstr "veer"
 
-#: FractionBounceActivity.py:54 FractionBounceActivity.py:59
+#: FractionBounceActivity.py:62 FractionBounceActivity.py:67
 msgid "user defined"
 msgstr "gebruiker gedefinieerd"
 
-#: FractionBounceActivity.py:55
+#: FractionBounceActivity.py:63
 msgid "grass"
 msgstr "gras"
 
-#: FractionBounceActivity.py:56
+#: FractionBounceActivity.py:64
 msgid "wood"
 msgstr "hout"
 
-#: FractionBounceActivity.py:57
+#: FractionBounceActivity.py:65
 msgid "clouds"
 msgstr "wolken"
 
-#: FractionBounceActivity.py:58
+#: FractionBounceActivity.py:66
 msgid "sand"
 msgstr "zand"
 
-#: FractionBounceActivity.py:155
+#: FractionBounceActivity.py:122
+msgid "Please wait"
+msgstr "Even wachten"
+
+#: FractionBounceActivity.py:123
+msgid "Starting connection..."
+msgstr "Verbinding maken..."
+
+#: FractionBounceActivity.py:127
+msgid "Wait for the sharer to start."
+msgstr "Wacht tot de deler start."
+
+#: FractionBounceActivity.py:182
 msgid "Custom"
 msgstr "Aangepast"
 
-#: FractionBounceActivity.py:172
+#: FractionBounceActivity.py:199
 msgid "<Ctrl>Q"
 msgstr "<Ctrl>Q"
 
-#: FractionBounceActivity.py:183
+#: FractionBounceActivity.py:210
 msgid "fractions"
 msgstr "fracties"
 
-#: FractionBounceActivity.py:190
+#: FractionBounceActivity.py:217
 msgid "sectors"
 msgstr "sectoren"
 
-#: FractionBounceActivity.py:197
+#: FractionBounceActivity.py:224
 msgid "percents"
 msgstr "procenten"
 
-#: FractionBounceActivity.py:212
+#: FractionBounceActivity.py:239
 msgid "Click the ball to start."
 msgstr "Klik op de bal om te starten."
 
-#: FractionBounceActivity.py:227
+#: FractionBounceActivity.py:254
 msgid "numerator"
 msgstr "nummeraar"
 
-#: FractionBounceActivity.py:244
+#: FractionBounceActivity.py:271
 msgid "denominator"
 msgstr "benoemer"
 
-#: FractionBounceActivity.py:253
+#: FractionBounceActivity.py:280
 msgid "add new fraction"
 msgstr "voeg een nieuwe breuk toe"
 
-#: FractionBounceActivity.py:267
+#: FractionBounceActivity.py:294
 msgid "choose a ball"
 msgstr "kies een bal"
 
-#: FractionBounceActivity.py:296
+#: FractionBounceActivity.py:323
 msgid "choose a background"
 msgstr "kies achtergrond"
 
-#: FractionBounceActivity.py:414
+#: FractionBounceActivity.py:449
 msgid "New fraction"
 msgstr "Nieuwe fractie"
 
-#: FractionBounceActivity.py:415
+#: FractionBounceActivity.py:450
 #, python-format
 msgid "Your fraction, %s, has been added to the program"
 msgstr "Je fractie, %s, is aan het programma toegevoegd"
 
-#: FractionBounceActivity.py:422
+#: FractionBounceActivity.py:516
+msgid "Wait for others to join."
+msgstr "Wacht tot anderen meedoen."
+
+#: FractionBounceActivity.py:579
+msgid "has left."
+msgstr "is vertrokken."
+
+#: FractionBounceActivity.py:591
+msgid "has joined."
+msgstr "doet mee."
+
+#: bounce.py:176
+msgid ""
+"Click the ball to start. Rock the computer left and right to move the ball."
+msgstr ""
+"Klik de bal om te starten. Beweeg de computer links en rechts om de bal te "
+"bewegen."
+
+#: bounce.py:180
+msgid "Click the ball to start. Then use the arrow keys to move the ball."
+msgstr "Klik de bal om te starten. Gebruik de pijltoetsen om de bal te bewegen."
+
+#: bounce.py:333
+msgid "Click on the bar to choose a fraction."
+msgstr "Klik op de balk om een breuk te kiezen."
+
+#: bounce.py:344
+#, python-format
+msgid "Waiting for %(buddy)s"
+msgstr "Wavht op %(buddy)s"
+
+#: bounce.py:555
 #, python-format
 msgid ""
 "Bounce the ball to a position %(fraction)s of the way from the left side of "
@@ -132,43 +176,22 @@ msgstr ""
 "Stuiter de bal naar een positie %(fraction)s van de weg van de linkerkant "
 "van de balk."
 
-#: FractionBounceActivity.py:426
+#: bounce.py:559
 #, python-format
 msgid "Bounce the ball to %(fraction)s"
 msgstr "Stuiter de bal naar %(fraction)s"
 
-#: FractionBounceActivity.py:487
-msgid "Wait for others to join."
-msgstr "Wacht tot anderen meedoen."
+#: collabwrapper.py:178
+msgid "Joining activity..."
+msgstr "Neem deel aan activiteit..."
 
-#: FractionBounceActivity.py:494
-msgid "Wait for the sharer to start."
-msgstr "Wacht tot de deler start."
+#: collabwrapper.py:179 collabwrapper.py:191
+msgid "Please wait for the connection..."
+msgstr "Wacht op de verbinding..."
 
-#: FractionBounceActivity.py:554
-msgid "has joined."
-msgstr "doet mee."
-
-#: bounce.py:178
-msgid ""
-"Click the ball to start. Rock the computer left and right to move the "
-"ball."
-msgstr ""
-"Klik de bal om te starten. Beweeg de computer links en rechts om de bal te "
-"bewegen."
-
-#: bounce.py:182
-msgid "Click the ball to start. Then use the arrow keys to move the ball."
-msgstr "Klik de bal om te starten. Gebruik de pijltoetsen om de bal te bewegen."
-
-#: bounce.py:331
-msgid "Click on the bar to choose a fraction."
-msgstr "Klik op de balk om een breuk te kiezen."
-
-#: bounce.py:342
-#, python-format
-msgid "Waiting for %(buddy)s"
-msgstr "Wavht op %(buddy)s"
+#: collabwrapper.py:190
+msgid "Resuming shared activity..."
+msgstr "Hervat gedeelde activiteit..."
 
 #~ msgid "Project"
 #~ msgstr "Project"
