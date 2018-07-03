@@ -52,6 +52,7 @@ from utils import json_load, json_dump, chooser
 from svg_utils import svg_str_to_pixbuf, generate_xo_svg
 
 from bounce import Bounce
+from aplay import aplay
 
 BALLDICT = {'basketball': [_('basketball'), 'wood'],
             'soccerball': [_('soccer ball'), 'grass'],
@@ -130,6 +131,10 @@ class FractionBounceActivity(activity.Activity):
                 self.connect("joined", self._joined_cb)
 
         self._setup_sharing()
+
+    def close(self, **kwargs):
+        aplay.close()
+        activity.Activity.close(self, **kwargs)
 
     def _configure_cb(self, event):
         if Gdk.Screen.width() < 1024:

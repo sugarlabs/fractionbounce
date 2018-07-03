@@ -59,7 +59,7 @@ from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
 
 from svg_utils import (svg_header, svg_footer, svg_rect, svg_str_to_pixbuf,
                        svg_from_file)
-from play_audio import play_audio_from_file
+from aplay import aplay
 
 from ball import Ball
 from bar import Bar, BAR_HEIGHT
@@ -483,7 +483,7 @@ class Bounce():
             self.ball.move_frame(self._current_frame,
                                 (self.ball.ball_x(), self.ball.ball_y()))
             self.ball.move_ball((self.ball.ball_x(), self._height))
-            GObject.idle_add(play_audio_from_file, self, self._path_to_bubbles)
+            aplay.play(self._path_to_bubbles)
 
         if self._accelerometer():
             fh = open(ACCELEROMETER_DEVICE)
@@ -605,10 +605,10 @@ class Bounce():
         if x > f - delta and x < f + delta:
             spr = Sprite(self._sprites, 0, 0, self.smiley_graphic)
             self._correct += 1
-            GObject.idle_add(play_audio_from_file, self, self._path_to_success)
+            aplay.play(self._path_to_success)
         else:
             spr = Sprite(self._sprites, 0, 0, self.frown_graphic)
-            GObject.idle_add(play_audio_from_file, self, self._path_to_failure)
+            aplay.play(self._path_to_failure)
 
         spr.move((int(self._n * 27), int(self._challenges[self._n][2] * 27)))
         spr.set_layer(-1)
