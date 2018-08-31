@@ -70,7 +70,7 @@ BGDICT = {'grass': [_('grass'), 'grass_background.png'],
 
 SERVICE = 'org.sugarlabs.FractionBounceActivity'
 IFACE = SERVICE
-PATH = '/org/augarlabs/FractionBounceActivity'
+PATH = '/org/sugarlabs/FractionBounceActivity'
 
 
 class FractionBounceActivity(activity.Activity):
