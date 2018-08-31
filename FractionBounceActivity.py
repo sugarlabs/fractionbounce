@@ -47,6 +47,7 @@ from gettext import gettext as _
 
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
+_logger.setLevel(logging.DEBUG)
 
 from utils import json_load, json_dump, chooser
 from svg_utils import svg_str_to_pixbuf, generate_xo_svg
@@ -566,16 +567,13 @@ class FractionBounceActivity(activity.Activity):
             'l': [self._buddy_left, 'buddy left']
             }
 
-    def event_received_cb(self, event_message):
+    def event_received_cb(self, collab, buddy, msg):
         ''' Data from a tube has arrived. '''
-        if len(event_message) == 0:
+        command = msg.get('command')
+        if command is None:
             return
-        try:
-            command, payload = event_message.split('|', 2)
-        except ValueError:
-            _logger.debug('Could not split event message %s', event_message)
-            return
-        _logger.debug('received an event %s|%s', command, payload)
+        payload = msg.get('data')
+        _logger.error('received an event %s %s', command, payload)
         if self._playing:
             self._processing_methods[command][0](payload)
 
@@ -650,9 +648,10 @@ class FractionBounceActivity(activity.Activity):
 
     def send_event(self, command, data):
         ''' Send event through the tube. '''
-        _logger.debug('sending event: %s', command)
+        _logger.error('sending event: %s', command)
         if hasattr(self, 'collab') and self.collab is not None:
             data["command"] = command
+            _logger.error('send_event %r', data)
             self.collab.post(data)
 
     def set_player_on_toolbar(self, nick):
