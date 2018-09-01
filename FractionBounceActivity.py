@@ -387,7 +387,7 @@ class FractionBounceActivity(activity.Activity):
         palette = button.get_palette()
         if palette:
             if not palette.is_up():
-                palette.popup(immediate=True, state=palette.SECONDARY)
+                palette.popup(immediate=True)
             else:
                 palette.popdown(immediate=True)
 
