@@ -30,25 +30,15 @@ from sugar3.graphics.toolbutton import ToolButton
 from sugar3.graphics.radiotoolbutton import RadioToolButton
 from sugar3.graphics.alert import NotifyAlert
 from sugar3.graphics import style
-from sugar3.graphics.xocolor import XoColor
-from sugar3.graphics.icon import Icon
 
-import telepathy
-from dbus.service import signal
-from dbus.gobject_service import ExportedGObject
-from sugar3.presence import presenceservice
-
-try:
-    from sugar3.presence.wrapper import CollabWrapper
-except ImportError:
-    from collabwrapper import CollabWrapper
+from collabwrapper import CollabWrapper
 
 from gettext import gettext as _
 
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
 
-from utils import json_load, json_dump, chooser
+from utils import chooser
 from svg_utils import svg_str_to_pixbuf, generate_xo_svg
 
 from bounce import Bounce
@@ -67,10 +57,6 @@ BGDICT = {'grass': [_('grass'), 'grass_background.png'],
           'sand': [_('sand'), 'beach_background.png'],
           'custom': [_('user defined'), None]}
 
-SERVICE = 'org.sugarlabs.FractionBounceActivity'
-IFACE = SERVICE
-PATH = '/org/augarlabs/FractionBounceActivity'
-
 
 class FractionBounceActivity(activity.Activity):
 
@@ -88,7 +74,6 @@ class FractionBounceActivity(activity.Activity):
         self._playing = True
 
         self._setup_toolbars()
-        self._setup_dispatch_table()
         canvas = self._setup_canvas()
 
         # Read any custom fractions from the project metadata
@@ -112,25 +97,71 @@ class FractionBounceActivity(activity.Activity):
             for f in fractions:
                 self._bounce_window.add_fraction(f)
 
+        self._bounce_window.buddies.append(self.nick)
+        self._player_colors = [self._colors]
+        self._player_pixbufs = [
+            svg_str_to_pixbuf(generate_xo_svg(scale=0.8, colors=self._colors))
+        ]
+
+        def on_activity_joined_cb(me):
+            logging.debug('activity joined')
+            self._player.set_from_pixbuf(self._player_pixbufs[0])
+
+        self.connect('joined', on_activity_joined_cb)
+
+        def on_activity_shared_cb(me):
+            logging.debug('activity shared')
+            self._player.set_from_pixbuf(self._player_pixbufs[0])
+            self._label.set_label(_('Wait for others to join.'))
+
+        self.connect('shared', on_activity_shared_cb)
+
+        self._collab = CollabWrapper(self)
+
         if self.shared_activity:
             # We're joining
             if not self.get_shared():
-                xocolors = XoColor(profile.get_color().to_string())
-                share_icon = Icon(icon_name='zoom-neighborhood',
-                                  xo_color=xocolors)
-                self._joined_alert = NotifyAlert()
-                self._joined_alert.props.icon = share_icon
-                self._joined_alert.props.title = _('Please wait')
-                self._joined_alert.props.msg = _('Starting connection...')
-                self._joined_alert.connect('response', self._alert_cancel_cb)
-                self.add_alert(self._joined_alert)
-
                 self._label.set_label(_('Wait for the sharer to start.'))
 
-                # Wait for joined signal
-                self.connect("joined", self._joined_cb)
+        actions = {
+            'j': self._new_joiner,
+            'b': self._buddy_list,
+            'f': self._receive_a_fraction,
+            't': self._take_a_turn,
+            'l': self._buddy_left,
+        }
 
-        self._setup_sharing()
+        def on_message_cb(collab, buddy, msg):
+            logging.debug('on_message_cb buddy %r msg %r' % (buddy, msg))
+            if self._playing:
+                actions[msg.get('action')](msg.get('data'))
+
+        self._collab.connect('message', on_message_cb)
+
+        def on_joined_cb(collab, msg):
+            logging.debug('joined')
+            self.send_event('j', [self.nick, self._colors])
+
+        self._collab.connect('joined', on_joined_cb, 'joined')
+
+        def on_buddy_joined_cb(collab, buddy, msg):
+            logging.debug('on_buddy_joined_cb buddy %r' % (buddy.props.nick))
+
+        self._collab.connect('buddy_joined', on_buddy_joined_cb,
+                             'buddy_joined')
+
+        def on_buddy_left_cb(collab, buddy, msg):
+            logging.debug('on_buddy_left_cb buddy %r' % (buddy.props.nick))
+
+        self._collab.connect('buddy_left', on_buddy_left_cb, 'buddy_left')
+
+        self._collab.setup()
+
+    def set_data(self, blob):
+        pass
+
+    def get_data(self):
+        return None
 
     def close(self, **kwargs):
         aplay.close()
@@ -365,7 +396,7 @@ class FractionBounceActivity(activity.Activity):
         if hasattr(self, '_bounce_window') and \
            self._bounce_window.we_are_sharing():
             self._playing = False
-            self.send_event('l', {"data": (json_dump([self.nick]))})
+            self.send_event('l', self.nick)
         return True
 
     def _setup_canvas(self):
@@ -472,133 +503,23 @@ class FractionBounceActivity(activity.Activity):
 
     # Collaboration-related methods
 
-    def _setup_sharing(self):
-        ''' Setup the Presence Service. '''
-        self.pservice = presenceservice.get_instance()
-        self.initiating = None  # sharing (True) or joining (False)
-
-        owner = self.pservice.get_owner()
-        self.owner = owner
-        self._bounce_window.buddies.append(self.nick)
-        self._player_colors = [self._colors]
-        self._player_pixbufs = [
-            svg_str_to_pixbuf(generate_xo_svg(scale=0.8, colors=self._colors))
-        ]
-        self._share = ''
-        self.connect('shared', self._shared_cb)
-        self.connect('joined', self._joined_cb)
-
-    def _shared_cb(self, activity):
-        ''' Either set up initial share...'''
-        self._new_tube_common(True)
-
-    def _joined_cb(self, activity):
-        ''' ...or join an exisiting share. '''
-        self._new_tube_common(False)
-
-    def _new_tube_common(self, sharer):
-        ''' Joining and sharing are mostly the same... '''
-        if self.shared_activity is None:
-            _logger.debug('Error: Failed to share or join activity ... \
-                shared_activity is null in _shared_cb()')
-            return
-
-        self.initiating = sharer
-        self.waiting_for_fraction = not sharer
-
-        self.conn = self.shared_activity.telepathy_conn
-        self.tubes_chan = self.shared_activity.telepathy_tubes_chan
-        self.text_chan = self.shared_activity.telepathy_text_chan
-
-        self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].connect_to_signal(
-            'NewTube', self._new_tube_cb)
-
-        if sharer:
-            _logger.debug('This is my activity: making a tube...')
-            id = self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].OfferDBusTube(
-                SERVICE, {})
-
-            self._label.set_label(_('Wait for others to join.'))
-        else:
-            _logger.debug('I am joining an activity: waiting for a tube...')
-            self.tubes_chan[telepathy.CHANNEL_TYPE_TUBES].ListTubes(
-                reply_handler=self._list_tubes_reply_cb,
-                error_handler=self._list_tubes_error_cb)
-
-        # display your XO on the toolbar
-        self._player.set_from_pixbuf(self._player_pixbufs[0])
-
-    def _list_tubes_reply_cb(self, tubes):
-        ''' Reply to a list request. '''
-        for tube_info in tubes:
-            self._new_tube_cb(*tube_info)
-
-    def _list_tubes_error_cb(self, e):
-        ''' Log errors. '''
-        _logger.debug('Error: ListTubes() failed: %s', e)
-
-    def _new_tube_cb(self, id, initiator, type, service, params, state):
-        ''' Create a new tube. '''
-        _logger.debug(
-            'Newtube: ID=%d initator=%d type=%d service=%s params=%r state=%d',
-            id, initiator, type, service, params, state)
-
-        if (type == telepathy.TUBE_TYPE_DBUS and service == SERVICE):
-            if state == telepathy.TUBE_STATE_LOCAL_PENDING:
-                self.tubes_chan[ \
-                              telepathy.CHANNEL_TYPE_TUBES].AcceptDBusTube(id)
-
-            self.collab = CollabWrapper(self)
-            self.collab.message.connect(self.event_received_cb)
-            self.collab.setup()
-
-            # Let the sharer know a new joiner has arrived.
-            if self.waiting_for_fraction:
-                self.send_event('j', {"data": (json_dump([self.nick,
-                                                     self._colors]))})
-
-    def _setup_dispatch_table(self):
-        self._processing_methods = {
-            'j': [self._new_joiner, 'new joiner'],
-            'b': [self._buddy_list, 'buddy list'],
-            'f': [self._receive_a_fraction, 'receive a fraction'],
-            't': [self._take_a_turn, 'take a turn'],
-            'l': [self._buddy_left, 'buddy left']
-            }
-
-    def event_received_cb(self, event_message):
-        ''' Data from a tube has arrived. '''
-        if len(event_message) == 0:
-            return
-        try:
-            command, payload = event_message.split('|', 2)
-        except ValueError:
-            _logger.debug('Could not split event message %s', event_message)
-            return
-        _logger.debug('received an event %s|%s', command, payload)
-        if self._playing:
-            self._processing_methods[command][0](payload)
-
-    def _buddy_left(self, payload):
-        [nick] = json_load(payload)
+    def _buddy_left(self, nick):
         self._label.set_label(nick + ' ' + _('has left.'))
-        if self.initiating:
+        if self._collab.props.leader:
             self._remove_player(nick)
-            payload = json_dump([self._bounce_window.buddies,
-                                 self._player_colors])
-            self.send_event('b', {"data": payload})
+            self.send_event(
+                'b', [self._bounce_window.buddies, self._player_colors])
             # Restart from sharer's turn
             self._bounce_window.its_my_turn()
 
     def _new_joiner(self, payload):
         ''' Someone has joined; sharer adds them to the buddy list. '''
-        [nick, colors] = json_load(payload)
+        [nick, colors] = payload
         self._label.set_label(nick + ' ' + _('has joined.'))
-        if self.initiating:
+        if self._collab.props.leader:
             self._append_player(nick, colors)
-            payload = json_dump([self._bounce_window.buddies,
-                                 self._player_colors])
-            self.send_event('b', {"data": payload})
+            self.send_event(
+                'b', [self._bounce_window.buddies, self._player_colors])
             if self._bounce_window.count == 0:  # Haven't started yet...
                 self._bounce_window.its_my_turn()
 
@@ -611,7 +532,7 @@ class FractionBounceActivity(activity.Activity):
 
     def _append_player(self, nick, colors):
         ''' Keep a list of players, their colors, and an XO pixbuf '''
-        if not nick in self._bounce_window.buddies:
+        if nick not in self._bounce_window.buddies:
             _logger.debug('appending %s to the buddy list', nick)
             self._bounce_window.buddies.append(nick)
             self._player_colors.append([str(colors[0]), str(colors[1])])
@@ -621,8 +542,8 @@ class FractionBounceActivity(activity.Activity):
 
     def _buddy_list(self, payload):
         '''Sharer sent the updated buddy list, so regenerate internal lists'''
-        if not self.initiating:
-            [buddies, colors] = json_load(payload)
+        if not self._collab.props.leader:
+            [buddies, colors] = payload
             self._bounce_window.buddies = buddies[:]
             self._player_colors = colors[:]
             self._player_pixbufs = []
@@ -633,54 +554,26 @@ class FractionBounceActivity(activity.Activity):
 
     def send_a_fraction(self, fraction):
         ''' Send a fraction to other players. '''
-        payload = json_dump(fraction)
-        self.send_event('f', {"data": payload})
+        self.send_event('f', fraction)
 
     def _receive_a_fraction(self, payload):
         ''' Receive a fraction from another player. '''
-        fraction = json_load(payload)
-        self._bounce_window.play_a_fraction(fraction)
+        self._bounce_window.play_a_fraction(payload)
 
     def _take_a_turn(self, nick):
         ''' If it is your turn, take it, otherwise, wait. '''
-        if nick == self.nick:
+        if nick == self.nick:  # TODO: disambiguate
             self._bounce_window.its_my_turn()
         else:
             self._bounce_window.its_their_turn(nick)
 
-    def send_event(self, command, data):
+    def send_event(self, action, data):
         ''' Send event through the tube. '''
-        _logger.debug('sending event: %s', command)
-        if hasattr(self, 'collab') and self.collab is not None:
-            data["command"] = command
-            self.collab.post(data)
+        _logger.debug('send_event action=%r data=%r' % (action, data))
+        self._collab.post({'action': action, 'data': data})
 
     def set_player_on_toolbar(self, nick):
         ''' Display the XO icon of the player whose turn it is. '''
-        self._player.set_from_pixbuf(self._player_pixbufs[
-                self._bounce_window.buddies.index(nick)])
+        self._player.set_from_pixbuf(
+            self._player_pixbufs[self._bounce_window.buddies.index(nick)])
         self._player.set_tooltip_text(nick)
-
-
-class ChatTube(ExportedGObject):
-    ''' Class for setting up tube for sharing '''
-
-    def __init__(self, tube, is_initiator, stack_received_cb):
-        super(ChatTube, self).__init__(tube, PATH)
-        self.tube = tube
-        self.is_initiator = is_initiator  # Are we sharing or joining activity?
-        self.stack_received_cb = stack_received_cb
-        self.stack = ''
-
-        self.tube.add_signal_receiver(self.send_stack_cb, 'SendText', IFACE,
-                                      path=PATH, sender_keyword='sender')
-
-    def send_stack_cb(self, text, sender=None):
-        if sender == self.tube.get_unique_name():
-            return
-        self.stack = text
-        self.stack_received_cb(text)
-
-    @signal(dbus_interface=IFACE, signature='s')
-    def SendText(self, text):
-        self.stack = text

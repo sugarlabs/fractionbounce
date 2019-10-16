@@ -456,7 +456,7 @@ class Bounce():
                     i = (self.buddies.index(self._activity.nick) + 1) % \
                         len(self.buddies)
                     self.its_their_turn(self.buddies[i])
-                    self._activity.send_event('', {"data": (self.buddies[i])})
+                    self._activity.send_event('t', self.buddies[i])
             else:
                 if not self.we_are_sharing() and self._easter_egg_test():
                     self._animate()
