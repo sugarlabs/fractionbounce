@@ -21,32 +21,6 @@ try:
 except:
     FILTER_TYPE_GENERIC_MIME = 'generic_mime'
 
-from StringIO import StringIO
-import json
-json.dumps
-from json import load as jload
-from json import dump as jdump
-
-def json_load(text):
-    """ Load JSON data using what ever resources are available. """
-    # strip out leading and trailing whitespace, nulls, and newlines
-    io = StringIO(text)
-    try:
-        listdata = jload(io)
-    except ValueError:
-        # assume that text is ascii list
-        listdata = text.split()
-        for i, value in enumerate(listdata):
-            listdata[i] = int(value)
-    return listdata
-
-
-def json_dump(data):
-    """ Save data using available JSON tools. """
-    _io = StringIO()
-    jdump(data, _io)
-    return _io.getvalue()
-
 
 def chooser(parent_window, filter, action):
     """ Choose an object from the datastore and take some action """
