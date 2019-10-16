@@ -26,11 +26,8 @@ from svg_utils import (svg_header, svg_footer, svg_str_to_pixbuf, svg_rect,
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
 
-try:
-    from sugar3 import profile
-    COLORS = profile.get_color().to_string().split(',')
-except:
-    COLORS = ['#FFFF00', '#00AAAA']
+from sugar3 import profile
+COLORS = profile.get_color().to_string().split(',')
 
 SIZE = [85, 120]
 BOX = [85, 32]
@@ -57,7 +54,7 @@ TRANSFORMS = ['<g>',
               '<g transform="matrix(1,0,0,0.08410415,0,73.873449)">']
 
 PUNCTURE = \
-'  <g \
+    '  <g \
      transform="translate(2.5316175, -8)">\
     <path \
        d="m 33.19688,68.961518 c 3.900378,7.602149 10.970659,7.634416 \
@@ -72,7 +69,7 @@ stroke-miterlimit:4" />\
   </g>'
 
 AIR = \
-'  <g \
+    '  <g \
      transform="matrix(0.63786322,0,0,0.64837179,17.379518,68.534252)"> \
     <path \
        d="M 39.054054,1.75 C 37.741313,16.51834 25.926641,23.082047 \

@@ -20,8 +20,8 @@
 
 CHALLENGES = [[['1/2', 2, 0], ['1/3', 3, 0], ['1/4', 4, 0],
                ['2/4', 4, 0], ['2/3', 3, 0], ['3/4', 4, 0]],
-              [['1/8', 8, 0], ['2/8', 8, 0],  ['3/8', 8, 0],
-               ['4/8', 8, 0], ['5/8', 8, 0],  ['6/8', 8, 0],
+              [['1/8', 8, 0], ['2/8', 8, 0], ['3/8', 8, 0],
+               ['4/8', 8, 0], ['5/8', 8, 0], ['6/8', 8, 0],
                ['7/8', 8, 0]],
               [['1/6', 6, 0], ['2/6', 6, 0], ['3/6', 6, 0],
                ['4/6', 6, 0], ['5/6', 6, 0]],
@@ -69,14 +69,10 @@ from gettext import gettext as _
 import logging
 _logger = logging.getLogger('fractionbounce-activity')
 
-try:
-    from sugar3 import profile
-    COLORS = profile.get_color().to_string().split(',')
-    from sugar3.graphics import style
-    GRID_CELL_SIZE = style.GRID_CELL_SIZE
-except:
-    COLORS = ['#FFFFFF', '#AAAAAA']
-    GRID_CELL_SIZE = 55
+from sugar3 import profile
+COLORS = profile.get_color().to_string().split(',')
+from sugar3.graphics import style
+GRID_CELL_SIZE = style.GRID_CELL_SIZE
 
 from sprites import Sprites, Sprite
 
@@ -242,8 +238,8 @@ class Bounce():
         self.bar = Bar(self._sprites, self.ball.width(), COLORS)
         self._current_bar = self.bar.get_bar(2)
 
-        self.ball_y_max = self.bar.bar_y() - self.ball.height() + \
-                          int(BAR_HEIGHT / 2.)
+        self.ball_y_max = \
+            self.bar.bar_y() - self.ball.height() + int(BAR_HEIGHT / 2.)
         self.ball.move_ball((int((self._width - self.ball.width()) / 2),
                              self.ball_y_max))
 
@@ -294,7 +290,7 @@ class Bounce():
         self._current_bg = 'custom'
 
     def set_background(self, name):
-        if not name in self._backgrounds:
+        if name not in self._backgrounds:
             width, height = self._calc_background_size()
             pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
                 os.path.join(self._path, 'images', name), width, height)
@@ -441,8 +437,8 @@ class Bounce():
         self._dy += self._ddy
 
         # Calculate a new ball_y_max depending on the x position
-        self.ball_y_max = self.bar.bar_y() - self.ball.height() + \
-                          self._wedge_offset()
+        self.ball_y_max = \
+            self.bar.bar_y() - self.ball.height() + self._wedge_offset()
 
         if self.ball.ball_y() >= self.ball_y_max:
             # hit the bottom
@@ -483,7 +479,7 @@ class Bounce():
             self._current_frame = 0
             self._frame_counter = 0
             self.ball.move_frame(self._current_frame,
-                                (self.ball.ball_x(), self.ball.ball_y()))
+                                 (self.ball.ball_x(), self.ball.ball_y()))
             self.ball.move_ball((self.ball.ball_x(), self._height))
             aplay.play(self._path_to_bubbles)
 

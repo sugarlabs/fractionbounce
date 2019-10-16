@@ -47,14 +47,14 @@ def generate_ball_svg(path):
 def generate_xo_svg(scale=1.0, colors=["#C0C0C0", "#282828"]):
     ''' Returns an SVG string representing an XO image '''
     return svg_header(55, 55, scale) + \
-           _svg_xo(colors[0], colors[1]) + \
-           svg_footer()
+        _svg_xo(colors[0], colors[1]) + \
+        svg_footer()
 
 
-def svg_str_to_pixbuf(svg_string):
+def svg_str_to_pixbuf(v):
     ''' Load pixbuf from SVG string '''
-    pl = GdkPixbuf.PixbufLoader.new_with_type('svg') 
-    pl.write(svg_string)
+    pl = GdkPixbuf.PixbufLoader.new_with_type('svg')
+    pl.write(v)
     pl.close()
     pixbuf = pl.get_pixbuf()
     return pixbuf
@@ -66,48 +66,47 @@ def svg_sector(x, y, r, a, fill, stroke):
         big_arc = 0
     else:
         big_arc = 1
-    svg_string = '       <path d="M%f,%f v%f a%f,%f 0 %d,0 %f,%f z"\n' % (
+    v = '       <path d="M%f,%f v%f a%f,%f 0 %d,0 %f,%f z"\n' % (
         x, y, -r, r, r, big_arc, -sin(a) * r, r - cos(a) * r)
-    svg_string += _svg_style('fill:%s;stroke:%s;' % (fill, stroke))
-    return svg_string
+    v += _svg_style('fill:%s;stroke:%s;' % (fill, stroke))
+    return v
 
 
 def svg_wedge(w, h, dx, dyl, dyr, fill, stroke, stroke_width=3.5):
     ''' Returns an SVG wedge: assumes  '''
-    s = stroke_width
     s2 = stroke_width / 2.0
-    svg_string = '<path\n'
-    svg_string += 'd="m %f,%f ' % (dx + s2, h - s2)
-    svg_string += '%f,%f ' % (w - s2, 0)
-    svg_string += '%f,-%f ' % (0, dyr - s2)
-    svg_string += '-%f,%f z"\n' % (w - s2, (dyr - dyl))
-    svg_string += _svg_style('fill:%s;stroke:%s;stroke_width:%f' %
-                             (fill, stroke, stroke_width))
-    return svg_string
+    v = '<path\n'
+    v += 'd="m %f,%f ' % (dx + s2, h - s2)
+    v += '%f,%f ' % (w - s2, 0)
+    v += '%f,-%f ' % (0, dyr - s2)
+    v += '-%f,%f z"\n' % (w - s2, (dyr - dyl))
+    v += _svg_style(
+        'fill:%s;stroke:%s;stroke_width:%f' % (fill, stroke, stroke_width))
+    return v
 
 
 def svg_rect(w, h, rx, ry, x, y, fill, stroke):
     ''' Returns an SVG rectangle '''
-    svg_string = '       <rect\n'
-    svg_string += '          width="%f"\n' % (w)
-    svg_string += '          height="%f"\n' % (h)
-    svg_string += '          rx="%f"\n' % (rx)
-    svg_string += '          ry="%f"\n' % (ry)
-    svg_string += '          x="%f"\n' % (x)
-    svg_string += '          y="%f"\n' % (y)
-    svg_string += _svg_style('fill:%s;stroke:%s;' % (fill, stroke))
-    return svg_string
+    v = '       <rect\n'
+    v += '          width="%f"\n' % (w)
+    v += '          height="%f"\n' % (h)
+    v += '          rx="%f"\n' % (rx)
+    v += '          ry="%f"\n' % (ry)
+    v += '          x="%f"\n' % (x)
+    v += '          y="%f"\n' % (y)
+    v += _svg_style('fill:%s;stroke:%s;' % (fill, stroke))
+    return v
 
 
 def genblank(w, h, colors, stroke_width=1.0):
     return svg_header(w, h, 1.0) + \
-           svg_rect(w, h, 0, 0, 0, 0, colors[0], colors[1]) + \
-           svg_footer()
+        svg_rect(w, h, 0, 0, 0, 0, colors[0], colors[1]) + \
+        svg_footer()
 
 
 def _svg_xo(fill, stroke, width=3.5):
     ''' Returns XO icon graphic '''
-    svg_string = '<path d="M33.233,35.1l10.102,10.1c0.752,\
+    v = '<path d="M33.233,35.1l10.102,10.1c0.752,\
 0.75,1.217,1.783,1.217,2.932\
    c0,2.287-1.855,4.143-4.146,4.143c-1.145,0-2.178-0.463-2.932-1.211L27.372,\
 40.961l-10.1,10.1c-0.75,0.75-1.787,1.211-2.934,1.211\
@@ -117,36 +116,33 @@ def _svg_xo(fill, stroke, width=3.5):
 0,2.18,0.465,2.93,1.214l10.099,10.102l10.102-10.103\
    c0.754-0.749,1.787-1.214,2.934-1.214c2.289,0,4.146,1.856,4.146,4.145c0,\
 1.146-0.467,2.18-1.217,2.932L33.233,35.1z" '
-    svg_string += _svg_style('fill:%s;stroke:%s;stroke_width:%f' % (fill,
-                                                                    stroke,
-                                                                    width))
-    svg_string += '\n<circle cx="27.371" cy="10.849" r="8.122" '
-    svg_string += _svg_style('fill:%s;stroke:%s;stroke_width:%f' % (fill,
-                                                                    stroke,
-                                                                    width))
-    return svg_string
+    v += _svg_style(
+        'fill:%s;stroke:%s;stroke_width:%f' % (fill, stroke, width))
+    v += '\n<circle cx="27.371" cy="10.849" r="8.122" '
+    v += _svg_style(
+        'fill:%s;stroke:%s;stroke_width:%f' % (fill, stroke, width))
+    return v
 
 
 def svg_header(w, h, scale):
     ''' Returns SVG header; some beads are elongated (hscale) '''
-    svg_string = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n'
-    svg_string += '<!-- Created with Python -->\n'
-    svg_string += '<svg\n'
-    svg_string += '   xmlns:svg="http://www.w3.org/2000/svg"\n'
-    svg_string += '   xmlns="http://www.w3.org/2000/svg"\n'
-    svg_string += '   version="1.0"\n'
-    svg_string += '   width="%f"\n' % (w * scale)
-    svg_string += '   height="%f">\n' % (h * scale)
-    svg_string += '<g\n       transform="matrix(%f,0,0,%f,0,0)">\n' % (
-                                  scale, scale)
-    return svg_string
+    v = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n'
+    v += '<!-- Created with Python -->\n'
+    v += '<svg\n'
+    v += '   xmlns:svg="http://www.w3.org/2000/svg"\n'
+    v += '   xmlns="http://www.w3.org/2000/svg"\n'
+    v += '   version="1.0"\n'
+    v += '   width="%f"\n' % (w * scale)
+    v += '   height="%f">\n' % (h * scale)
+    v += '<g\n       transform="matrix(%f,0,0,%f,0,0)">\n' % (scale, scale)
+    return v
 
 
 def svg_footer():
     ''' Returns SVG footer '''
-    svg_string = '</g>\n'
-    svg_string += '</svg>\n'
-    return svg_string
+    v = '</g>\n'
+    v += '</svg>\n'
+    return v
 
 
 def _svg_style(extras=''):
@@ -156,7 +152,7 @@ def _svg_style(extras=''):
 
 def svg_from_file(pathname):
     ''' Read SVG string from a file '''
-    f = file(pathname, 'r')
+    f = open(pathname, 'r')
     svg = f.read()
     f.close()
     return(svg)
