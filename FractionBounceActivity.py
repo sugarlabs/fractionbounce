@@ -164,6 +164,7 @@ class FractionBounceActivity(activity.Activity):
         return None
 
     def close(self, **kwargs):
+        self._bounce_window.pause()
         aplay.close()
         activity.Activity.close(self, **kwargs)
 
