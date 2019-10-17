@@ -55,7 +55,7 @@ import os
 import subprocess
 from random import uniform
 
-from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
+from gi.repository import GLib, Gtk, Gdk, GdkPixbuf
 
 from svg_utils import (svg_header, svg_footer, svg_rect, svg_str_to_pixbuf,
                        svg_from_file)
@@ -128,7 +128,8 @@ class Bounce():
         self._height = Gdk.Screen.height() - GRID_CELL_SIZE
         self._scale = Gdk.Screen.height() / 900.0
 
-        self._timeout = None
+        self._step_sid = None  # repeating timeout between steps of ball move
+        self._bounce_sid = None  # one-off timeout between bounces
         self.buddies = []  # used for sharing
         self._my_turn = False
         self.select_a_fraction = False
@@ -309,9 +310,13 @@ class Bounce():
 
     def pause(self):
         ''' Pause play when visibility changes '''
-        if self._timeout is not None:
-            GObject.source_remove(self._timeout)
-            self._timeout = None
+        if self._step_sid is not None:
+            GLib.source_remove(self._step_sid)
+            self._step_sid = None
+
+        if self._bounce_sid is not None:
+            GLib.source_remove(self._bounce_sid)
+            self._bounce_sid = None
 
     def we_are_sharing(self):
         ''' If there is more than one buddy, we are sharing. '''
@@ -320,7 +325,7 @@ class Bounce():
 
     def its_my_turn(self):
         ''' When sharing, it is your turn... '''
-        GObject.timeout_add(1000, self._take_a_turn)
+        GLib.timeout_add(1000, self._take_a_turn)
 
     def _take_a_turn(self):
         ''' On your turn, choose a fraction. '''
@@ -332,7 +337,7 @@ class Bounce():
 
     def its_their_turn(self, nick):
         ''' When sharing, it is nick's turn... '''
-        GObject.timeout_add(1000, self._wait_your_turn, nick)
+        GLib.timeout_add(1000, self._wait_your_turn, nick)
 
     def _wait_your_turn(self, nick):
         ''' Wait for nick to choose a fraction. '''
@@ -353,7 +358,7 @@ class Bounce():
             self.add_fraction(fraction)
             self._n = len(self._challenges)
         self._choose_a_fraction()
-        self._move_ball()
+        self._start_step()
 
     def _button_press_cb(self, win, event):
         ''' Callback to handle the button presses '''
@@ -376,9 +381,11 @@ class Bounce():
                     self._activity.send_a_fraction(fraction)
                     self.play_a_fraction(fraction)
             else:
-                if self._timeout is None and self._press == self.ball.ball:
+                if self._step_sid is None and \
+                   self._bounce_sid is None and \
+                   self._press == self.ball.ball:
                     self._choose_a_fraction()
-                    self._move_ball()
+                    self._start_step()
         return True
 
     def _search_challenges(self, f):
@@ -409,8 +416,23 @@ class Bounce():
                 self._accel_index = 0  # Landscape mode
                 self._accel_flip = y < 0
 
-    def _move_ball(self):
-        ''' Move the ball and test boundary conditions '''
+    def _defer_bounce(self, ms):
+        ''' Pause and then start the ball again '''
+        self._bounce_sid = GLib.timeout_add(ms, self._bounce)
+
+    def _bounce(self):
+        ''' Start the ball again '''
+        self._start_step()
+        self._bounce_sid = None
+        return False
+
+    def _start_step(self):
+        ''' Start the ball and keep moving until boundary conditions '''
+        if self._step():
+            self._step_sid = GLib.timeout_add(STEP_PAUSE, self._step)
+
+    def _step(self):
+        ''' Move the ball once and test boundary conditions '''
         if self._new_bounce:
             self.bar.mark.move((0, self._height))  # hide the mark
             if not self.we_are_sharing():
@@ -457,12 +479,12 @@ class Bounce():
                 if not self.we_are_sharing() and self._easter_egg_test():
                     self._animate()
                 else:
-                    self._timeout = GObject.timeout_add(
-                        max(STEP_PAUSE,
-                            BOUNCE_PAUSE - self.count * STEP_PAUSE),
-                        self._move_ball)
+                    ms = max(STEP_PAUSE, BOUNCE_PAUSE - self.count * STEP_PAUSE)
+                    self._defer_bounce(ms)
+            self._step_sid = None
+            return False
         else:
-            self._timeout = GObject.timeout_add(STEP_PAUSE, self._move_ball)
+            return True
 
     def _wedge_offset(self):
         return int(BAR_HEIGHT * (1 - (self.ball.ball_x() /
@@ -504,9 +526,9 @@ class Bounce():
             self.ball.hide_frames()
             self._test(easter_egg=True)
             self._new_bounce = True
-            self._timeout = GObject.timeout_add(BOUNCE_PAUSE, self._move_ball)
+            self._defer_bounce(BOUNCE_PAUSE)
         else:
-            GObject.timeout_add(STEP_PAUSE, self._animate)
+            GLib.timeout_add(STEP_PAUSE, self._animate)
 
     def add_fraction(self, string):
         ''' Add a new challenge; set bar to 2x demominator '''
@@ -583,8 +605,6 @@ class Bounce():
 
     def _test(self, easter_egg=False):
         ''' Test to see if we estimated correctly '''
-        self._timeout = None
-
         if self._expert:
             delta = self.ball.width() / 6
         else:
@@ -631,7 +651,8 @@ class Bounce():
         elif k in ['KP_Page_Up', 'KP_End', 'l', 'Right', 'KP_Right']:
             self._dx = DX * self._scale
         elif k in ['Return']:
-            self._dy = - self._ddy * (1 - STEPS) * 2.
+            if self._step_sid:
+                self._dy = - self._ddy * (1 - STEPS) * 2.
         else:
             self._dx = 0.
         if self._accel_flip:
@@ -647,8 +668,8 @@ class Bounce():
             return False
 
         if self._keyrelease_id is not None:
-            GObject.source_remove(self._keyrelease_id)
-        self._keyrelease_id = GObject.timeout_add(100, timer_cb)
+            GLib.source_remove(self._keyrelease_id)
+        self._keyrelease_id = GLib.timeout_add(100, timer_cb)
 
         return True
 
