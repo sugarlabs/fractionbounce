@@ -157,6 +157,7 @@ class Bounce():
         self._press = None  # sprite under mouse click
         self._new_bounce = False
         self._n = 0
+        self._accelerometer = self._check_accelerometer()
         self._accel_index = 0
         self._accel_flip = False
         self._accel_xy = [0, 0]
@@ -179,7 +180,7 @@ class Bounce():
 
         self._keyrelease_id = None
 
-    def _accelerometer(self):
+    def _check_accelerometer(self):
         return os.path.exists(ACCELEROMETER_DEVICE) and _is_tablet_mode()
 
     def configure_cb(self, event):
@@ -401,7 +402,7 @@ class Bounce():
         return closest
 
     def _guess_orientation(self):
-        if self._accelerometer():
+        if self._accelerometer:
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             fh.close()
@@ -422,6 +423,7 @@ class Bounce():
 
     def _bounce(self):
         ''' Start the ball again '''
+        self._accelerometer = self._check_accelerometer()
         self._start_step()
         self._bounce_sid = None
         return False
@@ -440,7 +442,7 @@ class Bounce():
             self._new_bounce = False
             self._dy = self._ddy * (1 - STEPS) / 2  # initial step size
 
-        if self._accelerometer():
+        if self._accelerometer:
             self._guess_orientation()
             self._dx = float(self._accel_xy[self._accel_index]) / 18.
             if self._accel_flip:
@@ -505,7 +507,7 @@ class Bounce():
             self.ball.move_ball((self.ball.ball_x(), self._height))
             aplay.play(self._path_to_bubbles)
 
-        if self._accelerometer():
+        if self._accelerometer:
             fh = open(ACCELEROMETER_DEVICE)
             string = fh.read()
             xyz = string[1:-2].split(',')
