@@ -631,8 +631,7 @@ class Bounce():
         elif k in ['KP_Page_Up', 'KP_End', 'l', 'Right', 'KP_Right']:
             self._dx = DX * self._scale
         elif k in ['Return']:
-            self._choose_a_fraction()
-            self._move_ball()
+            self._dy = - self._ddy * (1 - STEPS) * 2.
         else:
             self._dx = 0.
         if self._accel_flip:
