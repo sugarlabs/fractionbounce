@@ -72,7 +72,7 @@ class FractionBounceActivity(activity.Activity):
             self._colors = ['#A0FFA0', '#FF8080']
 
         self.max_participants = 4  # sharing
-        self._playing = True
+        self._ignore_messages = False  # activity was asked to stop
 
         self._setup_toolbars()
         canvas = self._setup_canvas()
@@ -134,7 +134,7 @@ class FractionBounceActivity(activity.Activity):
 
         def on_message_cb(collab, buddy, msg):
             logging.debug('on_message_cb buddy %r msg %r' % (buddy, msg))
-            if self._playing:
+            if not self._ignore_messages:
                 actions[msg.get('action')](msg.get('data'))
 
         self._collab.connect('message', on_message_cb)
@@ -397,7 +397,7 @@ class FractionBounceActivity(activity.Activity):
         # Let everyone know we are leaving...
         if hasattr(self, '_bounce_window') and \
            self._bounce_window.we_are_sharing():
-            self._playing = False
+            self._ignore_messages = True
             self.send_event('l', [self.nick, self.key])
         return True
 
