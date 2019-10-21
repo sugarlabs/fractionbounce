@@ -65,6 +65,7 @@ class FractionBounceActivity(activity.Activity):
         super(FractionBounceActivity, self).__init__(handle)
 
         self.nick = profile.get_nick_name()
+        self.key = profile.get_pubkey()
         if profile.get_color() is not None:
             self._colors = profile.get_color().to_string().split(',')
         else:
@@ -97,7 +98,7 @@ class FractionBounceActivity(activity.Activity):
             for f in fractions:
                 self._bounce_window.add_fraction(f)
 
-        self._bounce_window.buddies.append(self.nick)
+        self._bounce_window.buddies.append([self.nick, self.key])
         self._player_colors = [self._colors]
         self._player_pixbufs = [
             svg_str_to_pixbuf(generate_xo_svg(scale=0.8, colors=self._colors))
@@ -140,7 +141,7 @@ class FractionBounceActivity(activity.Activity):
 
         def on_joined_cb(collab, msg):
             logging.debug('joined')
-            self.send_event('j', [self.nick, self._colors])
+            self.send_event('j', [self.nick, self.key, self._colors])
 
         self._collab.connect('joined', on_joined_cb, 'joined')
 
@@ -397,7 +398,7 @@ class FractionBounceActivity(activity.Activity):
         if hasattr(self, '_bounce_window') and \
            self._bounce_window.we_are_sharing():
             self._playing = False
-            self.send_event('l', self.nick)
+            self.send_event('l', [self.nick, self.key])
         return True
 
     def _setup_canvas(self):
@@ -504,10 +505,11 @@ class FractionBounceActivity(activity.Activity):
 
     # Collaboration-related methods
 
-    def _buddy_left(self, nick):
+    def _buddy_left(self, payload):
+        [nick, key] = payload
         self._label.set_label(nick + ' ' + _('has left.'))
         if self._collab.props.leader:
-            self._remove_player(nick)
+            self._remove_player(nick, key)
             self.send_event(
                 'b', [self._bounce_window.buddies, self._player_colors])
             # Restart from sharer's turn
@@ -515,27 +517,27 @@ class FractionBounceActivity(activity.Activity):
 
     def _new_joiner(self, payload):
         ''' Someone has joined; sharer adds them to the buddy list. '''
-        [nick, colors] = payload
+        [nick, key, colors] = payload
         self._label.set_label(nick + ' ' + _('has joined.'))
         if self._collab.props.leader:
-            self._append_player(nick, colors)
+            self._append_player(nick, key, colors)
             self.send_event(
                 'b', [self._bounce_window.buddies, self._player_colors])
             if self._bounce_window.count == 0:  # Haven't started yet...
                 self._bounce_window.its_my_turn()
 
-    def _remove_player(self, nick):
-        if nick in self._bounce_window.buddies:
-            i = self._bounce_window.buddies.index(nick)
-            self._bounce_window.buddies.remove(nick)
+    def _remove_player(self, nick, key):
+        if [nick, key] in self._bounce_window.buddies:
+            i = self._bounce_window.buddies.index([nick, key])
+            self._bounce_window.buddies.remove([nick, key])
             self._player_colors.remove(self._player_colors[i])
             self._player_pixbufs.remove(self._player_pixbufs[i])
 
-    def _append_player(self, nick, colors):
+    def _append_player(self, nick, key, colors):
         ''' Keep a list of players, their colors, and an XO pixbuf '''
-        if nick not in self._bounce_window.buddies:
+        if [nick, key] not in self._bounce_window.buddies:
             _logger.debug('appending %s to the buddy list', nick)
-            self._bounce_window.buddies.append(nick)
+            self._bounce_window.buddies.append([nick, key])
             self._player_colors.append([str(colors[0]), str(colors[1])])
             self._player_pixbufs.append(svg_str_to_pixbuf(
                 generate_xo_svg(scale=0.8,
@@ -561,20 +563,21 @@ class FractionBounceActivity(activity.Activity):
         ''' Receive a fraction from another player. '''
         self._bounce_window.play_a_fraction(payload)
 
-    def _take_a_turn(self, nick):
+    def _take_a_turn(self, payload):
         ''' If it is your turn, take it, otherwise, wait. '''
-        if nick == self.nick:  # TODO: disambiguate
+        [nick, key] = payload
+        if [nick, key] == [self.nick, self.key]:
             self._bounce_window.its_my_turn()
         else:
-            self._bounce_window.its_their_turn(nick)
+            self._bounce_window.its_their_turn(nick, key)
 
     def send_event(self, action, data):
         ''' Send event through the tube. '''
         _logger.debug('send_event action=%r data=%r' % (action, data))
         self._collab.post({'action': action, 'data': data})
 
-    def set_player_on_toolbar(self, nick):
+    def set_player_on_toolbar(self, nick, key):
         ''' Display the XO icon of the player whose turn it is. '''
-        self._player.set_from_pixbuf(
-            self._player_pixbufs[self._bounce_window.buddies.index(nick)])
+        i = self._bounce_window.buddies.index([nick, key])
+        self._player.set_from_pixbuf(self._player_pixbufs[i])
         self._player.set_tooltip_text(nick)

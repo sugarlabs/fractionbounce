@@ -332,18 +332,19 @@ class Bounce():
         ''' On your turn, choose a fraction. '''
         self._my_turn = True
         self.select_a_fraction = True
-        self._activity.set_player_on_toolbar(self._activity.nick)
+        self._activity.set_player_on_toolbar(
+            self._activity.nick, self._activity.key)
         self._activity.reset_label(
             _("Click on the bar to choose a fraction."))
 
-    def its_their_turn(self, nick):
+    def its_their_turn(self, nick, key):
         ''' When sharing, it is nick's turn... '''
-        GLib.timeout_add(1000, self._wait_your_turn, nick)
+        GLib.timeout_add(1000, self._wait_your_turn, nick, key)
 
-    def _wait_your_turn(self, nick):
+    def _wait_your_turn(self, nick, key):
         ''' Wait for nick to choose a fraction. '''
         self._my_turn = False
-        self._activity.set_player_on_toolbar(nick)
+        self._activity.set_player_on_toolbar(nick, key)
         self._activity.reset_label(
             _('Waiting for %(buddy)s') % {'buddy': nick})
 
@@ -473,15 +474,18 @@ class Bounce():
             if self.we_are_sharing():
                 if self._my_turn:
                     # Let the next player know it is their turn.
-                    i = (self.buddies.index(self._activity.nick) + 1) % \
+                    i = (self.buddies.index(
+                        [self._activity.nick, self._activity.key]) + 1) % \
                         len(self.buddies)
-                    self.its_their_turn(self.buddies[i])
+                    [nick, key] = self.buddies[i]
+                    self.its_their_turn(nick, key)
                     self._activity.send_event('t', self.buddies[i])
             else:
                 if not self.we_are_sharing() and self._easter_egg_test():
                     self._animate()
                 else:
-                    ms = max(STEP_PAUSE, BOUNCE_PAUSE - self.count * STEP_PAUSE)
+                    ms = max(STEP_PAUSE,
+                             BOUNCE_PAUSE - self.count * STEP_PAUSE)
                     self._defer_bounce(ms)
             self._step_sid = None
             return False
