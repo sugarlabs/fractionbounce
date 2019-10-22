@@ -153,6 +153,11 @@ class FractionBounceActivity(activity.Activity):
 
         def on_buddy_left_cb(collab, buddy, msg):
             logging.debug('on_buddy_left_cb buddy %r' % (buddy.props.nick))
+            # synthesise a buddy left message in case it did not
+            # arrive; this can happen when the peer terminates
+            # unexpectedly, or the network connection between the
+            # peers fails.
+            self._buddy_left([buddy.props.nick, buddy.props.key])
 
         self._collab.connect('buddy_left', on_buddy_left_cb, 'buddy_left')
 
