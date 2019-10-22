@@ -1,3 +1,18 @@
+26
+
+* New translations,
+* Fix Python GI API version warnings,
+* Update CollabWrapper,
+* Fix missing sound effects,
+* Fix ball stop on key release,
+* Port from ExportedGObject and Tubes,
+* Add return key to accelerate ball to completion,
+* Port from GObject to GLib,
+* Improve performance on systems with an accelerometer,
+* Pause animation on activity stop,
+* Support duplicate nicknames,
+* Handle loss of network.
+
 25
 
 ENHANCEMENT:
