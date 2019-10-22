@@ -45,11 +45,11 @@ class Bar():
         self._height = Gdk.Screen.height() - style.GRID_CELL_SIZE
         self._scale = Gdk.Screen.height() / 900.0
 
-        for bar in self.bars.keys():
+        for bar in list(self.bars.keys()):
             self.bars[bar].hide()
         self.mark.hide()
 
-        for bar in self.bars.keys():
+        for bar in list(self.bars.keys()):
             self.make_bar(bar)
         self._make_wedge_mark()
 

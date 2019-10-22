@@ -342,7 +342,7 @@ class FractionBounceActivity(activity.Activity):
         self._ball_palette = button.get_palette()
         button_grid = Gtk.Grid()
         row = 0
-        for ball in BALLDICT.keys():
+        for ball in list(BALLDICT.keys()):
             if ball == 'custom':
                 button = ToolButton('view-source')
             else:
@@ -371,7 +371,7 @@ class FractionBounceActivity(activity.Activity):
         self._bg_palette = button.get_palette()
         button_grid = Gtk.Grid()
         row = 0
-        for bg in BGDICT.keys():
+        for bg in list(BGDICT.keys()):
             if bg == 'custom':
                 button = ToolButton('view-source')
             else:

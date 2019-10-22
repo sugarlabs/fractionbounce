@@ -190,7 +190,7 @@ class Bounce():
 
         # We need to resize the backgrounds
         width, height = self._calc_background_size()
-        for bg in self._backgrounds.keys():
+        for bg in list(self._backgrounds.keys()):
             if bg == 'custom':
                 path = self._custom_dsobject.file_path
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
@@ -365,14 +365,14 @@ class Bounce():
     def _button_press_cb(self, win, event):
         ''' Callback to handle the button presses '''
         win.grab_focus()
-        x, y = map(int, event.get_coords())
+        x, y = list(map(int, event.get_coords()))
         self._press = self._sprites.find_sprite((x, y))
         return True
 
     def _button_release_cb(self, win, event):
         ''' Callback to handle the button releases '''
         win.grab_focus()
-        x, y = map(int, event.get_coords())
+        x, y = list(map(int, event.get_coords()))
         if self._press is not None:
             if self.we_are_sharing():
                 if self.select_a_fraction and self._press == self._current_bar:
