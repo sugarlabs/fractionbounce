@@ -242,7 +242,7 @@ class Bounce():
 
         self.ball_y_max = \
             self.bar.bar_y() - self.ball.height() + int(BAR_HEIGHT / 2.)
-        self.ball.move_ball((int((self._width - self.ball.width()) / 2),
+        self.ball.move_ball((int((self._width - self.ball.width()) // 2),
                              self.ball_y_max))
 
         self._backgrounds = {}
@@ -263,7 +263,7 @@ class Bounce():
     def _crop_to_portrait(self, pixbuf):
         tmp = GdkPixbuf.Pixbuf.new(0, True, 8, Gdk.Screen.width(),
                                    Gdk.Screen.height())
-        x = int(Gdk.Screen.height() / 3)
+        x = int(Gdk.Screen.height() // 3)
         pixbuf.copy_area(x, 0, Gdk.Screen.width(), Gdk.Screen.height(),
                          tmp, 0, 0)
         return tmp
@@ -271,10 +271,10 @@ class Bounce():
     def _calc_background_size(self):
         if Gdk.Screen.height() > Gdk.Screen.width():
             height = Gdk.Screen.height()
-            return int(4 * height / 3), height
+            return int(4 * height // 3), height
         else:
             width = Gdk.Screen.width()
-            return width, int(3 * width / 4)
+            return width, int(3 * width // 4)
 
     def new_background_from_image(self, path, dsobject=None):
         if path is None:

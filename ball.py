@@ -103,7 +103,7 @@ class Ball():
         self.ball.set_layer(3)
         self.ball.set_label_attributes(24, vert_align='top')
 
-        ball = extract_svg_payload(file(filename, 'r'))
+        ball = extract_svg_payload(open(filename, 'r'))
         for i in range(8):
             self._frames.append(Sprite(
                 self._sprites, 0, 0, svg_str_to_pixbuf(
@@ -117,7 +117,7 @@ class Ball():
     def new_ball(self, filename):
         ''' Create a ball object and Easter Egg animation from an SVG file. '''
         self.ball.set_shape(svg_str_to_pixbuf(svg_from_file(filename)))
-        ball = extract_svg_payload(file(filename, 'r'))
+        ball = extract_svg_payload(open(filename, 'r'))
         for i in range(8):
             self._frames[i].set_shape(svg_str_to_pixbuf(
                 svg_header(SIZE[0], SIZE[1], 1.0) + TRANSFORMS[i] +
@@ -132,10 +132,10 @@ class Ball():
             pixbuf = GdkPixbuf.Pixbuf.new_from_file(filename)
             if pixbuf.get_width() > pixbuf.get_height():
                 size = pixbuf.get_height()
-                x = int((pixbuf.get_width() - size) / 2)
+                x = int((pixbuf.get_width() - size) // 2)
             else:
                 size = pixbuf.get_width()
-                x = int((pixbuf.get_height() - size) / 2)
+                x = int((pixbuf.get_height() - size) // 2)
             crop = GdkPixbuf.Pixbuf.new(0, True, 8, size, size)
             pixbuf.copy_area(x, 0, size, size, crop, 0, 0)
             scale = crop.scale_simple(85, 85, GdkPixbuf.InterpType.BILINEAR)

@@ -54,7 +54,7 @@ def generate_xo_svg(scale=1.0, colors=["#C0C0C0", "#282828"]):
 def svg_str_to_pixbuf(v):
     ''' Load pixbuf from SVG string '''
     pl = GdkPixbuf.PixbufLoader.new_with_type('svg')
-    pl.write(v)
+    pl.write(v.encode())
     pl.close()
     pixbuf = pl.get_pixbuf()
     return pixbuf
