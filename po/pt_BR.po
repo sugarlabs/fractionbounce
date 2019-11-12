@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-06 08:06+1100\n"
-"PO-Revision-Date: 2018-06-20 20:35+0000\n"
+"PO-Revision-Date: 2019-03-09 00:16+0000\n"
 "Last-Translator: Paulo Francisco <slomp@ufrgs.br>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: pt_BR\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.5.1.1\n"
-"X-POOTLE-MTIME: 1529526947.000000\n"
+"X-POOTLE-MTIME: 1552090569.000000\n"
 
 #: activity/activity.info:2
 msgid "FractionBounce"
@@ -28,7 +28,7 @@ msgstr "jogo interativo de frações"
 
 #: FractionBounceActivity.py:56
 msgid "basketball"
-msgstr "basquete"
+msgstr "bola de basquete"
 
 #: FractionBounceActivity.py:57
 msgid "soccer ball"
@@ -52,7 +52,7 @@ msgstr "pena"
 
 #: FractionBounceActivity.py:62 FractionBounceActivity.py:67
 msgid "user defined"
-msgstr "definido(a) pelo usuário"
+msgstr "definido pelo usuário"
 
 #: FractionBounceActivity.py:63
 msgid "grass"
@@ -80,7 +80,7 @@ msgstr "Iniciando a conexão..."
 
 #: FractionBounceActivity.py:127
 msgid "Wait for the sharer to start."
-msgstr "Aguarde o provedor iniciar."
+msgstr "Aguarde o participante iniciar."
 
 #: FractionBounceActivity.py:182
 msgid "Custom"
@@ -100,7 +100,7 @@ msgstr "setores"
 
 #: FractionBounceActivity.py:224
 msgid "percents"
-msgstr "porcento"
+msgstr "porcentagem"
 
 #: FractionBounceActivity.py:239
 msgid "Click the ball to start."
@@ -124,7 +124,7 @@ msgstr "escolha uma bola"
 
 #: FractionBounceActivity.py:323
 msgid "choose a background"
-msgstr "escolha um fundo"
+msgstr "escolha um plano de fundo"
 
 #: FractionBounceActivity.py:449
 msgid "New fraction"
@@ -151,8 +151,8 @@ msgstr "juntou-se."
 msgid ""
 "Click the ball to start. Rock the computer left and right to move the ball."
 msgstr ""
-"Clique na bola para começar. Balance o computador para a direita e esquerda "
-"para mover a bola."
+"Clique na bola para começar. Balance o laptop para a direita e esquerda para "
+"mover a bola."
 
 #: bounce.py:180
 msgid "Click the ball to start. Then use the arrow keys to move the ball."
@@ -183,7 +183,7 @@ msgstr "Quique a bola em %(fraction)s"
 
 #: collabwrapper.py:178
 msgid "Joining activity..."
-msgstr "Juntando-se à atividade..."
+msgstr "Unindo-se à atividade..."
 
 #: collabwrapper.py:179 collabwrapper.py:191
 msgid "Please wait for the connection..."
