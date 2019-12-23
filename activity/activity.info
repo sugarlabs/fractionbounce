@@ -8,4 +8,4 @@ icon = activity-fractionbounce
 show_launcher = yes
 summary = interactive fraction game
 category = maths game
-repository = https://github.com/walterbender/fractionbounce
+repository = https://github.com/sugarlabs/fractionbounce
