@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-11-06 08:06+1100\n"
-"PO-Revision-Date: 2017-04-25 18:04+0000\n"
-"Last-Translator: yurchor <yurchor@ukr.net>\n"
+"PO-Revision-Date: 2019-11-16 10:46+0000\n"
+"Last-Translator: lxlalexlxl <pilipchukap@rambler.ru>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Pootle 2.5.1.1\n"
-"X-POOTLE-MTIME: 1493143454.000000\n"
+"X-POOTLE-MTIME: 1573901213.000000\n"
 
 #: activity/activity.info:2
 msgid "FractionBounce"
@@ -73,11 +73,11 @@ msgstr "пісок"
 
 #: FractionBounceActivity.py:122
 msgid "Please wait"
-msgstr ""
+msgstr "Зачекайте"
 
 #: FractionBounceActivity.py:123
 msgid "Starting connection..."
-msgstr ""
+msgstr "Початок з'єднання..."
 
 #: FractionBounceActivity.py:127
 msgid "Wait for the sharer to start."
@@ -142,7 +142,7 @@ msgstr "Очікуємо на долучення інших гравців."
 
 #: FractionBounceActivity.py:579
 msgid "has left."
-msgstr ""
+msgstr "вийшов."
 
 #: FractionBounceActivity.py:591
 msgid "has joined."
@@ -185,12 +185,12 @@ msgstr "Спрямуйте кульку у %(fraction)s"
 
 #: collabwrapper.py:178
 msgid "Joining activity..."
-msgstr ""
+msgstr "Приєднання..."
 
 #: collabwrapper.py:179 collabwrapper.py:191
 msgid "Please wait for the connection..."
-msgstr ""
+msgstr "Зачекайте на з'єднання..."
 
 #: collabwrapper.py:190
 msgid "Resuming shared activity..."
-msgstr ""
+msgstr "Відновлення спільної діяльності..."
