@@ -303,11 +303,11 @@ class Bounce():
         self.bar.mark.hide()
         self._current_bar.hide()
         self.ball.ball.hide()
-        self.do_expose_event()
         self.ball.ball.set_layer(3)
         self._current_bar.set_layer(2)
         self.bar.mark.set_layer(1)
         self._current_bg = name
+        self._canvas.queue_draw()
 
     def pause(self):
         ''' Pause play when visibility changes '''
@@ -680,18 +680,6 @@ class Bounce():
         return True
 
     def __draw_cb(self, canvas, cr):
-        self._sprites.redraw_sprites(cr=cr)
-
-    def do_expose_event(self, event=None):
-        ''' Handle the expose-event by drawing '''
-        # Restrict Cairo to the exposed area
-        cr = self._activity.get_window().cairo_create()
-        if event is None:
-            cr.rectangle(0, 0, Gdk.Screen.width(), Gdk.Screen.height())
-        else:
-            cr.rectangle(event.area.x, event.area.y,
-                         event.area.width, event.area.height)
-        cr.clip()
         self._sprites.redraw_sprites(cr=cr)
 
     def _destroy_cb(self, win, event):
