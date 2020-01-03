@@ -20,7 +20,6 @@ def generate_ball_svg(path):
         x = w.read()
     base64_embed = base64.b64encode(x).decode()
     type_embed = path.split('.')[-1]
-    print(path, 'kkk')
     a =  """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
 xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -33,7 +32,7 @@ version="1.1"
 width="85"
 height="120">
 <image
-xlink:href="data:image/png;base64,{}
+xlink:href="data:image/{};base64,{}
 "
 x="0"
 y="35"
@@ -47,8 +46,7 @@ x="0"
 y="0"
 style="fill:#ffffff;fill-opacity:1;stroke:none" />
 </svg>
-""".format(base64_embed)
-    print(a)
+""".format(type_embed, base64_embed)
     return a
 
 
