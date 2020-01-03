@@ -10,38 +10,46 @@
 # along with this library; if not, write to the Free Software
 # Foundation, 51 Franklin Street, Suite 500 Boston, MA 02110-1335 USA
 from gi.repository import GdkPixbuf
-
+import base64
 from math import sin, cos, pi
 
 
 def generate_ball_svg(path):
     ''' Returns an SVG string of a ball + label with image from path '''
-    return \
-        '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + \
-        '<svg\n' + \
-        'xmlns:dc="http://purl.org/dc/elements/1.1/"\n' + \
-        'xmlns:cc="http://creativecommons.org/ns#"\n' + \
-        'xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"\n' + \
-        'xmlns:svg="http://www.w3.org/2000/svg"\n' + \
-        'xmlns="http://www.w3.org/2000/svg"\n' + \
-        'xmlns:xlink="http://www.w3.org/1999/xlink"\n' + \
-        'version="1.1"\n' + \
-        'width="85"\n' + \
-        'height="120">\n' + \
-        '<image\n' + \
-        'xlink:href="file://%s"\n' % path + \
-        'x="0"\n' + \
-        'y="35"\n' + \
-        'width="85"\n' + \
-        'height="85" />\n' + \
-        '<rect\n' + \
-        'width="85"\n' + \
-        'height="35"\n' + \
-        'ry="7.75"\n' + \
-        'x="0"\n' + \
-        'y="0"\n' + \
-        'style="fill:#ffffff;fill-opacity:1;stroke:none" />\n' + \
-        '</svg>'
+    with open(path, 'rb') as w:
+        x = w.read()
+    base64_embed = base64.b64encode(x).decode()
+    type_embed = path.split('.')[-1]
+    print(path, 'kkk')
+    a =  """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:cc="http://creativecommons.org/ns#"
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:svg="http://www.w3.org/2000/svg"
+xmlns="http://www.w3.org/2000/svg"
+xmlns:xlink="http://www.w3.org/1999/xlink"
+version="1.1"
+width="85"
+height="120">
+<image
+xlink:href="data:image/png;base64,{}
+"
+x="0"
+y="35"
+width="85"
+height="85" />
+<rect
+width="85"
+height="35"
+ry="7.75"
+x="0"
+y="0"
+style="fill:#ffffff;fill-opacity:1;stroke:none" />
+</svg>
+""".format(base64_embed)
+    print(a)
+    return a
 
 
 def generate_xo_svg(scale=1.0, colors=["#C0C0C0", "#282828"]):
