@@ -1,3 +1,11 @@
+28
+
+* Add missing end of line to activity.info,
+* Move repository,
+* Fix changing the background image,
+* New translations,
+* Deanglify links to help.sugarlabs.org,
+
 27
 
 * Port to Python 3.
