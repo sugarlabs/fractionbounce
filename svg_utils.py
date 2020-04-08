@@ -130,6 +130,9 @@ def svg_header(w, h, scale):
     v += '<!-- Created with Python -->\n'
     v += '<svg\n'
     v += '   xmlns:svg="http://www.w3.org/2000/svg"\n'
+    v += '   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"\n'
+    v += '   xmlns:cc="http://creativecommons.org/ns#"\n'
+    v += '   xmlns:dc="http://purl.org/dc/elements/1.1/"\n'
     v += '   xmlns="http://www.w3.org/2000/svg"\n'
     v += '   version="1.0"\n'
     v += '   width="%f"\n' % (w * scale)
