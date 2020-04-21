@@ -1,3 +1,7 @@
+28.1
+
+* Fix fail to start, XML parse error, Ubuntu 20.04,
+
 28
 
 * Add missing end of line to activity.info,
