@@ -119,8 +119,11 @@ class Bounce():
         self._canvas.connect('button-release-event', self._button_release_cb)
         self._canvas.connect('key-press-event', self._keypress_cb)
         self._canvas.connect('key-release-event', self._keyrelease_cb)
+        self._canvas.connect("motion-notify-event", self._mouse_motion_cb)
         self._canvas.set_can_focus(True)
         self._canvas.grab_focus()
+
+        self._canvas.set_events(Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK)
 
         self._sprites = Sprites(self._canvas)
 
@@ -367,12 +370,15 @@ class Bounce():
         win.grab_focus()
         x, y = list(map(int, event.get_coords()))
         self._press = self._sprites.find_sprite((x, y))
+        if self._press is not None and self._press == self.ball.ball:
+            self.ball.grabbed = True
         return True
 
     def _button_release_cb(self, win, event):
         ''' Callback to handle the button releases '''
         win.grab_focus()
         x, y = list(map(int, event.get_coords()))
+        self.ball.grabbed=False
         if self._press is not None:
             if self.we_are_sharing():
                 if self.select_a_fraction and self._press == self._current_bar:
@@ -388,6 +394,19 @@ class Bounce():
                    self._press == self.ball.ball:
                     self._choose_a_fraction()
                     self._start_step()
+        return True
+
+    def _mouse_motion_cb(self, widget, event):
+        if self.ball.grabbed and self._fraction != None:
+            if event.is_hint:
+                mouse_x, mouse_y, state = event.window.get_pointer()
+            else:
+                mouse_x = event.x
+                mouse_y = event.y
+                state = event.state
+
+                self.ball.move_ball_relative((mouse_x - self.ball.ball_x(), 0))
+        
         return True
 
     def _search_challenges(self, f):
