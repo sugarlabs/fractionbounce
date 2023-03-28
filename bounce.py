@@ -123,8 +123,6 @@ class Bounce():
         self._canvas.set_can_focus(True)
         self._canvas.grab_focus()
 
-        self._canvas.set_events(Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK)
-
         self._sprites = Sprites(self._canvas)
 
         self._width = Gdk.Screen.width()
