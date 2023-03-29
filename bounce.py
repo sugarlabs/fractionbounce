@@ -395,7 +395,7 @@ class Bounce():
         return True
 
     def _mouse_motion_cb(self, widget, event):
-        if self.ball.grabbed and self._fraction != None:
+        if self.ball.grabbed and self._fraction is not None:
             if event.is_hint:
                 mouse_x, mouse_y, state = event.window.get_pointer()
             else:
