@@ -376,7 +376,7 @@ class Bounce():
         ''' Callback to handle the button releases '''
         win.grab_focus()
         x, y = list(map(int, event.get_coords()))
-        self.ball.grabbed=False
+        self.ball.grabbed = False
         if self._press is not None:
             if self.we_are_sharing():
                 if self.select_a_fraction and self._press == self._current_bar:
