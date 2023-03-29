@@ -401,7 +401,9 @@ class Bounce():
             else:
                 mouse_x = event.x
 
-                self.ball.move_ball_relative((mouse_x - self.ball.ball_x() - self.ball.width() / 2, 0))
+                self.ball.move_ball_relative((mouse_x
+                                              - self.ball.ball_x()
+                                              - self.ball.width() / 2, 0))
 
         return True
 
