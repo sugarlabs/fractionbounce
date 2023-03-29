@@ -368,7 +368,7 @@ class Bounce():
         win.grab_focus()
         x, y = list(map(int, event.get_coords()))
         self._press = self._sprites.find_sprite((x, y))
-        if self._press is not None and self._press == self.ball.ball:
+        if self._press == self.ball.ball:
             self.ball.grabbed = True
         return True
 
