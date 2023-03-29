@@ -397,11 +397,9 @@ class Bounce():
     def _mouse_motion_cb(self, widget, event):
         if self.ball.grabbed and self._fraction is not None:
             if event.is_hint:
-                mouse_x, mouse_y, state = event.window.get_pointer()
+                mouse_x = event.window.get_pointer()[0]
             else:
                 mouse_x = event.x
-                mouse_y = event.y
-                state = event.state
 
                 self.ball.move_ball_relative((mouse_x - self.ball.ball_x() - self.ball.width() / 2, 0))
 
