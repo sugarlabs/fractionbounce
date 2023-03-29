@@ -404,7 +404,7 @@ class Bounce():
                 state = event.state
 
                 self.ball.move_ball_relative((mouse_x - self.ball.ball_x() - self.ball.width() / 2, 0))
-        
+
         return True
 
     def _search_challenges(self, f):
