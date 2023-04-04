@@ -119,7 +119,7 @@ class Bounce():
         self._canvas.connect('button-release-event', self._button_release_cb)
         self._canvas.connect('key-press-event', self._keypress_cb)
         self._canvas.connect('key-release-event', self._keyrelease_cb)
-        self._canvas.connect("motion-notify-event", self._mouse_motion_cb)
+        self._canvas.connect('motion-notify-event', self._mouse_motion_cb)
         self._canvas.set_can_focus(True)
         self._canvas.grab_focus()
 
