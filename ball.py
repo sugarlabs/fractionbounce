@@ -103,8 +103,6 @@ class Ball():
         self.ball.set_layer(3)
         self.ball.set_label_attributes(24, vert_align='top')
 
-        self.grabbed = False
-
         ball = extract_svg_payload(open(filename, 'r'))
         for i in range(8):
             self._frames.append(Sprite(

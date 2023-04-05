@@ -156,6 +156,7 @@ class Bounce():
         self.count = 0  # number of bounces played
         self._correct = 0  # number of correct answers
         self._press = None  # sprite under mouse click
+        self._mouse_grab = False # whether the ball is being grabbed
         self._new_bounce = False
         self._n = 0
         self._accelerometer = self._check_accelerometer()
@@ -369,14 +370,14 @@ class Bounce():
         x, y = list(map(int, event.get_coords()))
         self._press = self._sprites.find_sprite((x, y))
         if self._press == self.ball.ball:
-            self.ball.grabbed = True
+            self._mouse_grab = True
         return True
 
     def _button_release_cb(self, win, event):
         ''' Callback to handle the button releases '''
         win.grab_focus()
         x, y = list(map(int, event.get_coords()))
-        self.ball.grabbed = False
+        self._mouse_grab = False
         if self._press is not None:
             if self.we_are_sharing():
                 if self.select_a_fraction and self._press == self._current_bar:
@@ -395,7 +396,7 @@ class Bounce():
         return True
 
     def _mouse_motion_cb(self, widget, event):
-        if self.ball.grabbed and self._fraction is not None:
+        if self._mouse_grab and self._fraction is not None:
             if event.is_hint:
                 mouse_x = event.window.get_pointer()[0]
             else:
