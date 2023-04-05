@@ -397,15 +397,9 @@ class Bounce():
 
     def _mouse_motion_cb(self, widget, event):
         if self._mouse_grab and self._fraction is not None:
-            if event.is_hint:
-                mouse_x = event.window.get_pointer()[0]
-            else:
-                mouse_x = event.x
-
-                self.ball.move_ball_relative((mouse_x
-                                              - self.ball.ball_x()
-                                              - self.ball.width() / 2, 0))
-
+            x_diff = event.x_root - self.ball.ball_x()
+            relative_x = x_diff - (self.ball.width() / 2)
+            self.ball.move_ball_relative((relative_x, 0))
         return True
 
     def _search_challenges(self, f):
