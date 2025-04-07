@@ -112,6 +112,7 @@ class Bounce():
         self._canvas.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self._canvas.add_events(Gdk.EventMask.BUTTON_RELEASE_MASK)
         self._canvas.add_events(Gdk.EventMask.POINTER_MOTION_MASK)
+        self._canvas.connect('motion-notify-event', self._mouse_move_cb)
         self._canvas.add_events(Gdk.EventMask.KEY_PRESS_MASK)
         self._canvas.add_events(Gdk.EventMask.KEY_RELEASE_MASK)
         self._canvas.connect('draw', self.__draw_cb)
@@ -678,6 +679,22 @@ class Bounce():
         self._keyrelease_id = GLib.timeout_add(100, timer_cb)
 
         return True
+      
+    def _mouse_move_cb(self, widget, event):
+        ball_x = self.ball.ball_x()
+        ball_width = self.ball.width()
+        center_of_ball = ball_x + ball_width / 2
+
+        sensitivity = 40.0
+        diff = event.x - center_of_ball
+        self._dx = (diff / sensitivity) * self._scale
+
+        max_dx = DX * self._scale
+        if self._dx > max_dx:
+            self._dx = max_dx
+        elif self._dx < -max_dx:
+            self._dx = -max_dx
+        return True  
 
     def __draw_cb(self, canvas, cr):
         self._sprites.redraw_sprites(cr=cr)
