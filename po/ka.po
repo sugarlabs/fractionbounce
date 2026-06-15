@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-22 13:15+1100\n"
-"PO-Revision-Date: 2026-06-15 07:48+0000\n"
+"PO-Revision-Date: 2026-06-15 08:59+0000\n"
 "Last-Translator: NF <rkavt@smartprojects.ge>\n"
 "Language-Team: Georgian <http://weblate.sugarlabs.org/projects/"
 "sugar-activities/fraction-bounce/ka/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: activity/activity.info:2
 msgid "FractionBounce"
-msgstr ""
+msgstr "FractionBounce"
 
 #: activity/activity.info:3
 msgid "interactive fraction game"
@@ -29,7 +29,7 @@ msgstr ""
 
 #: FractionBounceActivity.py:47
 msgid "basketball"
-msgstr ""
+msgstr "კალათბურთი"
 
 #: FractionBounceActivity.py:48
 msgid "soccer ball"
@@ -45,11 +45,11 @@ msgstr ""
 
 #: FractionBounceActivity.py:51
 msgid "beachball"
-msgstr ""
+msgstr "ბურთი პლაჟზე"
 
 #: FractionBounceActivity.py:52
 msgid "feather"
-msgstr ""
+msgstr "ბუმბული"
 
 #: FractionBounceActivity.py:53 FractionBounceActivity.py:58
 msgid "user defined"
@@ -57,19 +57,19 @@ msgstr ""
 
 #: FractionBounceActivity.py:54
 msgid "grass"
-msgstr ""
+msgstr "ბალახი"
 
 #: FractionBounceActivity.py:55
 msgid "wood"
-msgstr ""
+msgstr "ტყე"
 
 #: FractionBounceActivity.py:56
 msgid "clouds"
-msgstr ""
+msgstr "ღრუბლები"
 
 #: FractionBounceActivity.py:57
 msgid "sand"
-msgstr ""
+msgstr "ქვიშა"
 
 #: FractionBounceActivity.py:116
 msgid "Wait for others to join."
@@ -81,7 +81,7 @@ msgstr ""
 
 #: FractionBounceActivity.py:225
 msgid "Custom"
-msgstr ""
+msgstr "მორგებული"
 
 #: FractionBounceActivity.py:242
 msgid "<Ctrl>Q"
@@ -89,15 +89,15 @@ msgstr "<Ctrl>Q"
 
 #: FractionBounceActivity.py:253
 msgid "fractions"
-msgstr ""
+msgstr "წილადი"
 
 #: FractionBounceActivity.py:260
 msgid "sectors"
-msgstr ""
+msgstr "სექტორი"
 
 #: FractionBounceActivity.py:267
 msgid "percents"
-msgstr ""
+msgstr "პროცენტი"
 
 #: FractionBounceActivity.py:282
 msgid "Click the ball to start."
@@ -105,11 +105,11 @@ msgstr ""
 
 #: FractionBounceActivity.py:297
 msgid "numerator"
-msgstr ""
+msgstr "მნიშვნელი"
 
 #: FractionBounceActivity.py:314
 msgid "denominator"
-msgstr ""
+msgstr "მრიცხველი"
 
 #: FractionBounceActivity.py:323
 msgid "add new fraction"
