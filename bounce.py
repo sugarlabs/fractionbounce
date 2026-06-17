@@ -630,9 +630,11 @@ class Bounce():
             spr = Sprite(self._sprites, 0, 0, self.smiley_graphic)
             self._correct += 1
             aplay.play(self._path_to_success)
+            self.bar.update_indicator(True)
         else:
             spr = Sprite(self._sprites, 0, 0, self.frown_graphic)
             aplay.play(self._path_to_failure)
+            self.bar.update_indicator(False)
 
         spr.move((int(self._n * 27), int(self._challenges[self._n][2] * 27)))
         spr.set_layer(-1)

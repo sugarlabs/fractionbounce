@@ -72,9 +72,34 @@ class Bar():
                           '#FF0000', '#FFFFFF')
         mark += svg_footer()
         self.mark = Sprite(self._sprites, 0,
-                           self._height,  # hide off bottom of screen
+                           self._height - BAR_HEIGHT * self._scale,  # hide off bottom of screen
                            svg_str_to_pixbuf(mark))
         self.mark.set_layer(1)
+        self.mark.hide()
+
+    def update_indicator(self, correct):
+
+        color = '#00FF00' if correct else '#FF0000'
+
+        dx = self._ball_size / 2.
+        n = (self._width - self._ball_size) / dx
+        dy = (BAR_HEIGHT * self._scale) / n
+        s = 3.5
+        i = int(n / 2) - 1
+
+        mark = svg_header(self._ball_size,
+                          BAR_HEIGHT * self._scale + s, 1.0)
+        mark += svg_wedge(dx, BAR_HEIGHT * self._scale + s,
+                          s,
+                          i * 2 * dy + s, (i * 2 + 1) * dy + s,
+                          color, '#FFFFFF')
+        mark += svg_wedge(dx, BAR_HEIGHT * self._scale + s,
+                          dx + s,
+                          (i * 2 + 1) * dy + s, (i * 2 + 2) * dy + s,
+                          color, '#FFFFFF')
+        mark += svg_footer()
+        self.mark.set_shape(svg_str_to_pixbuf(mark))
+        self.mark.restore()
 
     def mark_width(self):
         return self.mark.rect[2]
