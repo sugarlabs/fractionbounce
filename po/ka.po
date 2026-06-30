@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-22 13:15+1100\n"
-"PO-Revision-Date: 2026-06-15 08:59+0000\n"
+"PO-Revision-Date: 2026-06-30 00:37+0000\n"
 "Last-Translator: NF <rkavt@smartprojects.ge>\n"
 "Language-Team: Georgian <http://weblate.sugarlabs.org/projects/"
 "sugar-activities/fraction-bounce/ka/>\n"
@@ -181,3 +181,11 @@ msgstr ""
 #: collabwrapper.py:209
 msgid "Resuming shared activity..."
 msgstr ""
+
+#: FractionBounceActivity.py:122
+msgid "Please wait"
+msgstr "მოითმინეთ"
+
+#: FractionBounceActivity.py:123
+msgid "Starting connection..."
+msgstr "კავშირის დასაწყისი..."
